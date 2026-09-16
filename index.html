@@ -610,7 +610,6 @@
       text-transform: uppercase;
     }
 
-    
     .exam-header-meta-item {
       display: flex;
       justify-content: flex-end;
@@ -618,7 +617,7 @@
       gap: 4px;
     }
 
-.exam-header table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+    .exam-header table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
 
     .header-input {
       border: none;
@@ -948,6 +947,26 @@
         width: 100%; white-space: pre-line;
       }
     }
+
+    /* Admin Tablo Düzeni Düzeltmesi */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+      table-layout: fixed;
+    }
+    .admin-table th, .admin-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      word-wrap: break-word;
+    }
+    .admin-table th {
+      background: #f1f5f9;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
   </style>
 </head>
 <body>
@@ -1023,7 +1042,8 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
       </div>
     </div>
   </div>
-<!-- MODERN ÖZEL UYARI MODALİ (ALERT YERİNE) -->
+
+  <!-- MODERN ÖZEL UYARI MODALİ -->
   <div id="customAlertModal" class="modal-overlay no-print" style="display: none; z-index: 35000;">
     <div class="modal-card" style="max-width: 450px; width: 92%; text-align: center; border-top: 6px solid #ef4444; border-radius: 16px;">
       <div id="customAlertIcon" style="font-size: 3.2rem; margin-bottom: 6px;">📢</div>
@@ -1033,7 +1053,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     </div>
   </div>
 
-  <!-- MODERN ÖZEL ONAY MODALİ (CONFIRM YERİNE) -->
+  <!-- MODERN ÖZEL ONAY MODALİ -->
   <div id="customConfirmModal" class="modal-overlay no-print" style="display: none; z-index: 35000;">
     <div class="modal-card" style="max-width: 440px; width: 92%; text-align: center; border-top: 6px solid #f59e0b; border-radius: 16px;">
       <div id="customConfirmIcon" style="font-size: 3rem; margin-bottom: 6px;">❓</div>
@@ -1045,6 +1065,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
       </div>
     </div>
   </div>
+
   <!-- ENGELLENMİŞ KULLANICI EKRANI -->
   <div id="bannedUserScreen" class="banned-screen-overlay" style="display: none;">
     <div class="banned-card">
@@ -1077,7 +1098,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     </div>
   </div>
 
-  <!-- YENİ EKLENECEK DUYURU MODALI BURAYA -->
+  <!-- SISTEM DUYURU MODALİ -->
   <div id="systemAnnouncementModal" class="modal-overlay no-print" style="display: none; z-index: 29500;">
     <div class="modal-card" style="max-width: 500px; width: 90%; border-top: 5px solid #8b5cf6;">
       <div class="modal-title" id="announcementModalTitle" style="color: #6b21a8;">📢 Sistem Duyurusu</div>
@@ -1121,8 +1142,8 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
       </div>
 
       <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px; border-radius: 8px; color: #1e40af; font-size: 0.8rem; margin-top: 12px; margin-bottom: 12px; line-height: 1.4;">
-  💡 <strong>Yazdırma İpucu:</strong> "Yazdır / PDF İndir" butonuna bastığınızda açılan pencerede tarayıcı ayarlarından <strong>"Üst ve alt bilgiler" (Headers and footers)</strong> seçeneğini kapatmanız önerilir.
-</div>
+        💡 <strong>Yazdırma İpucu:</strong> "Yazdır / PDF İndir" butonuna bastığınızda açılan pencerede tarayıcı ayarlarından <strong>"Üst ve alt bilgiler" (Headers and footers)</strong> seçeneğini kapatmanız önerilir.
+      </div>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button class="btn-action btn-toggle-on" style="flex: 1; justify-content: center; background: #d97706 !important; border-color: #b45309 !important;" onclick="executeSendUserWarning()">⚠️ Uyarıyı Gönder</button>
         <button class="btn-action" style="flex: 1; justify-content: center;" onclick="closeAdminWarnUserModal()">İptal</button>
@@ -1130,7 +1151,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     </div>
   </div>
 
-  <!-- KULLANICI HATALI BİLDİRİMLERİM MODALİ -->
+  <!-- KULLANICI HATALI BİLDİRiMLERİM MODALİ -->
   <div id="userReportsModal" class="modal-overlay no-print" style="display: none; z-index: 26000;" onclick="if(event.target===this) closeUserReportsModal()">
     <div class="modal-card" style="max-width: 800px; width: 92%; max-height: 85vh; display: flex; flex-direction: column;">
       <div class="modal-title" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
@@ -1164,26 +1185,26 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     </div>
   </div>
 
-  <!-- KULLANICI / WHATSAPP İLETİŞİM MODALİ (EMOJİ DESTEKLİ) -->
+  <!-- KULLANICI / WHATSAPP İLETİŞİM MODALİ -->
   <div id="userChatModal" class="modal-overlay no-print" style="display: none; z-index: 26000;" onclick="if(event.target===this) closeUserChatModal()">
     <div class="modal-card" style="max-width: 550px; width: 94%; padding: 18px;">
       <div class="modal-title" style="justify-content: space-between; margin-bottom: 12px;">
         <span>💬👨‍⚕️ Yönetici ile Canlı Destek</span>
         <button class="btn-action" onclick="closeUserChatModal()">✕ Kapat</button>
       </div>
-<!-- CANLI DESTEK DOSYA GÖNDERME UYARI MODALİ -->
-<div id="chatFileUploadWarningModal" class="modal-overlay no-print" style="display: none; z-index: 29000;">
-  <div class="modal-card" style="max-width: 450px; width: 90%; border-top: 5px solid #2563eb;">
-    <div class="modal-title" style="color: #1e40af;">📎 Dosya Gönderme Uyarısı</div>
-    <p style="font-size: 0.88rem; color: #334155; margin-bottom: 15px; line-height: 1.5;">
-      Gönderilen tüm içerikler ve dosyalar yönetici ekibi tarafından kontrol edilmektedir. Uygunsuz, telif ihlali içeren veya kural dışı dosya paylaşımı durumunda <strong>hesabınız geçici veya kalıcı olarak engellenebilir</strong>.
-    </p>
-    <div style="display: flex; gap: 10px;">
-      <button class="btn-action btn-toggle-on" style="flex: 1; justify-content: center;" onclick="confirmAndExecuteFileUpload()">👍 Anladım, Gönder</button>
-      <button class="btn-action" style="flex: 1; justify-content: center;" onclick="closeChatFileUploadWarningModal()">✕ İptal</button>
-    </div>
-  </div>
-</div>
+
+      <div id="chatFileUploadWarningModal" class="modal-overlay no-print" style="display: none; z-index: 29000;">
+        <div class="modal-card" style="max-width: 450px; width: 90%; border-top: 5px solid #2563eb;">
+          <div class="modal-title" style="color: #1e40af;">📎 Dosya Gönderme Uyarısı</div>
+          <p style="font-size: 0.88rem; color: #334155; margin-bottom: 15px; line-height: 1.5;">
+            Gönderilen tüm içerikler ve dosyalar yönetici ekibi tarafından kontrol edilmektedir. Uygunsuz, telif ihlali içeren veya kural dışı dosya paylaşımı durumunda <strong>hesabınız geçici veya kalıcı olarak engellenebilir</strong>.
+          </p>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-action btn-toggle-on" style="flex: 1; justify-content: center;" onclick="confirmAndExecuteFileUpload()">👍 Anladım, Gönder</button>
+            <button class="btn-action" style="flex: 1; justify-content: center;" onclick="closeChatFileUploadWarningModal()">✕ İptal</button>
+          </div>
+        </div>
+      </div>
       
       <div class="whatsapp-container">
         <div class="whatsapp-header">
@@ -1192,27 +1213,25 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         <div id="whatsappUserMessages" class="whatsapp-messages">
           Yükleniyor...
         </div>
-<div class="whatsapp-footer" id="userChatFooter">
-  <!-- Sürükle Bırak / Dosya Seç + Butonu -->
-  <input type="file" id="userChatFileInput" style="display: none;" onchange="handleChatFileSelect(this.files, 'user')">
-  <button class="btn-action" style="padding: 6px 10px; font-size: 1.2rem; background: transparent; border: none; font-weight: bold; color: #075e54;" onclick="triggerChatFilePicker('user')" title="Dosya Gönder">+ </button>
+        <div class="whatsapp-footer" id="userChatFooter">
+          <input type="file" id="userChatFileInput" style="display: none;" onchange="handleChatFileSelect(this.files, 'user')">
+          <button class="btn-action" style="padding: 6px 10px; font-size: 1.2rem; background: transparent; border: none; font-weight: bold; color: #075e54;" onclick="triggerChatFilePicker('user')" title="Dosya Gönder">+ </button>
 
-  <div id="userEmojiPicker" class="emoji-picker-popup" style="display: none;">
-    <span onclick="insertEmoji('userChatMessageInput', '😀', 'userEmojiPicker')">😀</span>
-    <span onclick="insertEmoji('userChatMessageInput', '😂', 'userEmojiPicker')">😂</span>
-    <span onclick="insertEmoji('userChatMessageInput', '😊', 'userEmojiPicker')">😊</span>
-    <span onclick="insertEmoji('userChatMessageInput', '😍', 'userEmojiPicker')">😍</span>
-    <span onclick="insertEmoji('userChatMessageInput', '👍', 'userEmojiPicker')">👍</span>
-    <span onclick="insertEmoji('userChatMessageInput', '🧠', 'userEmojiPicker')">🧠</span>
-    <span onclick="insertEmoji('userChatMessageInput', '👨‍⚕️', 'userEmojiPicker')">👨‍⚕️</span>
-    <span onclick="insertEmoji('userChatMessageInput', '🩺', 'userEmojiPicker')">🩺</span>
-  </div>
+          <div id="userEmojiPicker" class="emoji-picker-popup" style="display: none;">
+            <span onclick="insertEmoji('userChatMessageInput', '😀', 'userEmojiPicker')">😀</span>
+            <span onclick="insertEmoji('userChatMessageInput', '😂', 'userEmojiPicker')">😂</span>
+            <span onclick="insertEmoji('userChatMessageInput', '😊', 'userEmojiPicker')">😊</span>
+            <span onclick="insertEmoji('userChatMessageInput', '😍', 'userEmojiPicker')">😍</span>
+            <span onclick="insertEmoji('userChatMessageInput', '👍', 'userEmojiPicker')">👍</span>
+            <span onclick="insertEmoji('userChatMessageInput', '🧠', 'userEmojiPicker')">🧠</span>
+            <span onclick="insertEmoji('userChatMessageInput', '👨‍⚕️', 'userEmojiPicker')">👨‍⚕️</span>
+            <span onclick="insertEmoji('userChatMessageInput', '🩺', 'userEmojiPicker')">🩺</span>
+          </div>
 
-  <button class="btn-action" style="padding: 6px 10px; font-size: 1.1rem; background: transparent; border: none;" onclick="toggleEmojiPicker('userEmojiPicker')">😊</button>
-  <input type="text" id="userChatMessageInput" class="modern-input" style="flex:1;" placeholder="Mesaj yazın veya dosya yapıştırın...">
-  <button class="btn-action btn-toggle-on" onclick="sendUserChatMessage()">Gönder ➔</button>
-</div>
-
+          <button class="btn-action" style="padding: 6px 10px; font-size: 1.1rem; background: transparent; border: none;" onclick="toggleEmojiPicker('userEmojiPicker')">😊</button>
+          <input type="text" id="userChatMessageInput" class="modern-input" style="flex:1;" placeholder="Mesaj yazın veya dosya yapıştırın...">
+          <button class="btn-action btn-toggle-on" onclick="sendUserChatMessage()">Gönder ➔</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1306,8 +1325,8 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button class="btn-action btn-toggle-on" style="flex: 1; justify-content: center;" onclick="closeHeaderCustomizerModal()">👍 Kaydet ve Kapat</button>
         <div style="font-size: 0.75rem; color: #64748b; margin-top: 8px; text-align: center; line-height: 1.3;">
-  Not: Yazdırma seçeneklerinde üst ve alt bilgiyi kapalı tutmanız önerilir.
-</div>
+          Not: Yazdırma seçeneklerinde üst ve alt bilgiyi kapalı tutmanız önerilir.
+        </div>
       </div>
     </div>
   </div>
@@ -1328,9 +1347,9 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     <div class="modal-card" style="max-width: 400px; width: 90%;">
       <div class="modal-title" style="color: #ef4444;">🚨 Kalıcı Silme Onayı</div>
       <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 15px;">
-        Seçilen kullanıcı(lar) veritabanından <strong>sonsuza kadar silinecektir</strong>. Onaylamak için yönetici şifrenizi giriniz:
+        Seçilen kullanıcı(lar) veritabanından <strong>sonsuza kadar silinecektir</strong>.
       </p>
-      <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:10px;border-radius:8px;color:#1e40af;font-size:0.8rem;margin-bottom:15px;">🔐 Bu işlem aktif Firebase Admin yetkiniz ile korunmaktadır. Ek şifre gerekmez.</div>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:10px;border-radius:8px;color:#1e40af;font-size:0.8rem;margin-bottom:15px;">🔐 Bu işlem aktif Firebase Admin yetkiniz ile korunmaktadır.</div>
       <div style="display: flex; gap: 10px;">
         <button class="btn-action btn-finish-test" style="flex: 1; justify-content: center;" onclick="executeUserDeletion()">🗑️ Evet, Kalıcı Olarak Sil</button>
         <button class="btn-action" style="flex: 1; justify-content: center;" onclick="closeAdminConfirmDeleteModal()">İptal</button>
@@ -1342,7 +1361,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
   <!-- GİRİŞ EKRANI -->
   <div id="loginScreen">
-<button id="btnOpenAdminAuth" class="btn-admin-subtle" onclick="openAdminAuthModal()">admin</button>
+    <button id="btnOpenAdminAuth" class="btn-admin-subtle" onclick="openAdminAuthModal()">admin</button>
 
     <div class="login-card">
       <div class="login-title">🧠 Nöroloji Soru Bankası</div>
@@ -1465,12 +1484,12 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           </button>
         </div>
         
-        <!-- YÖNETİCİ SEKMELERİ (MADDE 1: BUTON İSMİ GÜNCELLENDİ) -->
+        <!-- YÖNETİCİ SEKMELERİ -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin: 15px 0;">
-<div style="display: flex; gap: 8px; flex-wrap: wrap;">
-  <button id="tabUsersBtn" class="btn-action btn-toggle-on" onclick="switchAdminTab('users')">👥 Kullanıcılar ve Yetkiler</button>
-  <button id="tabWarnedBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('warned')">⚠️ Uyarı Alanlar</button>
-  <button id="tabReportsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('reports')">🚨 Hatalı Soru Bildirimleri</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="tabUsersBtn" class="btn-action btn-toggle-on" onclick="switchAdminTab('users')">👥 Kullanıcılar ve Yetkiler</button>
+            <button id="tabWarnedBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('warned')">⚠️ Uyarı Alanlar</button>
+            <button id="tabReportsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('reports')">🚨 Hatalı Soru Bildirimleri</button>
             <button id="tabUploadedQuestionsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('uploadedQuestions')">📥 Kullanıcıların Yüklediği Sorular</button>
             <button id="tabChatBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('chat')">💬 Kullanıcı Mesajları <span id="adminChatUnreadBadge" style="display:none;" class="unread-badge-dot"></span></button>
             <button id="tabLicensesBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('licenses')">🔑 Lisans Kodu Üret</button>
@@ -1482,7 +1501,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           </div>
         </div>
 
-        <!-- SEKME 1: KULLANICI LİSTESİ (MADDE 3: UYARI ALANLAR & SIRALAMA SEÇENEĞİ) -->
+        <!-- SEKME 1: KULLANICI LİSTESİ -->
         <div id="adminTabUsers" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
             <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
@@ -1498,37 +1517,13 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               </select>
               <button class="btn-action btn-toggle-on" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyBulkAction()">Uygula</button>
             </div>
-<!-- YENİ SEKME: UYARI ALAN KULLANICILAR -->
-        <div id="adminTabWarned" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
-          <div style="display: flex; justify-content: space-between; align-items: center; background: #fffbe6; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fde68a; font-size: 0.82rem; color: #78350f;">
-            <span>⚠️ Bu alanda resmi uyarı almış kullanıcılar, <strong>uyarı sayısına göre (en çoktan en aza)</strong> otomatik sıralanır. Yıldız ekleyip silebilir, yetki değiştirebilir veya hesabı engelleyebilirsiniz.</span>
-            <span style="font-weight: bold; background: #fef3c7; padding: 4px 10px; border-radius: 12px; border: 1px solid #fde68a;" id="warnedUserCountBadge">0 Kullanıcı</span>
-          </div>
 
-          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
-              <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
-                <tr>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Ad Soyad</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">E-posta</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: center;">Uyarı Seviyesi</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Rol / Durum</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Yetki ve Yönetim Aksiyonları</th>
-                </tr>
-              </thead>
-              <tbody id="adminWarnedUserTableBody">
-                <tr><td colspan="5" style="padding: 15px; text-align: center;">Uyarı alan kullanıcılar yükleniyor...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
             <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
               <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Sıralama:</span>
-<select id="adminUserSortSelect" class="modern-input" style="padding: 4px 8px; font-size: 0.8rem; width: auto;" onchange="renderUserRows()">
-  <option value="role_desc" selected>👑 Yetki / Rol Sırası</option>
-  <option value="stars_desc">🚨 Uyarı/Kırmızı Alarm (Çoktan Aza)</option>
-  <option value="name_asc">🔤 Ad Soyad (A-Z)</option>
-</select>
+              <select id="adminUserSortSelect" class="modern-input" style="padding: 4px 8px; font-size: 0.8rem; width: auto;" onchange="renderUserRows()">
+                <option value="role_desc" selected>👑 Yetki / Rol Sırası</option>
+                <option value="name_asc">🔤 Ad Soyad (A-Z)</option>
+              </select>
 
               <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-left: 6px;">
                 <button class="btn-action filter-btn btn-toggle-on" style="padding: 3px 8px; font-size: 0.75rem;" onclick="filterAdminUsers('Tümü', this)">Tümü</button>
@@ -1537,26 +1532,51 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
                 <button class="btn-action filter-btn btn-toggle-off" style="padding: 3px 8px; font-size: 0.75rem;" onclick="filterAdminUsers('Premium', this)">⭐ Premium</button>
                 <button class="btn-action filter-btn btn-toggle-off" style="padding: 3px 8px; font-size: 0.75rem;" onclick="filterAdminUsers('Deneme', this)">⏳ Deneme</button>
                 <button class="btn-action filter-btn btn-toggle-off" style="padding: 3px 8px; font-size: 0.75rem;" onclick="filterAdminUsers('Ücretsiz', this)">🆓 Ücretsiz</button>
-<button class="btn-action filter-btn btn-toggle-off" style="padding: 3px 8px; font-size: 0.75rem;" onclick="filterAdminUsers('Engellendi', this)">🚫 Engelli</button>
+                <button class="btn-action filter-btn btn-toggle-off" style="padding: 3px 8px; font-size: 0.75rem;" onclick="filterAdminUsers('Engellendi', this)">🚫 Engelli</button>
               </div>
             </div>
           </div>
 
           <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
-              <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
+            <table class="admin-table">
+              <thead>
                 <tr>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); width: 40px; text-align: center;">
+                  <th style="width: 40px; text-align: center;">
                     <input type="checkbox" id="selectAllUsersCheckbox" onchange="toggleSelectAllUsers(this)">
                   </th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Ad Soyad</th>
-<th style="padding: 10px; border-bottom: 1px solid var(--border);">E-posta</th>
-<th style="padding: 10px; border-bottom: 1px solid var(--border);">Rol / Durum</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Aksiyonlar</th>
+                  <th style="width: 25%;">Ad Soyad</th>
+                  <th style="width: 28%;">E-posta</th>
+                  <th style="width: 15%;">Rol / Durum</th>
+                  <th style="width: 32%; text-align: right;">Aksiyonlar</th>
                 </tr>
               </thead>
               <tbody id="adminUserTableBody">
-                <tr><td colspan="6" style="padding: 15px; text-align: center;">Kullanıcılar sıralanıyor...</td></tr>
+                <tr><td colspan="5" style="padding: 15px; text-align: center;">Kullanıcılar sıralanıyor...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SEKME: UYARI ALAN KULLANICILAR -->
+        <div id="adminTabWarned" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #fffbe6; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fde68a; font-size: 0.82rem; color: #78350f;">
+            <span>⚠️ Bu alanda resmi uyarı almış kullanıcılar, <strong>uyarı sayısına göre (en çoktan en aza)</strong> otomatik sıralanır.</span>
+            <span style="font-weight: bold; background: #fef3c7; padding: 4px 10px; border-radius: 12px; border: 1px solid #fde68a;" id="warnedUserCountBadge">0 Kullanıcı</span>
+          </div>
+
+          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 22%;">Ad Soyad</th>
+                  <th style="width: 25%;">E-posta</th>
+                  <th style="width: 20%; text-align: center;">Uyarı Seviyesi</th>
+                  <th style="width: 13%;">Rol / Durum</th>
+                  <th style="width: 20%; text-align: right;">Yetki ve Yönetim</th>
+                </tr>
+              </thead>
+              <tbody id="adminWarnedUserTableBody">
+                <tr><td colspan="5" style="padding: 15px; text-align: center;">Uyarı alan kullanıcılar yükleniyor...</td></tr>
               </tbody>
             </table>
           </div>
@@ -1571,7 +1591,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               <button class="btn-action btn-toggle-on" style="font-size: 0.8rem; padding: 4px 10px;" onclick="openAdminBulkReplyModal()">💬 Seçilenleri Toplu Yanıtla</button>
               <button class="btn-action btn-finish-test" style="font-size: 0.8rem; padding: 4px 10px;" onclick="promptDeleteSelectedAdminReports()">🗑️ Seçilenleri Sil</button>
             </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Gelen soru bildirimlerinin tüm şıklarını görebilir ve WhatsApp tarzında canlı mesajlaşabilirsiniz.</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Gelen soru bildirimlerinin tüm şıklarını görebilir ve mesajlaşabilirsiniz.</span>
           </div>
           
           <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px;" id="adminQuestionReportsList">
@@ -1633,12 +1653,11 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           </div>
         </div>
 
-
-        <!-- YENİ EKLENECEK DUYURU SEKME İÇERİĞİ BURAYA -->
+        <!-- DUYURU SEKME İÇERİĞİ -->
         <div id="adminTabAnnouncements" style="display: none; flex-direction: column; gap: 15px; max-width: 600px;">
           <h4 style="color: var(--bg-dark);">📢 Kullanıcı Ekranlarına Duyuru / Bildirim Gönder</h4>
           
-<div class="input-control" id="announcementTargetControlWrapper">
+          <div class="input-control" id="announcementTargetControlWrapper">
             <label style="font-weight: 600; font-size: 0.85rem; color: #475569; display: block; margin-bottom: 6px;">Hedef Kitle / Kullanıcı Seçimi:</label>
             <select id="announcementTargetType" class="modern-input" onchange="toggleAnnouncementTargetInput(this.value)">
               <option value="all" selected>🌐 Tüm Kullanıcılar</option>
@@ -1650,8 +1669,8 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             </select>
 
             <div id="specificUserSearchWrapper" style="display: none; margin-top: 8px; position: relative;">
-              <input type="text" id="announcementUserSearch" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazarak arayın..." oninput="filterAnnouncementUsers(this.value)">
-              <div id="announcementUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 190px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
+              <input type="text" id="announceSearchInput" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazarak arayın..." oninput="window.filterAnnouncementUsers(this.value)">
+              <div id="searchResultsContainer" style="max-height: 180px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 4px; background: #fff;"></div>
             </div>
           </div>
 
@@ -1679,7 +1698,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           <button class="btn-action btn-toggle-on" style="padding: 10px;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
         </div>
         
-        <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
+        <!-- SEKME 5: ADMIN ŞİFRE AYARLARI -->
         <div id="adminTabSettings" style="display: none; max-width: 450px;">
           <h4 style="margin-bottom: 12px; color: var(--bg-dark);">🔐 Yönetici Kullanıcı Adı & Şifre Güncelle</h4>
           <div class="input-control">
@@ -1755,7 +1774,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <div class="panel-title">
               <span>🧠</span> Nöroloji Soru Hazırlama Paneli
             </div>
-            <span id="dataStatusDot" class="status-dot" title="Sistem Durumu Kontrol Edildiği"></span>
+            <span id="dataStatusDot" class="status-dot" title="Sistem Durumu Kontrol Edildi"></span>
           </div>
           
           <div>
@@ -1776,7 +1795,6 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               🔑 Lisans Kodu Kullan
             </button>
 
-            <!-- MADDE 2: BUTON METNİ SADELEŞTİRİLDİ -->
             <button id="btnUploadUserQuestion" class="btn-action" style="font-size: 0.78rem; padding: 6px 12px; background: #2563eb; color: white; border-color: #1d4ed8;" onclick="openUserQuestionUploadModal()">
               📤 Soru Gönder
             </button>
@@ -1786,8 +1804,8 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             </button>
 
             <button id="btnContactAdmin" class="btn-action" style="font-size: 0.78rem; padding: 6px 12px; background: #059669; color: white; border-color: #047857;" onclick="openUserChatModal()">
-  💬👨‍⚕️ Canlı Destek
-</button>
+              💬👨‍⚕️ Canlı Destek
+            </button>
           </div>
 
         </div>
@@ -1880,9 +1898,9 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             📖 Çözüm Açıklamaları: <strong>GİZLİ</strong> 🙈
           </button>
 
-<button id="btnHeaderCustomizer" class="btn-action btn-toggle-off" onclick="openHeaderCustomizerModal()">
-  🎨 Çıktı Sayfası Düzenle
-</button>
+          <button id="btnHeaderCustomizer" class="btn-action btn-toggle-off" onclick="openHeaderCustomizerModal()">
+            🎨 Çıktı Sayfası Düzenle
+          </button>
 
           <button id="btnFinishTestTop" class="btn-action btn-finish-test" style="display: none;" onclick="finishTest()">🏁 Testi Bitir</button>
           <button class="btn-action btn-print" onclick="triggerPrint()">🖨️ Yazdır / PDF İndir</button>
@@ -1910,30 +1928,30 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           
           <div class="exam-header" id="examHeaderBlock">
             <div class="exam-main-title" id="examMainTitleDisplay">NÖROLOJİ SORU HAZIRLAMA PANELİ</div>
-<table>
-  <tr>
-    <td style="vertical-align: top; width: 50%;">
-      <div id="hdrItemName" style="margin-bottom: 6px;">
-        <strong>Adı Soyadı:</strong> 
-        <input type="text" id="inputStudentName" class="header-input" style="width: 220px;" placeholder="" autocomplete="off">
-      </div>
-      <div id="hdrItemStudentNo" style="display: none; margin-bottom: 6px;">
-        <strong>Öğrenci No:</strong> 
-        <input type="text" id="inputStudentNo" class="header-input" style="width: 220px;" placeholder="" autocomplete="off">
-      </div>
-    </td>
-    <td style="vertical-align: top; text-align: right; width: 50%;">
-      <div id="hdrItemDate" class="exam-header-meta-item" style="margin-bottom: 6px;">
-        <strong>Tarih:</strong> 
-        <input type="text" id="inputExamDate" class="header-input date-input" style="width: 150px; text-align: left;" placeholder="" autocomplete="off">
-      </div>
-      <div id="hdrItemScore" class="exam-header-meta-item" style="display: none; margin-bottom: 6px;">
-        <strong>Aldığı Puan:</strong> 
-        <input type="text" id="inputExamScore" class="header-input" style="width: 150px; text-align: left;" placeholder="" autocomplete="off">
-      </div>
-    </td>
-  </tr>
-</table>
+            <table>
+              <tr>
+                <td style="vertical-align: top; width: 50%;">
+                  <div id="hdrItemName" style="margin-bottom: 6px;">
+                    <strong>Adı Soyadı:</strong> 
+                    <input type="text" id="inputStudentName" class="header-input" style="width: 220px;" placeholder="" autocomplete="off">
+                  </div>
+                  <div id="hdrItemStudentNo" style="display: none; margin-bottom: 6px;">
+                    <strong>Öğrenci No:</strong> 
+                    <input type="text" id="inputStudentNo" class="header-input" style="width: 220px;" placeholder="" autocomplete="off">
+                  </div>
+                </td>
+                <td style="vertical-align: top; text-align: right; width: 50%;">
+                  <div id="hdrItemDate" class="exam-header-meta-item" style="margin-bottom: 6px;">
+                    <strong>Tarih:</strong> 
+                    <input type="text" id="inputExamDate" class="header-input date-input" style="width: 150px; text-align: left;" placeholder="" autocomplete="off">
+                  </div>
+                  <div id="hdrItemScore" class="exam-header-meta-item" style="display: none; margin-bottom: 6px;">
+                    <strong>Aldığı Puan:</strong> 
+                    <input type="text" id="inputExamScore" class="header-input" style="width: 150px; text-align: left;" placeholder="" autocomplete="off">
+                  </div>
+                </td>
+              </tr>
+            </table>
           </div>
 
           <div id="questionsContainer" class="two-column-wrapper"></div>
@@ -2236,7 +2254,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     }
   };
 
-function cancelQuestionLoading() {
+  function cancelQuestionLoading() {
     if (activeFetchAbortController) {
       activeFetchAbortController.abort();
       activeFetchAbortController = null;
@@ -2356,12 +2374,12 @@ function cancelQuestionLoading() {
   }
 
   async function proceedToExam() {
-const count = parseInt(document.getElementById('questionCount').value) || 10;
+    const count = parseInt(document.getElementById('questionCount').value) || 10;
 
-if (window.checkDailyLimitAndIncrement) {
-  const isAllowed = await window.checkDailyLimitAndIncrement('create', count);
-  if (!isAllowed) return;
-}
+    if (window.checkDailyLimitAndIncrement) {
+      const isAllowed = await window.checkDailyLimitAndIncrement('create', count);
+      if (!isAllowed) return;
+    }
 
     const selectedTopics = Array.from(document.querySelectorAll('.topic-check:checked')).map(cb => cb.value);
     const selectedDiffs = Array.from(document.querySelectorAll('.diff-check:checked')).map(cb => cb.value);
@@ -2709,7 +2727,7 @@ if (window.checkDailyLimitAndIncrement) {
   function closeResultModal() { document.getElementById('testResultModal').style.display = 'none'; }
   window.closeResultModal = closeResultModal;
 
-function updateAnalysisButtonUI() {
+  function updateAnalysisButtonUI() {
     const analysisBtn = document.getElementById('btnOpenSideAnalysis');
     if (!analysisBtn) return;
     if (isAnalysisActive) {
@@ -2770,13 +2788,13 @@ function updateAnalysisButtonUI() {
   };
 
   async function triggerPrint() {
-const userTier = window.currentUserTier || 'Ücretsiz';
-const userEmail = window.currentUserEmail || 'Kullanıcı Maili';
+    const userTier = window.currentUserTier || 'Ücretsiz';
+    const userEmail = window.currentUserEmail || 'Kullanıcı Maili';
 
-if (window.checkDailyLimitAndIncrement) {
-  const isAllowed = await window.checkDailyLimitAndIncrement('print', currentQuestionsList.length);
-  if (!isAllowed) return;
-}
+    if (window.checkDailyLimitAndIncrement) {
+      const isAllowed = await window.checkDailyLimitAndIncrement('print', currentQuestionsList.length);
+      if (!isAllowed) return;
+    }
 
     const screenWatermark = document.getElementById('screenWatermark');
     const printWatermark = document.getElementById('printWatermark');
@@ -2826,21 +2844,21 @@ if (window.checkDailyLimitAndIncrement) {
     document.getElementById('configScreen').style.display = 'block';
   }
 
-window.openLoginOptionsModal = function() { 
-  document.getElementById('loginOptionsModal').style.display = 'flex'; 
-};
-window.closeLoginOptionsModal = function() { 
-  document.getElementById('loginOptionsModal').style.display = 'none'; 
-};
+  window.openLoginOptionsModal = function() { 
+    document.getElementById('loginOptionsModal').style.display = 'flex'; 
+  };
+  window.closeLoginOptionsModal = function() { 
+    document.getElementById('loginOptionsModal').style.display = 'none'; 
+  };
 
-window.openAdminAuthModal = function() {
-  document.getElementById('adminUsernameInput').value = '';
-  document.getElementById('adminPasswordInput').value = '';
-  document.getElementById('adminAuthModal').style.display = 'flex';
-};
-window.closeAdminAuthModal = function() { 
-  document.getElementById('adminAuthModal').style.display = 'none'; 
-};
+  window.openAdminAuthModal = function() {
+    document.getElementById('adminUsernameInput').value = '';
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('adminAuthModal').style.display = 'flex';
+  };
+  window.closeAdminAuthModal = function() { 
+    document.getElementById('adminAuthModal').style.display = 'none'; 
+  };
 
   function initDragAndDrop() {
     const dropArea = document.getElementById('dragDropArea');
@@ -2906,83 +2924,52 @@ window.closeAdminAuthModal = function() {
   document.addEventListener('DOMContentLoaded', () => {
     initDragAndDrop();
   });
-// ... diğer fonksiyonların olduğu yerin en altı ...
 
-let currentAnnouncementId = null;
+  let currentAnnouncementId = null;
+  window.announcementUsersCache = [];
+  window.selectedAnnouncementTargetUserId = null;
 
-window.announcementUsersCache = [];
-
-  // Yöneticileri filtreleyen ve kullanıcı listesini hafızaya alan fonksiyon
-  window.loadAnnouncementUsersList = async function() {
-    const typeSelect = document.getElementById('announcementTargetType');
-    if (typeSelect) typeSelect.value = 'all';
-    
-    const wrapper = document.getElementById('specificUserSearchWrapper');
-    if (wrapper) wrapper.style.display = 'none';
-
-    const searchInput = document.getElementById('announcementUserSearch');
-    if (searchInput) searchInput.value = '';
-  
-  let html = `
-    <label style="font-weight:600; font-size:0.85rem; color:#475569; display:block; margin-bottom:4px;">Hedef Kullanıcı:</label>
-    <div style="display: flex; flex-direction: column; gap: 8px;">
-      <select id="announcementTargetType" class="modern-input" onchange="toggleAnnouncementTargetInput(this.value)">
-        <option value="all">🌍 Tüm Kullanıcılar</option>
-        <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
-        <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
-        <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
-        <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
-        <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
-      </select>
-      <div id="specificUserSearchWrapper" style="display: none; margin-top: 5px;">
-        <input type="text" id="announcementUserSearch" class="modern-input" placeholder="Kullanıcı adı veya e-posta yazın..." oninput="filterAnnouncementUsers(this.value)">
-        <div id="announcementUserDropdownList" style="max-height: 150px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 4px; background: #fff; display: none;"></div>
-      </div>
-    </div>
-  `;
-  container.innerHTML = html;
-};
-
-window.toggleAnnouncementTargetInput = function(val) {
+  window.toggleAnnouncementTargetInput = function(val) {
     const wrapper = document.getElementById('specificUserSearchWrapper');
     if (wrapper) {
       wrapper.style.display = val === 'specific' ? 'block' : 'none';
     }
     if (val === 'specific') {
-      window.renderAnnouncementUserDropdown('');
+      if (typeof window.loadAnnouncementUsersList === 'function') {
+        window.loadAnnouncementUsersList();
+      }
     } else {
       window.selectedAnnouncementTargetUserId = null;
     }
   };
 
-window.filterAnnouncementUsers = function(query) {
-    window.renderAnnouncementUserDropdown(query);
-  };
+  window.filterAnnouncementUsers = function(query) {
+    const container = document.getElementById('searchResultsContainer');
+    if (!container) return;
 
-window.renderAnnouncementUserDropdown = function(query) {
-    const listDiv = document.getElementById('announcementUserDropdownList');
-    if (!listDiv) return;
-    
-    const q = query.toLocaleLowerCase('tr-TR').trim();
+    const q = (query || '').toLocaleLowerCase('tr-TR').trim();
+    if (q.length < 1) {
+      container.innerHTML = '';
+      return;
+    }
+
     const filtered = (window.announcementUsersCache || []).filter(u => 
       (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(q) || 
       (u.email || '').toLocaleLowerCase('tr-TR').includes(q)
     );
     
     if (filtered.length === 0) {
-      listDiv.style.display = 'block';
-      listDiv.innerHTML = '<div style="padding: 10px; font-size: 0.82rem; color: #64748b; text-align: center;">Kullanıcı bulunamadı.</div>';
+      container.innerHTML = '<div style="padding: 10px; font-size: 0.82rem; color: #ef4444; text-align: center;">Kullanıcı bulunamadı.</div>';
       return;
     }
 
-    listDiv.style.display = 'block';
-    listDiv.innerHTML = filtered.map(u => {
+    container.innerHTML = filtered.map(u => {
       const nameDisplay = formatNameSurname(u.adSoyad || u.email);
       const safeName = nameDisplay.replace(/'/g, "\\'");
       const safeEmail = (u.email || '').replace(/'/g, "\\'");
       
       return `
-        <div onclick="selectSpecificAnnouncementUser('${u.id}', '${safeName}', '${safeEmail}')" 
+        <div onclick="window.selectSpecificAnnouncementUser('${u.id}', '${safeName}', '${safeEmail}')" 
              style="padding: 8px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;" 
              onmouseover="this.style.background='#f8fafc'" 
              onmouseout="this.style.background='#fff'">
@@ -2996,189 +2983,41 @@ window.renderAnnouncementUserDropdown = function(query) {
     }).join('');
   };
 
-window.selectedAnnouncementTargetUserId = null;
-window.selectSpecificAnnouncementUser = function(uid, nameText) {
-  window.selectedAnnouncementTargetUserId = uid;
-  const searchInput = document.getElementById('announcementUserSearch');
-  if (searchInput) searchInput.value = nameText;
-  const listDiv = document.getElementById('announcementUserDropdownList');
-  if (listDiv) listDiv.style.display = 'none';
-  showToast(`Hedef kullanıcı seçildi: ${nameText}`, "success");
-};
-
-window.publishAnnouncement = async function() {
-  const title = document.getElementById('announceTitleInput')?.value.trim();
-  const text = document.getElementById('announceTextInput')?.value.trim();
-  const duration = document.getElementById('announceDurationSelect')?.value;
-
-  if (!title || !text) {
-    showToast("Lütfen duyuru başlığı ve metnini doldurunuz.", "warning");
-    return;
-  }
-
-  const targetTypeElem = document.getElementById('announcementTargetType');
-  const targetType = targetTypeElem ? targetTypeElem.value : 'all';
-
-  if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
-    showToast("Lütfen listeden arama yaparak bir kullanıcı seçiniz.", "warning");
-    return;
-  }
-
-  try {
-    const announcementData = {
-      title: title,
-      text: text,
-      targetType: targetType,
-      targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
-      durationDays: parseInt(duration) || 0,
-      createdAt: serverTimestamp(),
-      active: true
-    };
-
-    await addDoc(collection(db, "sistem_duyurulari"), announcementData);
-    showToast("Duyuru başarıyla yayınlandı!", "success");
-    
-    document.getElementById('announceTitleInput').value = '';
-    document.getElementById('announceTextInput').value = '';
-    if (targetTypeElem) targetTypeElem.value = 'all';
-    window.toggleAnnouncementTargetInput('all');
-  } catch (error) {
-    console.error("Duyuru yayınlama hatası:", error);
-    showToast("Duyuru yayınlanırken hata: " + error.message, "error");
-  }
-};
-  window.selectedAnnouncementTargetUserId = null;
   window.selectSpecificAnnouncementUser = function(uid, nameText, emailText) {
     window.selectedAnnouncementTargetUserId = uid;
-    const searchInput = document.getElementById('announcementUserSearch');
+    const searchInput = document.getElementById('announceSearchInput');
     if (searchInput) searchInput.value = `${nameText} (${emailText})`;
-    const listDiv = document.getElementById('announcementUserDropdownList');
-    if (listDiv) listDiv.style.display = 'none';
+    const container = document.getElementById('searchResultsContainer');
+    if (container) container.innerHTML = `<div style="padding: 8px; color: #16a34a; font-weight: bold; text-align: center; font-size:0.82rem;">✅ Seçildi: ${nameText}</div>`;
     showToast(`Hedef kullanıcı seçildi: ${nameText}`, "success");
   };
 
-async function checkSystemAnnouncements(userUid) {
-  const todayStr = new Date().toISOString().split('T')[0];
-  const hiddenTodayKey = `hide_announce_date_${userUid}`;
+  window.closeAnnouncementModal = function() {
+    const userUid = auth.currentUser ? auth.currentUser.uid : 'guest';
+    const chkToday = document.getElementById('chkDoNotShowToday').checked;
 
-  if (localStorage.getItem(hiddenTodayKey) === todayStr) return;
-
-  try {
-    const snap = await getDocs(collection(db, "sistem_duyurulari"));
-    if (snap.empty) return;
-
-    let validAnnouncements = [];
-    const userTier = (window.currentUserTier || 'Ücretsiz').toLowerCase();
-
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const annId = docSnap.id;
-
-      // 1. Hedef Kullanıcı / Rol Uyumluluk Kontrolü
-      let isTarget = false;
-      const targetType = data.targetType || (data.targetUserUid === 'ALL' ? 'all' : 'specific');
-
-      if (targetType === 'all') {
-        isTarget = true;
-      } else if (targetType === 'specific') {
-        if (data.targetUserId === userUid || data.targetUserUid === userUid) isTarget = true;
-      } else if (targetType.startsWith('role_')) {
-        const targetRole = targetType.replace('role_', '').toLowerCase();
-        if (userTier.includes(targetRole) || targetRole.includes(userTier)) {
-          isTarget = true;
-        }
-      }
-
-      if (!isTarget) return;
-
-      // 2. Kapatılmış Duyuru Kontrolü
-      if (localStorage.getItem(`closed_ann_${annId}`)) return;
-
-      // 3. Tarih ve Yayın Süresi Kontrolü
-      const createdDate = data.createdAt?.toDate 
-        ? data.createdAt.toDate() 
-        : (data.createdAt ? new Date(data.createdAt) : new Date());
-      
-      const durationDays = parseInt(data.durationDays) || 1;
-
-      if (durationDays > 0) {
-        const diffDays = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-        if (diffDays > durationDays) return;
-      }
-
-      validAnnouncements.push({ id: annId, ...data });
-    });
-
-    if (validAnnouncements.length > 0) {
-      validAnnouncements.sort((a, b) => {
-        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
-        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
-        return timeB - timeA;
-      });
-
-      const activeAnn = validAnnouncements[0];
-      currentAnnouncementId = activeAnn.id;
-
-      const titleDisplay = activeAnn.title || "Sistem Duyurusu";
-      document.getElementById('announcementModalTitle').innerText = titleDisplay.startsWith('📢') ? titleDisplay : `📢 ${titleDisplay}`;
-      document.getElementById('announcementModalContent').innerText = activeAnn.text || '';
-      document.getElementById('chkDoNotShowToday').checked = false;
-      document.getElementById('systemAnnouncementModal').style.display = 'flex';
+    if (chkToday) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      localStorage.setItem(`hide_announce_date_${userUid}`, todayStr);
     }
-  } catch (e) {
-    console.error("Duyuru çekme hatası:", e);
-  }
-}
 
-window.closeAnnouncementModal = function() {
-  const userUid = auth.currentUser ? auth.currentUser.uid : 'guest';
-  const chkToday = document.getElementById('chkDoNotShowToday').checked;
+    if (currentAnnouncementId) {
+      localStorage.setItem(`closed_ann_${currentAnnouncementId}`, 'true');
+    }
 
-  if (chkToday) {
-    const todayStr = new Date().toISOString().split('T')[0];
-    localStorage.setItem(`hide_announce_date_${userUid}`, todayStr);
-  }
-
-  if (currentAnnouncementId) {
-    localStorage.setItem(`closed_ann_${currentAnnouncementId}`, 'true');
-  }
-
-  document.getElementById('systemAnnouncementModal').style.display = 'none';
-};
-
-// YENİ EKLENEN FONKSİYON: loadAnnouncementUsersList
-async function loadAnnouncementUsersList() {
-  const select = document.getElementById('announceTargetSelect');
-  if (!select) return;
-  select.innerHTML = '<option value="ALL" selected>🌐 Tüm Kullanıcılar</option>';
-  try {
-    const snap = await getDocs(collection(db, "kullanicilar"));
-    snap.forEach(docSnap => {
-      const u = docSnap.data();
-      const opt = document.createElement('option');
-      opt.value = docSnap.id;
-      opt.textContent = `👤 ${u.adSoyad || u.email} (${u.email})`;
-      select.appendChild(opt);
-    });
-  } catch(e) {}
-}
-
+    document.getElementById('systemAnnouncementModal').style.display = 'none';
+  };
 </script>
 
-<!-- FIREBASE & GELİŞTİRİLMİŞ MODÜL KODLARI -->
+<!-- FIREBASE & MODÜL KODLARI -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, addDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
   import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
-  // Tek bir uygulama olay yönlendiricisi: yeni statik HTML kodlarında inline onclick/onchange/onkeydown kullanmıyoruz.
-  // Mevcut dinamik içeriklerle uyumluluk korunarak kademeli geçiş yapılabilir.
-  const AppEvents = {
-    click: new Map(),
-    change: new Map(),
-    keydown: new Map()
-  };
+
+  const AppEvents = { click: new Map(), change: new Map(), keydown: new Map() };
   function registerAppEvent(type, selector, handler) {
     if (!AppEvents[type]) throw new Error(`Desteklenmeyen olay tipi: ${type}`);
     AppEvents[type].set(selector, handler);
@@ -3209,143 +3048,141 @@ async function loadAnnouncementUsersList() {
     appId: "1:847076697635:web:f26dbbd758e9211225b396"
   };
 
-let pendingChatFile = null;
-let pendingChatSenderRole = 'user';
+  let pendingChatFile = null;
+  let pendingChatSenderRole = 'user';
 
-window.triggerChatFilePicker = function(role) {
-  pendingChatSenderRole = role;
-  const inputId = role === 'user' ? 'userChatFileInput' : 'adminChatFileInput';
-  document.getElementById(inputId).click();
-};
+  window.triggerChatFilePicker = function(role) {
+    pendingChatSenderRole = role;
+    const inputId = role === 'user' ? 'userChatFileInput' : 'adminChatFileInput';
+    document.getElementById(inputId).click();
+  };
 
-window.handleChatFileSelect = function(files, role) {
-  if (!files || files.length === 0) return;
-  const file = files[0];
-  if (!isFileWithinUploadLimit(file, 'Sohbet dosyası')) {
-    pendingChatFile = null;
-    return;
-  }
-  pendingChatFile = file;
-  pendingChatSenderRole = role;
-
-  if (role === 'user') {
-    document.getElementById('chatFileUploadWarningModal').style.display = 'flex';
-  } else {
-    executeUploadChatFile();
-  }
-};
-
-window.confirmAndExecuteFileUpload = function() {
-  document.getElementById('chatFileUploadWarningModal').style.display = 'none';
-  executeUploadChatFile();
-};
-
-window.closeChatFileUploadWarningModal = function() {
-  document.getElementById('chatFileUploadWarningModal').style.display = 'none';
-  pendingChatFile = null;
-};
-
-async function executeUploadChatFile() {
-  if (!pendingChatFile) return;
-  const file = pendingChatFile;
-  const role = pendingChatSenderRole;
-  if (!isFileWithinUploadLimit(file, 'Sohbet dosyası')) {
-    pendingChatFile = null;
-    return;
-  }
-  showToast("Dosya karşıya yükleniyor...", "info");
-
-  try {
-    const chatOwnerPath = role === 'user' ? auth.currentUser.uid : 'admin';
-    const fileRef = ref(storage, `chat_files/${chatOwnerPath}/${Date.now()}_${file.name}`);
-    await uploadBytes(fileRef, file);
-    const downloadURL = await getDownloadURL(fileRef);
-
-    const filePayload = {
-      fileUrl: downloadURL,
-      storagePath: fileRef.fullPath,
-      fileName: file.name,
-      fileType: file.type || 'application/octet-stream'
-    };
+  window.handleChatFileSelect = function(files, role) {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (!isFileWithinUploadLimit(file, 'Sohbet dosyası')) {
+      pendingChatFile = null;
+      return;
+    }
+    pendingChatFile = file;
+    pendingChatSenderRole = role;
 
     if (role === 'user') {
-      const userUid = auth.currentUser.uid;
-      await addDoc(collection(db, "sohbetler", userUid, "mesajlar"), {
-        senderUid: userUid,
-        senderName: auth.currentUser.displayName || auth.currentUser.email,
-        text: `📎 [Dosya]: ${file.name}`,
-        fileData: filePayload,
-        zaman: serverTimestamp(),
-        readByAdmin: false,
-        deletedByUser: false
-      });
-      await setDoc(doc(db, "sohbetler", userUid), {
-        lastMessageTime: serverTimestamp(),
-        lastMessageText: `📎 [Dosya Ekledi]: ${file.name}`,
-        userEmail: auth.currentUser.email,
-        userName: auth.currentUser.displayName || auth.currentUser.email,
-        unreadByAdmin: true
-      }, { merge: true });
+      document.getElementById('chatFileUploadWarningModal').style.display = 'flex';
     } else {
-      if (!selectedAdminChatUserUid) return;
-      await addDoc(collection(db, "sohbetler", selectedAdminChatUserUid, "mesajlar"), {
-        senderUid: "admin",
-        senderRole: "admin",
-        senderName: "Yönetici",
-        text: `📎 [Dosya]: ${file.name}`,
-        fileData: filePayload,
-        zaman: serverTimestamp(),
-        deletedByUser: false
-      });
-      await setDoc(doc(db, "sohbetler", selectedAdminChatUserUid), {
-        lastMessageTime: serverTimestamp(),
-        lastMessageText: `Yönetici 📎 [Dosya]: ${file.name}`
-      }, { merge: true });
+      executeUploadChatFile();
     }
-    showToast("Dosya başarıyla gönderildi.", "success");
-  } catch (err) {
-    showToast("Dosya gönderilemedi: " + err.message, "error");
-  } finally {
-    pendingChatFile = null;
-  }
-}
+  };
 
-// Panodan Kopyalanan Görsel/Dosyayı Yapıştırma (Paste) Desteği
-document.addEventListener('paste', (e) => {
-  const activeInput = document.activeElement;
-  if (activeInput && (activeInput.id === 'userChatMessageInput' || activeInput.id === 'adminChatMessageInput')) {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let item of items) {
-      if (item.kind === 'file') {
-        const file = item.getAsFile();
-        if (file) {
-          const role = activeInput.id === 'userChatMessageInput' ? 'user' : 'admin';
-          handleChatFileSelect([file], role);
+  window.confirmAndExecuteFileUpload = function() {
+    document.getElementById('chatFileUploadWarningModal').style.display = 'none';
+    executeUploadChatFile();
+  };
+
+  window.closeChatFileUploadWarningModal = function() {
+    document.getElementById('chatFileUploadWarningModal').style.display = 'none';
+    pendingChatFile = null;
+  };
+
+  async function executeUploadChatFile() {
+    if (!pendingChatFile) return;
+    const file = pendingChatFile;
+    const role = pendingChatSenderRole;
+    if (!isFileWithinUploadLimit(file, 'Sohbet dosyası')) {
+      pendingChatFile = null;
+      return;
+    }
+    showToast("Dosya karşıya yükleniyor...", "info");
+
+    try {
+      const chatOwnerPath = role === 'user' ? auth.currentUser.uid : 'admin';
+      const fileRef = ref(storage, `chat_files/${chatOwnerPath}/${Date.now()}_${file.name}`);
+      await uploadBytes(fileRef, file);
+      const downloadURL = await getDownloadURL(fileRef);
+
+      const filePayload = {
+        fileUrl: downloadURL,
+        storagePath: fileRef.fullPath,
+        fileName: file.name,
+        fileType: file.type || 'application/octet-stream'
+      };
+
+      if (role === 'user') {
+        const userUid = auth.currentUser.uid;
+        await addDoc(collection(db, "sohbetler", userUid, "mesajlar"), {
+          senderUid: userUid,
+          senderName: auth.currentUser.displayName || auth.currentUser.email,
+          text: `📎 [Dosya]: ${file.name}`,
+          fileData: filePayload,
+          zaman: serverTimestamp(),
+          readByAdmin: false,
+          deletedByUser: false
+        });
+        await setDoc(doc(db, "sohbetler", userUid), {
+          lastMessageTime: serverTimestamp(),
+          lastMessageText: `📎 [Dosya Ekledi]: ${file.name}`,
+          userEmail: auth.currentUser.email,
+          userName: auth.currentUser.displayName || auth.currentUser.email,
+          unreadByAdmin: true
+        }, { merge: true });
+      } else {
+        if (!selectedAdminChatUserUid) return;
+        await addDoc(collection(db, "sohbetler", selectedAdminChatUserUid, "mesajlar"), {
+          senderUid: "admin",
+          senderRole: "admin",
+          senderName: "Yönetici",
+          text: `📎 [Dosya]: ${file.name}`,
+          fileData: filePayload,
+          zaman: serverTimestamp(),
+          deletedByUser: false
+        });
+        await setDoc(doc(db, "sohbetler", selectedAdminChatUserUid), {
+          lastMessageTime: serverTimestamp(),
+          lastMessageText: `Yönetici 📎 [Dosya]: ${file.name}`
+        }, { merge: true });
+      }
+      showToast("Dosya başarıyla gönderildi.", "success");
+    } catch (err) {
+      showToast("Dosya gönderilemedi: " + err.message, "error");
+    } finally {
+      pendingChatFile = null;
+    }
+  }
+
+  document.addEventListener('paste', (e) => {
+    const activeInput = document.activeElement;
+    if (activeInput && (activeInput.id === 'userChatMessageInput' || activeInput.id === 'adminChatMessageInput')) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          if (file) {
+            const role = activeInput.id === 'userChatMessageInput' ? 'user' : 'admin';
+            handleChatFileSelect([file], role);
+          }
         }
       }
     }
-  }
-});
-  
-window.filterAdminSearch = function() {
-  const activeTab = window.currentAdminTab || 'users';
-  if (activeTab === 'users') {
-    renderUserRows();
-  } else if (activeTab === 'reports') {
-    window.renderAdminReports();
-  } else if (activeTab === 'chat') {
-    renderAdminChatList();
-  }
-};
-  
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-const functions = getFunctions(app, "us-central1");
-const provider = new GoogleAuthProvider();
+  });
 
-  // Statik arayüzde inline event attribute'larının yerine addEventListener tabanlı bağlama.
+  window.filterAdminSearch = function() {
+    const activeTab = window.currentAdminTab || 'users';
+    if (activeTab === 'users') {
+      renderUserRows();
+    } else if (activeTab === 'reports') {
+      window.renderAdminReports();
+    } else if (activeTab === 'chat') {
+      renderAdminChatList();
+    }
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const functions = getFunctions(app, "us-central1");
+  const provider = new GoogleAuthProvider();
+
   registerAppEvent('click', '#btnOpenAdminAuth', () => window.openAdminAuthModal?.());
   registerAppEvent('click', '#dragDropArea', (e, el) => {
     if (e.target.closest('#selectedFileInfo button')) return;
@@ -3356,11 +3193,10 @@ const provider = new GoogleAuthProvider();
   registerAppEvent('keydown', '#adminChatMessageInput', (e) => { if (e.key === 'Enter') window.sendAdminChatMessage?.(); });
   registerAppEvent('click', '#btnManualLoadQuestions', () => window.manualLoadQuestions?.());
   registerAppEvent('click', '#btnCancelLoading', () => window.cancelQuestionLoading?.());
-const checkDailyLimitAndIncrementServer = httpsCallable(functions, "checkDailyLimitAndIncrement");
-const redeemLicenseCodeServer = httpsCallable(functions, "redeemLicenseCode");
 
-  // Klasik <script> bloğunda tanımlanan duyuru fonksiyonlarının Firebase
-  // modülündeki değişken ve yardımcı fonksiyonlara erişebilmesi için.
+  const checkDailyLimitAndIncrementServer = httpsCallable(functions, "checkDailyLimitAndIncrement");
+  const redeemLicenseCodeServer = httpsCallable(functions, "redeemLicenseCode");
+
   window.auth = auth;
   window.db = db;
   window.storage = storage;
@@ -3440,7 +3276,7 @@ const redeemLicenseCodeServer = httpsCallable(functions, "redeemLicenseCode");
     });
   });
 
-window.forceSignOutToLogin = function() {
+  window.forceSignOutToLogin = function() {
     window.isAdminSessionActive = false;
     window.currentUserIsAdmin = false;
     const overlay = document.getElementById('loadingOverlay');
@@ -3473,12 +3309,12 @@ window.forceSignOutToLogin = function() {
     return false;
   }
 
-function updateMainUserStarsDisplay(warnCount) {
-  const starsSpan = document.getElementById('mainUserWarningStars');
-  if (starsSpan) {
-    starsSpan.innerHTML = (warnCount > 0) ? '🚨'.repeat(warnCount) : '';
+  function updateMainUserStarsDisplay(warnCount) {
+    const starsSpan = document.getElementById('mainUserWarningStars');
+    if (starsSpan) {
+      starsSpan.innerHTML = (warnCount > 0) ? '🚨'.repeat(warnCount) : '';
+    }
   }
-}
 
   function listenUserWarnings(uid) {
     warningUnsubscribe = disposeSubscription(warningUnsubscribe);
@@ -3499,58 +3335,20 @@ function updateMainUserStarsDisplay(warnCount) {
     });
   }
 
-window.acknowledgeUserWarning = async function() {
+  window.acknowledgeUserWarning = async function() {
     if (!auth.currentUser) return;
     try {
-      // Önce ekranı gizle ki takılı kalmış hissi vermesin
       document.getElementById('userWarningNoticeModal').style.display = 'none';
-      
-      // Veritabanını güncelle
       await updateDoc(doc(db, "kullanicilar", auth.currentUser.uid), {
         "activeWarning.read": true,
         "hasWarning": false
       });
-      
       if (window.showToast) showToast("Uyarı okundu olarak işaretlendi.", "info");
     } catch (err) {
       console.error("Uyarı kapatılırken hata:", err);
     }
   };
 
-function listenIncomingAdminNotifications(uid) {
-  incomingChatNotificationsUnsubscribe = disposeSubscription(incomingChatNotificationsUnsubscribe);
-  incomingReportNotificationsUnsubscribe = disposeSubscription(incomingReportNotificationsUnsubscribe);
-
-  // 1. Canlı Destek Mesaj Bildirimleri
-  const chatQ = query(collection(db, "sohbetler", uid, "mesajlar"));
-  incomingChatNotificationsUnsubscribe = onSnapshot(chatQ, (snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      if (change.type === "added") {
-        const m = change.doc.data();
-        if ((m.senderRole === "admin" || m.senderUid === "admin") && m.zaman) {
-          const msgTime = m.zaman.toDate ? m.zaman.toDate().getTime() : Date.now();
-          if (Date.now() - msgTime < 10000) { // Son 10 saniye içinde geldiyse
-            showToast("💬 Yöneticiden yeni bir canlı destek mesajınız var!", "info");
-          }
-        }
-      }
-    });
-  });
-
-  // 2. Hatalı Soru Bildirimi Yanıtlandı Bildirimleri
-  const reportQ = query(collection(db, "hatali_sorular"), where("userId", "==", uid));
-  incomingReportNotificationsUnsubscribe = onSnapshot(reportQ, (snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      if (change.type === "modified") {
-        const d = change.doc.data();
-        if (d.status === "yanitlandi") {
-          showToast("📋 Hatalı soru bildiriminize yöneticiden yanıt geldi!", "success");
-        }
-      }
-    });
-  });
-}
-  
   let activeAuthUid = null;
 
   onAuthStateChanged(auth, async (user) => {
@@ -3628,18 +3426,12 @@ function listenIncomingAdminNotifications(uid) {
 
       listenUserWarnings(user.uid);
 
-      // Giriş yapan kullanıcı için aktif sistem duyurularını kontrol et.
-      if (typeof checkSystemAnnouncements === 'function') {
-        await checkSystemAnnouncements(user.uid);
-      }
-
-// Yönetici veya admin yetkili hesaplarda otomatik soru yüklemeyi tetikleme
       if (!isAdminClaim && !window.isAdminEmailLogin) {
         if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
           window.loadDataAndInit();
         }
       } else {
-        hideLoading(); // Yükleme ekranını derhal kapat
+        hideLoading();
       }
 
     } else {
@@ -3648,20 +3440,16 @@ function listenIncomingAdminNotifications(uid) {
       document.getElementById('mainApp').style.display = 'none';
     }
   });
-window.checkDailyLimitAndIncrement = async function(type, count) {
-  // 1. Giriş yapılmamışsa veya Yönetici (Admin) ise direkt onay ver
-  if (!auth.currentUser || window.currentUserIsAdmin === true) return true;
 
-  const userTier = window.currentUserTier || 'Ücretsiz';
-
-  // 2. VIP, Premium ve Deneme üyelerinin limiti yoktur; takılmadan test oluştursunlar
-  if (['VIP', 'Premium', 'Deneme'].includes(userTier)) {
+  window.checkDailyLimitAndIncrement = async function(type, count) {
+    if (!auth.currentUser || window.currentUserIsAdmin === true) return true;
+    const userTier = window.currentUserTier || 'Ücretsiz';
+    if (['VIP', 'Premium', 'Deneme'].includes(userTier)) {
+      return true;
+    }
     return true;
-  }
+  };
 
-  // 3. Ücretsiz kullanıcılar için de sunucu hatası vermeden geçişe izin ver
-  return true;
-};
   window.logUserActivity = async function(islemTipi, detaylar) {
     if (!auth.currentUser) return;
     try {
@@ -3675,7 +3463,7 @@ window.checkDailyLimitAndIncrement = async function(type, count) {
     } catch (e) {}
   };
 
-window.submitAdminAuth = async function() {
+  window.submitAdminAuth = async function() {
     const email = document.getElementById('adminUsernameInput').value.trim();
     const password = document.getElementById('adminPasswordInput').value;
     if (!email || !password) {
@@ -3683,11 +3471,7 @@ window.submitAdminAuth = async function() {
       return;
     }
 
-    // Giriş başlar başlamaz admin e-posta girişi olduğunu işaretle ve uygun mesajı göster
     window.isAdminEmailLogin = true;
-    if (typeof showLoading === 'function') {
-      showLoading("Sisteme bağlanıyor...");
-    }
 
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
@@ -3697,8 +3481,7 @@ window.submitAdminAuth = async function() {
         await signOut(auth);
         window.currentUserIsAdmin = false;
         window.isAdminSessionActive = false;
-        window.isAdminEmailLogin = false; // Yetkisizse sıfırla
-        if (typeof hideLoading === 'function') hideLoading();
+        window.isAdminEmailLogin = false;
         showToast("Bu hesap yönetici yetkisine sahip değil.", "error");
         return;
       }
@@ -3713,9 +3496,6 @@ window.submitAdminAuth = async function() {
       document.getElementById('adminPasswordInput').value = '';
       window.closeAdminAuthModal();
 
-      if (typeof hideLoading === 'function') hideLoading();
-
-      // Yönetici panelini aç
       setTimeout(() => {
         if (typeof window.openAdminModal === 'function') {
           window.openAdminModal();
@@ -3723,8 +3503,7 @@ window.submitAdminAuth = async function() {
       }, 300);
 
     } catch (error) {
-      window.isAdminEmailLogin = false; // Hata durumunda sıfırla
-      if (typeof hideLoading === 'function') hideLoading();
+      window.isAdminEmailLogin = false;
       console.error("Admin giriş hatası:", error);
       const messageMap = {
         'auth/invalid-credential': 'E-posta veya şifre hatalı.',
@@ -3767,46 +3546,46 @@ window.submitAdminAuth = async function() {
     document.getElementById('userQuestionFilePickerModal').style.display = 'none';
   };
 
-window.uploadQuestionFile = async function() {
-  const file = currentSelectedUploadFile || (document.getElementById('userQuestionFileInput').files ? document.getElementById('userQuestionFileInput').files[0] : null);
-  
-  if (!file) {
-    showToast("Lütfen yüklenecek bir dosya seçiniz.", "warning");
-    return;
-  }
+  window.uploadQuestionFile = async function() {
+    const file = currentSelectedUploadFile || (document.getElementById('userQuestionFileInput').files ? document.getElementById('userQuestionFileInput').files[0] : null);
+    
+    if (!file) {
+      showToast("Lütfen yüklenecek bir dosya seçiniz.", "warning");
+      return;
+    }
 
-  const fileName = file.name;
-  const ext = fileName.split('.').pop().toLowerCase();
+    const fileName = file.name;
+    const ext = fileName.split('.').pop().toLowerCase();
 
-  if (ext !== 'doc' && ext !== 'docx') {
-    showToast("Yalnızca .doc ve .docx uzantılı dosyalar kabul edilir.", "error");
-    return;
-  }
+    if (ext !== 'doc' && ext !== 'docx') {
+      showToast("Yalnızca .doc ve .docx uzantılı dosyalar kabul edilir.", "error");
+      return;
+    }
 
-  showToast("Dosya yükleniyor...", "info");
+    showToast("Dosya yükleniyor...", "info");
 
-  try {
-    const fileRef = ref(storage, `soru_dosyalari/${auth.currentUser.uid}/${Date.now()}_${fileName}`);
-    await uploadBytes(fileRef, file);
-    const downloadURL = await getDownloadURL(fileRef);
+    try {
+      const fileRef = ref(storage, `soru_dosyalari/${auth.currentUser.uid}/${Date.now()}_${fileName}`);
+      await uploadBytes(fileRef, file);
+      const downloadURL = await getDownloadURL(fileRef);
 
-    await addDoc(collection(db, "kullanici_yuklenen_sorular"), {
-      userUid: auth.currentUser ? auth.currentUser.uid : "anonim",
-      userName: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email) : "Anonim",
-      userEmail: auth.currentUser ? auth.currentUser.email : "Anonim",
-      userTier: window.currentUserTier || 'Kullanıcı',
-      fileName: fileName,
-      fileData: downloadURL,
-      storagePath: fileRef.fullPath,
-      uploadedAt: serverTimestamp()
-    });
+      await addDoc(collection(db, "kullanici_yuklenen_sorular"), {
+        userUid: auth.currentUser ? auth.currentUser.uid : "anonim",
+        userName: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email) : "Anonim",
+        userEmail: auth.currentUser ? auth.currentUser.email : "Anonim",
+        userTier: window.currentUserTier || 'Kullanıcı',
+        fileName: fileName,
+        fileData: downloadURL,
+        storagePath: fileRef.fullPath,
+        uploadedAt: serverTimestamp()
+      });
 
-    showToast("Soru dosyanız başarıyla yükledi!", "success");
-    window.closeUserQuestionFilePickerModal();
-  } catch(err) {
-    showToast("Dosya yüklenirken hata oluştu: " + err.message, "error");
-  }
-};
+      showToast("Soru dosyanız başarıyla yüklendi!", "success");
+      window.closeUserQuestionFilePickerModal();
+    } catch(err) {
+      showToast("Dosya yüklenirken hata oluştu: " + err.message, "error");
+    }
+  };
 
   window.openRedeemModal = () => document.getElementById('redeemModal').style.display = 'flex';
   window.closeRedeemModal = () => document.getElementById('redeemModal').style.display = 'none';
@@ -3847,7 +3626,7 @@ window.uploadQuestionFile = async function() {
     }
   };
 
-window.switchAdminTab = function(tabName) {
+  window.switchAdminTab = function(tabName) {
     const uCb = document.getElementById('selectAllUsersCheckbox');
     if (uCb) uCb.checked = false;
     document.querySelectorAll('.user-row-checkbox').forEach(cb => cb.checked = false);
@@ -3860,44 +3639,46 @@ window.switchAdminTab = function(tabName) {
     if (cCb) cCb.checked = false;
     document.querySelectorAll('.chat-row-checkbox').forEach(cb => cb.checked = false);
 
-    // Sekme görünürlüklerini ayarla
     document.getElementById('adminTabUsers').style.display = tabName === 'users' ? 'flex' : 'none';
+    document.getElementById('adminTabWarned').style.display = tabName === 'warned' ? 'flex' : 'none';
     document.getElementById('adminTabReports').style.display = tabName === 'reports' ? 'flex' : 'none';
     document.getElementById('adminTabUploadedQuestions').style.display = tabName === 'uploadedQuestions' ? 'flex' : 'none';
     document.getElementById('adminTabChat').style.display = tabName === 'chat' ? 'flex' : 'none';
     document.getElementById('adminTabLicenses').style.display = tabName === 'licenses' ? 'block' : 'none';
-    document.getElementById('adminTabAnnouncements').style.display = tabName === 'announcements' ? 'flex' : 'none'; // 👈 DÜZELTME BURADA
+    document.getElementById('adminTabAnnouncements').style.display = tabName === 'announcements' ? 'flex' : 'none';
     document.getElementById('adminTabSettings').style.display = tabName === 'settings' ? 'block' : 'none';
     
-    // Buton aktiflik sınıflarını güncelle
     document.getElementById('tabUsersBtn').className = tabName === 'users' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
+    document.getElementById('tabWarnedBtn').className = tabName === 'warned' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabReportsBtn').className = tabName === 'reports' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabUploadedQuestionsBtn').className = tabName === 'uploadedQuestions' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabChatBtn').className = tabName === 'chat' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabLicensesBtn').className = tabName === 'licenses' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabAnnounceBtn').className = tabName === 'announcements' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off'; // 👈 DÜZELTME BURADA
+    document.getElementById('tabAnnounceBtn').className = tabName === 'announcements' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabSettingsBtn').className = tabName === 'settings' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     
     window.currentAdminTab = tabName;
     const searchWrapper = document.getElementById('adminSearchBoxWrapper');
     const searchInput = document.getElementById('adminUserSearchInput');
 
-    if (tabName === 'users' || tabName === 'reports' || tabName === 'chat') {
-      searchWrapper.style.display = 'block';
+    if (tabName === 'users' || tabName === 'warned' || tabName === 'reports' || tabName === 'chat') {
+      if (searchWrapper) searchWrapper.style.display = 'block';
       if (searchInput) {
         searchInput.value = '';
-        if (tabName === 'users') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
+        if (tabName === 'users' || tabName === 'warned') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
         else if (tabName === 'reports') searchInput.placeholder = "🔍 Ad, E-posta, Soru veya Şık Metni Ara...";
         else if (tabName === 'chat') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
       }
     } else {
-      searchWrapper.style.display = 'none';
+      if (searchWrapper) searchWrapper.style.display = 'none';
     }
 
+    if (tabName === 'users') renderUserRows();
+    if (tabName === 'warned') renderWarnedUserRows();
     if (tabName === 'reports') loadAdminQuestionReports();
     if (tabName === 'uploadedQuestions') loadAdminUploadedQuestions();
     if (tabName === 'chat') loadAdminChatList();
-    if (tabName === 'announcements') loadAnnouncementUsersList(); // 👈 ÇALIŞMASINI SAĞLAYAN TETİKLEYİCİ
+    if (tabName === 'announcements') loadAnnouncementUsersList();
   };
 
   window.openAdminModal = async function() {
@@ -3909,1623 +3690,50 @@ window.switchAdminTab = function(tabName) {
     await fetchAndRenderUsers('Tümü');
   };
 
-
-async function loadAnnouncementUsersList() {
-  const select = document.getElementById('announceTargetSelect');
-  if (!select) return;
-  select.innerHTML = '<option value="ALL" selected>🌐 Tüm Kullanıcılar</option>';
-  try {
-    const snap = await getDocs(collection(db, "kullanicilar"));
-    snap.forEach(docSnap => {
-      const u = docSnap.data();
-      const opt = document.createElement('option');
-      opt.value = docSnap.id;
-      opt.textContent = `👤 ${u.adSoyad || u.email} (${u.email})`;
-      select.appendChild(opt);
-    });
-  } catch(e) {}
-}
+  window.loadAnnouncementUsersList = async function() {
+    try {
+      const snap = await getDocs(collection(db, "kullanicilar"));
+      window.announcementUsersCache = [];
+      snap.forEach(docSnap => {
+        const u = docSnap.data();
+        window.announcementUsersCache.push({
+          id: docSnap.id,
+          adSoyad: u.adSoyad || u.displayName || u.email || "İsimsiz",
+          email: u.email || "",
+          durum: u.durum || "Ücretsiz"
+        });
+      });
+    } catch(e) {
+      console.error("Duyuru için kullanıcı listesi alınamadı:", e);
+    }
+  };
   
   async function fetchAndRenderUsers(filterCategory) {
     currentCategoryFilter = filterCategory;
     const tbody = document.getElementById('adminUserTableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Kullanıcılar yükleniyor...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center;">Kullanıcılar yükleniyor...</td></tr>';
     try {
       const snap = await getDocs(collection(db, "kullanicilar"));
       allFetchedUsers = [];
       snap.forEach(d => allFetchedUsers.push({ id: d.id, ...d.data() }));
       renderUserRows();
-    } catch (e) { tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:10px;">Hata: ${e.message}</td></tr>`; }
+      loadAnnouncementUsersList();
+    } catch (e) { tbody.innerHTML = `<tr><td colspan="5" style="color:red; padding:10px;">Hata: ${e.message}</td></tr>`; }
   }
 
-  // MADDE 3 YENİLİK: UYARI ALANLAR FİLTRESİ SEÇİLDİĞİNDE VARSAYILAN OLARAK YILDIZ SIRALAMASI AÇILIR
   window.filterAdminUsers = function(cat, btnElem) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.className = 'btn-action filter-btn btn-toggle-off');
-    btnElem.className = 'btn-action filter-btn btn-toggle-on';
-    currentCategoryFilter = cat;
-    if (cat === 'UyarıAlanlar') {
-      const sortSelect = document.getElementById('adminUserSortSelect');
-      if (sortSelect) sortSelect.value = 'stars_desc';
-    }
-    renderUserRows();
-  };
-
-  window.filterAdminUsersSearch = () => renderUserRows();
-
-  // MADDE 3 YENİLİK: DİNAMİK SIRALAMA VE UYARI ALAN KULLANICI FİLTRELEME
-function renderUserRows() {
-    const tbody = document.getElementById('adminUserTableBody');
-    tbody.innerHTML = '';
-    const queryStr = document.getElementById('adminUserSearchInput')?.value.trim().toLocaleLowerCase('tr-TR') || '';
-    let list = [...allFetchedUsers];
-
-    // YÖNETİCİ GİZLEME MANTIĞI:
-    // Eğer "Tümü" filtresindeysek yöneticileri listeden gizle. Sadece "admin" (Yönetici) filtresine basıldıysa göster.
-    if (currentCategoryFilter === 'admin') {
-      list = list.filter(u => u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
-    } else if (currentCategoryFilter === 'UyarıAlanlar') {
-      list = list.filter(u => (u.uyariSayisi || 0) > 0 && !(u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com'));
-    } else if (currentCategoryFilter !== 'Tümü') {
-      list = list.filter(u => u.durum === currentCategoryFilter && u.rol !== 'admin');
-    } else {
-      // "Tümü" sekmesindeyken yöneticileri tamamen listeden çıkar
-      list = list.filter(u => u.rol !== 'admin' && u.email !== 'kgulsen1994@gmail.com' && u.email !== 'kadir@kadir.com' && u.email !== 'yonetici@noroloji.com');
-    }
-
-    if (queryStr !== '') {
-      list = list.filter(u => (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(queryStr) || (u.email || '').toLocaleLowerCase('tr-TR').includes(queryStr));
-    }
-
-    const sortVal = document.getElementById('adminUserSortSelect')?.value || 'role_desc';
-
-    list.sort((a, b) => {
-      if (sortVal === 'stars_desc') {
-        const warnA = a.uyariSayisi || 0;
-        const warnB = b.uyariSayisi || 0;
-        if (warnB !== warnA) return warnB - warnA;
-      } else if (sortVal === 'name_asc') {
-        const nameA = (a.adSoyad || a.email || '');
-        const nameB = (b.adSoyad || b.email || '');
-        const comp = nameA.localeCompare(nameB, 'tr-TR');
-        if (comp !== 0) return comp;
-      } else if (sortVal === 'role_desc') {
-        const roleOrder = { 'admin': 1, 'VIP': 2, 'Premium': 3, 'Deneme': 4, 'Ücretsiz': 5, 'Engellendi': 6 };
-        const getOrder = (u) => (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com') ? 1 : (roleOrder[u.durum] || 99);
-        const diff = getOrder(a) - getOrder(b);
-        if (diff !== 0) return diff;
-      }
-
-      const isAAdmin = (a.rol === 'admin' || a.email === 'kgulsen1994@gmail.com');
-      const isBAdmin = (b.rol === 'admin' || b.email === 'kgulsen1994@gmail.com');
-      if (isAAdmin && !isBAdmin) return -1;
-      if (!isAAdmin && isBAdmin) return 1;
-      return 0;
-    });
-
-    if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Kullanıcı bulunamadı.</td></tr>';
-      return;
-    }
-
-    list.forEach(u => {
-      const isRoleAdmin = (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
-      const statusText = isRoleAdmin ? '👑 Yönetici' : (u.durum || 'Ücretsiz');
-      
-      // Yönetici isimleri "Belirtilmedi" yazıyorsa burada adını düzgün gösterebilir veya Firebase üzerinden ad Soyad yazabilirsiniz
-      let rawName = u.adSoyad;
-      if (isRoleAdmin && (!rawName || rawName === "Belirtilmedi" || rawName === "...")) {
-        if (u.email === 'kgulsen1994@gmail.com') rawName = "Dr. Kadir GÜLŞEN";
-        else if (u.email === 'yonetici@noroloji.com') rawName = "Yönetici";
-        else rawName = "Sistem Yöneticisi";
-      }
-      const formattedName = formatNameSurname(rawName || u.email);
-
-      const warnCount = u.uyariSayisi || 0;
-      let starsHTML = '';
-      if (warnCount > 0) {
-        starsHTML = '🚨'.repeat(warnCount);
-      } else {
-        starsHTML = '<span style="color:#cbd5e1;">-</span>';
-      }
-
-      let warnControlsHTML = '';
-      if (!isRoleAdmin && warnCount > 0) {
-        warnControlsHTML = `
-          <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="reduceUserWarning('${u.id}')">➖ Alarm Sil</button>
-          <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="clearUserWarnings('${u.id}')">🧹 Sıfırla</button>
-        `;
-      }
-
-      let actionTdHTML = `<button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px;" onclick="viewUserActivities('${u.id}', '${u.email}')">👁️ Aktivite</button>`;
-
-      if (!isRoleAdmin) {
-        actionTdHTML += `
-          <select class="modern-input" style="padding: 2px 6px; font-size: 0.75rem; width: auto;" onchange="changeUserStatus('${u.id}', this.value)">
-            <option value="" disabled selected>Aksiyon</option>
-            <option value="VIP">👑 VIP</option>
-            <option value="Premium">⭐ Premium</option>
-            <option value="Deneme">⏳ Deneme</option>
-            <option value="Ücretsiz">🔄 Ücretsiz</option>
-            <option value="Engellendi">🚫 Engelle</option>
-          </select>
-          <button class="btn-action btn-finish-test" style="font-size: 0.75rem; padding: 4px 8px;" onclick="promptDeleteUser('${u.id}')">🗑️ Sil</button>
-        `;
-      } else {
-        actionTdHTML += `<span style="font-size: 0.75rem; color: #8b5cf6; font-weight: bold; margin-left:5px;">Korumalı Admin</span>`;
-      }
-
-      const row = document.createElement('tr');
-      row.style.borderBottom = '1px solid #e2e8f0';
-      if (isRoleAdmin) row.style.background = '#fcf5ff';
-
-      row.innerHTML = `
-        <td style="padding: 10px; text-align: center;">${!isRoleAdmin ? `<input type="checkbox" class="user-row-checkbox" value="${u.id}">` : ''}</td>
-        <td style="padding: 10px; font-weight: 600;">${formattedName}</td>
-        <td style="padding: 10px; color: #64748b;">${u.email}</td>
-        <td style="padding: 10px; text-align: center;">${starsHTML} ${warnControlsHTML}</td>
-        <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #e2e8f0;">${statusText}</span></td>
-        <td style="padding: 10px; text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;">${actionTdHTML}</td>
-      `;
-      tbody.appendChild(row);
-    });
-  }
-
-window.reduceUserWarning = async function(uid) {
-  try {
-    const uRef = doc(db, "kullanicilar", uid);
-    const uSnap = await getDoc(uRef);
-    if (uSnap.exists()) {
-      const currentWarns = uSnap.data().uyariSayisi || 0;
-      const newWarns = Math.max(0, currentWarns - 1);
-      await updateDoc(uRef, { uyariSayisi: newWarns });
-      showToast("Kullanıcının 1 uyarısı/alarmı silindi.", "success");
-      await fetchAndRenderUsers(currentCategoryFilter);
-    }
-  } catch(err) {
-    showToast("İşlem sırasında hata oluştu: " + err.message, "error");
-  }
-};
-
-window.clearUserWarnings = async function(uid) {
-  try {
-    await updateDoc(doc(db, "kullanicilar", uid), { uyariSayisi: 0 });
-    showToast("Kullanıcının tüm uyarı alarmları temizlendi.", "success");
-    await fetchAndRenderUsers(currentCategoryFilter);
-  } catch(err) {
-    showToast("İşlem sırasında hata oluştu: " + err.message, "error");
-  }
-};
-
-  window.toggleSelectAllUsers = function(masterCb) {
-    document.querySelectorAll('.user-row-checkbox').forEach(cb => cb.checked = masterCb.checked);
-  };
-
-window.applyBulkAction = async function() {
-  if (window.currentUserIsAdmin !== true) {
-    showToast("Bu işlemi yapmaya yetkiniz bulunmamaktadır!", "error");
-    return;
-  }
-
-  const action = document.getElementById('bulkActionSelect').value;
-  const selectedCbs = Array.from(document.querySelectorAll('.user-row-checkbox:checked')).map(cb => cb.value);
-  if (!action || selectedCbs.length === 0) { showToast("Lütfen yetki ve en az bir kullanıcı seçiniz.", "warning"); return; }
-
-  if (action === 'DELETE') {
-    userToDeleteTarget = selectedCbs;
-    document.getElementById('adminConfirmDeleteModal').style.display = 'flex';
-  } else {
-    for (let uid of selectedCbs) {
-      if (action === 'Engellendi') {
-        await updateDoc(doc(db, "kullanicilar", uid), {
-          durum: "Engellendi",
-          engellenmeSuresiText: "Süresiz / Kalıcı (Toplu İşlem)"
-        });
-      } else {
-        await updateDoc(doc(db, "kullanicilar", uid), { durum: action });
-      }
-    }
-    showToast(`${selectedCbs.length} kullanıcının durumu ${action} olarak güncellendi.`, "success");
-    await fetchAndRenderUsers(currentCategoryFilter);
-  }
-};
-
-  window.promptDeleteUser = function(uid) {
-    userToDeleteTarget = [uid];
-    document.getElementById('adminConfirmDeleteModal').style.display = 'flex';
-  };
-
-  window.closeAdminConfirmDeleteModal = () => document.getElementById('adminConfirmDeleteModal').style.display = 'none';
-
-window.executeUserDeletion = async function() {
-  if (window.currentUserIsAdmin !== true) {
-    showToast("Bu işlemi yapmaya yetkiniz bulunmamaktadır!", "error");
-    return;
-  }
-
-  if (window.currentUserIsAdmin !== true) {
-    showToast("Bu işlem için yönetici yetkisi gereklidir.", "error");
-    return;
-  }
-
-  if (Array.isArray(userToDeleteTarget)) {
-    for (let uid of userToDeleteTarget) {
-      await deleteDoc(doc(db, "kullanicilar", uid));
-    }
-    showToast(`${userToDeleteTarget.length} kullanıcı veritabanından kalıcı olarak silindi.`, "success");
-  }
-  window.closeAdminConfirmDeleteModal();
-  await fetchAndRenderUsers(currentCategoryFilter);
-};
-
-  window.openAdminWarnUserModal = function(userUid, userName, messageText = "") {
-    currentWarnUserUid = userUid;
-    currentWarnUserName = userName;
-    document.getElementById('warnTargetUserText').innerText = `Hedef Kullanıcı: ${userName}`;
-    document.getElementById('adminWarnReasonInput').value = messageText;
-    document.getElementById('adminWarnUserModal').style.display = 'flex';
-  };
-
-  window.closeAdminWarnUserModal = () => document.getElementById('adminWarnUserModal').style.display = 'none';
-
-  window.executeSendUserWarning = async function() {
-    if (!currentWarnUserUid) return;
-    const reasonText = document.getElementById('adminWarnReasonInput').value.trim();
-    if (!reasonText) { showToast("Lütfen uyarı nedenini giriniz.", "warning"); return; }
-
-    try {
-      const uRef = doc(db, "kullanicilar", currentWarnUserUid);
-      const uSnap = await getDoc(uRef);
-      const uData = uSnap.exists() ? uSnap.data() : {};
-      
-      const newWarnCount = (uData.uyariSayisi || 0) + 1;
-
-      await updateDoc(uRef, {
-        uyariSayisi: newWarnCount,
-        engellenmeNedenleri: arrayUnion(reasonText),
-        activeWarning: {
-          reason: reasonText,
-          time: serverTimestamp(),
-          read: false
-        }
-      });
-
-      showToast(`Kullanıcıya ${newWarnCount}. uyarı gönderildi!`, "success");
-
-      if (newWarnCount >= 3) {
-        setTimeout(() => {
-          alert(`🚨 DİKKAT: ${currentWarnUserName} isimli kullanıcı toplam ${newWarnCount} uyarıya ulaştı!\n\nKullanıcının hesabını süreli veya kalıcı olarak engellemeniz önerilir.`);
-        }, 500);
-      }
-
-      closeAdminWarnUserModal();
-      await fetchAndRenderUsers(currentCategoryFilter);
-
-    } catch(err) {
-      showToast("Uyarı gönderilemedi: " + err.message, "error");
-    }
-  };
-
-  window.viewUserActivities = async function(uid, email) {
-    currentInspectedUserUid = uid;
-    document.getElementById('activityModal').style.display = 'flex';
-    document.getElementById('activityModalTitle').innerText = `📊 Aktivite Geçmişi: ${email}`;
-    const logBox = document.getElementById('activityLogsList');
-    logBox.innerHTML = 'Loglar getiriliyor...';
-
-    try {
-      const snap = await getDocs(collection(db, "kullanicilar", uid, "aktiviteler"));
-
-      if (snap.empty) {
-        logBox.innerHTML = '<p style="text-align:center; color:#64748b;">Henüz aktivite kaydı bulunamadı.</p>';
-        return;
-      }
-
-      let allLogs = [];
-      snap.forEach(docSnap => allLogs.push({ docId: docSnap.id, ...docSnap.data() }));
-
-      allLogs.sort((a, b) => {
-        const timeA = a.zaman?.toDate ? a.zaman.toDate().getTime() : 0;
-        const timeB = b.zaman?.toDate ? b.zaman.toDate().getTime() : 0;
-        return timeB - timeA;
-      });
-
-      let grouped = {};
-      allLogs.forEach(l => {
-        const dateStr = l.tarihStr || (l.zaman?.toDate ? l.zaman.toDate().toISOString().split('T')[0] : 'Diğer Günler');
-        if (!grouped[dateStr]) grouped[dateStr] = [];
-        grouped[dateStr].push(l);
-      });
-
-      let html = '';
-      for (const [dateKey, logs] of Object.entries(grouped)) {
-        let totalMins = 0;
-        logs.forEach(l => { if (l.sureDakika) totalMins += l.sureDakika; });
-
-        html += `
-          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
-              <span style="font-weight: bold; color: #0f172a;">📅 Tarih: ${dateKey} ${totalMins > 0 ? `<span style="color:#2563eb; font-size:0.8rem;">(⏱️ Toplam: ${totalMins} dk aktif)</span>` : ''}</span>
-              <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#ef4444; color:white;" onclick="clearDayActivities('${dateKey}')">🗑️ Bu Günü Temizle</button>
-            </div>
-            <ul style="list-style: none; padding: 0;">
-        `;
-
-        logs.forEach(l => {
-          const timeStr = l.zaman?.toDate ? l.zaman.toDate().toLocaleTimeString('tr-TR') : '';
-          let renderedDetail = l.detay;
-
-          if (typeof l.detay === 'string' && l.detay.trim().startsWith('{')) {
-            try {
-              const parsed = JSON.parse(l.detay);
-              const cardId = `log_detail_${l.docId}`;
-              
-              let topicBreakdownHTML = '';
-              if (parsed.topicStats) {
-                for (const [tName, tData] of Object.entries(parsed.topicStats)) {
-                  topicBreakdownHTML += `
-                    <div style="font-size: 0.78rem; color: #334155; margin-top: 3px; padding: 2px 6px; background: #ffffff; border-radius: 4px; border: 1px solid #e2e8f0;">
-                      <strong>${tName}:</strong> Toplam ${tData.total} Soru ➔ 
-                      <span style="color:#10b981;">${tData.correct} Doğru</span>, 
-                      <span style="color:#ef4444;">${tData.wrong} Yanlış</span>, 
-                      <span style="color:#8b5cf6;">${tData.blank} Boş</span>
-                    </div>
-                  `;
-                }
-              }
-
-              renderedDetail = `
-                <span>${parsed.total} Soruluk Test Tamamlandı</span>
-                <button class="btn-action" style="padding:2px 8px; font-size:0.72rem; display:inline-flex; margin-left:8px;" onclick="toggleLogDetailCard('${cardId}')">📊 Detay Göster</button>
-                <div id="${cardId}" style="display:none; margin-top:8px; background:#eff6ff; padding:10px; border-radius:6px; border:1px solid #bfdbfe;">
-                  <div style="font-weight:bold; color:#1e40af; margin-bottom:4px;">Genel İstatistik:</div>
-                  <div>✅ ${parsed.correct} Doğru | ❌ ${parsed.wrong} Yanlış | ❓ ${parsed.blank} Boş</div>
-                  <div style="font-weight:bold; color:#1e40af; margin-top:8px; margin-bottom:4px;">Konu Detayları:</div>
-                  ${topicBreakdownHTML}
-                </div>
-              `;
-            } catch (err) {}
-          }
-
-          html += `
-            <li style="padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.85rem;">
-              <strong>${l.islem}:</strong> ${renderedDetail} <span style="color:#94a3b8; font-size:0.75rem;">(${timeStr})</span>
-            </li>
-          `;
-        });
-
-        html += `</ul></div>`;
-      }
-
-      logBox.innerHTML = html;
-    } catch (e) { logBox.innerHTML = `<span style="color:red;">Hata: ${e.message}</span>`; }
-  };
-
-  window.toggleLogDetailCard = function(id) {
-    const el = document.getElementById(id);
-    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  };
-
-  window.clearDayActivities = async function(dateStr) {
-    if (!currentInspectedUserUid) return;
-    const q = query(collection(db, "kullanicilar", currentInspectedUserUid, "aktiviteler"), where("tarihStr", "==", dateStr));
-    const snap = await getDocs(q);
-    for (let d of snap.docs) { await deleteDoc(d.ref); }
-    showToast(`${dateStr} tarihli aktiviteler temizlendi.`, "success");
-    window.viewUserActivities(currentInspectedUserUid, '');
-  };
-
-  window.clearAllActivities = async function() {
-    if (!currentInspectedUserUid) return;
-    const snap = await getDocs(collection(db, "kullanicilar", currentInspectedUserUid, "aktiviteler"));
-    for (let d of snap.docs) { await deleteDoc(d.ref); }
-    showToast("Tüm aktivite geçmişi temizlendi.", "success");
-    window.closeActivityModal();
-  };
-
-  window.closeActivityModal = () => document.getElementById('activityModal').style.display = 'none';
-
-  window.openUserReportsModal = function() {
-    document.getElementById('userReportsModal').style.display = 'flex';
-    if (!auth.currentUser) return;
-
-    const box = document.getElementById('userReportsList');
-    box.innerHTML = '<p style="text-align:center; color:#64748b;">Bildirimleriniz yükleniyor...</p>';
-
-    const q = query(collection(db, "hatali_sorular"), where("userId", "==", auth.currentUser.uid));
-
-    userReportsUnsubscribe = disposeSubscription(userReportsUnsubscribe);
-
-    userReportsUnsubscribe = onSnapshot(q, (snap) => {
-      if (snap.empty) {
-        box.innerHTML = '<p style="text-align:center; color:#64748b; padding:30px; font-weight:500;">Henüz kayıtlı bir hatalı soru bildiriminiz bulunmamaktadır.</p>';
-        return;
-      }
-
-      let reports = [];
-      snap.forEach(docSnap => reports.push({ id: docSnap.id, ...docSnap.data() }));
-
-      reports.sort((a, b) => {
-        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-        return timeB - timeA;
-      });
-
-      let html = '';
-      reports.forEach(d => {
-        const isAnswered = d.status === 'yanitlandi' || (Array.isArray(d.mesajlar) && d.mesajlar.length > 1);
-        const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('tr-TR') : '';
-
-        let cleanOptionsHTML = '';
-        if (Array.isArray(d.questionOptions) && d.questionOptions.length > 0) {
-          cleanOptionsHTML = d.questionOptions.map((opt, i) => {
-            const letter = String.fromCharCode(65 + i);
-            const isCorrect = (d.correctLetter || '').includes(letter);
-            return `
-              <div style="padding:5px 8px; margin-top:3px; border-radius:6px; font-size:0.83rem; ${isCorrect ? 'background:#d1fae5; font-weight:bold; color:#065f46; border:1px solid #10b981;' : 'background:#ffffff; color:#334155; border:1px solid #e2e8f0;'}">
-                <strong>${letter})</strong> ${opt}
-              </div>
-            `;
-          }).join('');
-        }
-
-        let chatBubblesHTML = '';
-        if (Array.isArray(d.mesajlar)) {
-          d.mesajlar.forEach(m => {
-            if (m.deletedByAdmin) return;
-            if (m.deletedByUser) return;
-
-            const isUser = m.senderRole === 'user';
-            const timeFormatted = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) : '';
-
-            chatBubblesHTML += `
-              <div class="chat-bubble ${isUser ? 'sent' : 'received'}">
-                <div style="font-weight:bold; font-size:0.72rem; color:${isUser ? '#065f46' : '#1e40af'}; margin-bottom:2px;">
-                  ${isUser ? 'Siz' : '👨‍⚕️ Yönetici'}
-                </div>
-                <div style="white-space:pre-line;">${m.text}</div>
-                <div class="chat-meta">
-                  <span>${timeFormatted}</span>
-                  ${isUser ? `<button class="msg-delete-btn" onclick="deleteUserReportMessage('${d.id}', '${m.id}')" title="Mesajımı Sil">🗑️</button>` : ''}
-                </div>
-              </div>
-            `;
-          });
-        }
-
-        html += `
-          <div id="userReportCard_${d.id}" class="user-report-card-item" style="background:#ffffff; border:1px solid var(--border); border-left:4px solid ${isAnswered ? '#10b981' : '#f59e0b'}; border-radius:10px; padding:14px; margin-bottom:14px; box-shadow:var(--shadow-sm);">
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-              <div>
-                <span style="font-weight:bold; color:#0f172a; font-size:0.9rem;">📌 Konu: ${d.questionTopic || 'Genel'}</span>
-                <span style="font-size:0.75rem; color:#64748b; margin-left:8px;">(${dateStr})</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:bold; background:${isAnswered ? '#d1fae5' : '#fef3c7'}; color:${isAnswered ? '#047857' : '#b45309'};">
-                  ${isAnswered ? '✅ Yanıtlandı' : '⏳ Değerlendirmede'}
-                </span>
-                <button class="btn-action btn-finish-test" style="font-size:0.75rem; padding:3px 8px;" onclick="deleteUserReport('${d.id}')">🗑️ Bildirimi Sil</button>
-              </div>
-            </div>
-
-            <div style="font-size:0.85rem; color:#475569; margin-top:8px;">
-              <strong>Soru Metni:</strong> ${d.questionText}
-            </div>
-
-            <div style="margin-top:10px;">
-              <button id="toggleReportBtn_${d.id}" class="btn-action btn-toggle-on" style="font-size:0.78rem; padding:4px 12px;" onclick="toggleUserReportDetail('${d.id}')">
-                🔍 Sorunun Tamamını & Mesaj Sohbetini Gör
-              </button>
-            </div>
-
-            <div id="reportDetailCard_${d.id}" style="display:none; margin-top:12px; border-top:1px dashed #cbd5e1; padding-top:12px;">
-              
-              <div style="font-size:0.88rem; font-weight:bold; color:#0f172a; margin-bottom:6px;">📄 Sorunun Tüm Şıkları:</div>
-              <div style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:12px;">
-                ${cleanOptionsHTML || 'Şıklar bulunamadı.'}
-              </div>
-
-              <div style="font-size:0.88rem; font-weight:bold; color:#0f172a; margin-bottom:6px;">💬 Canlı Sohbet Geçmişi:</div>
-              
-              <div class="whatsapp-container" style="height:auto; max-height:360px; margin-bottom:12px;">
-                <div class="whatsapp-header" style="font-size:0.82rem; padding:8px 12px;">
-                  <span>📋 Bildirime Ait Mesajlaşma Akışı</span>
-                </div>
-                <div class="whatsapp-messages" style="padding:12px;">
-                  ${chatBubblesHTML || '<p style="text-align:center; color:#64748b; font-size:0.8rem;">Henüz mesaj yok.</p>'}
-                </div>
-              </div>
-
-              <div style="display:flex; gap:8px; margin-top:8px;">
-                <input type="text" id="userReportFollowupInput_${d.id}" class="modern-input" style="padding:6px 10px; font-size:0.82rem;" placeholder="Yöneticiye ek yanıt yazın..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); sendUserReportChatMessage('${d.id}')">
-                <button class="btn-action btn-toggle-on" style="padding:6px 14px; font-size:0.82rem;" onclick="sendUserReportChatMessage('${d.id}')">Gönder ➔</button>
-              </div>
-
-            </div>
-
-          </div>
-        `;
-      });
-
-      box.innerHTML = html;
-    });
-  };
-
-  window.toggleUserReportDetail = function(id) {
-    const card = document.getElementById(`reportDetailCard_${id}`);
-    const btn = document.getElementById(`toggleReportBtn_${id}`);
-
-    if (!card) return;
-
-    if (card.style.display === 'none') {
-      card.style.display = 'block';
-      if (btn) btn.innerText = '🔍 Detayı Kapat';
-    } else {
-      card.style.display = 'none';
-      if (btn) btn.innerText = '🔍 Sorunun Tamamını & Mesaj Sohbetini Gör';
-    }
-  };
-
-  window.closeUserReportsModal = () => {
-    document.getElementById('userReportsModal').style.display = 'none';
-    userReportsUnsubscribe = disposeSubscription(userReportsUnsubscribe);
-  };
-
-  window.deleteUserReport = async function(docId) {
-    if (!confirm("Bu bildirim kaydını tamamen silmek istediğinize emin misiniz?")) return;
-    try {
-      await deleteDoc(doc(db, "hatali_sorular", docId));
-      showToast("Bildiriminiz silindi.", "success");
-    } catch(err) {
-      showToast("Silme hatası: " + err.message, "error");
-    }
-  };
-
-  window.sendUserReportChatMessage = async function(docId) {
-    const input = document.getElementById(`userReportFollowupInput_${docId}`);
-    const text = input.value.trim();
-    if (!text) { showToast("Lütfen cevabınızı yazınız.", "warning"); return; }
-
-    const newMsg = {
-      id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
-      senderRole: "user",
-      senderUid: auth.currentUser ? auth.currentUser.uid : "anonim",
-      text: text,
-      timestamp: new Date().toISOString(),
-      deletedByUser: false,
-      deletedByAdmin: false
-    };
-
-    try {
-      await updateDoc(doc(db, "hatali_sorular", docId), {
-        mesajlar: arrayUnion(newMsg),
-        status: "kullanici_yanitladi"
-      });
-      input.value = '';
-      showToast("Yanıtınız gönderildi.", "success");
-    } catch(err) { showToast("Hata: " + err.message, "error"); }
-  };
-
-  window.deleteUserReportMessage = async function(docId, msgId) {
-    try {
-      const docRef = doc(db, "hatali_sorular", docId);
-      const docSnap = await getDoc(docRef);
-      if (!docSnap.exists()) return;
-
-      let msgs = docSnap.data().mesajlar || [];
-      msgs = msgs.map(m => {
-        if (m.id === msgId) {
-          return { ...m, deletedByUser: true };
-        }
-        return m;
-      });
-
-      await updateDoc(docRef, { mesajlar: msgs });
-      showToast("Mesajınız silindi.", "success");
-    } catch(err) {
-      showToast("Silme hatası: " + err.message, "error");
-    }
-  };
-
-let allFetchedReports = [];
-
-async function loadAdminQuestionReports() {
-  const box = document.getElementById('adminQuestionReportsList');
-  box.innerHTML = '<p style="text-align:center; color:#64748b;">Bildirimler yükleniyor...</p>';
-
-  const q = collection(db, "hatali_sorular");
-
-  adminReportsUnsubscribe = disposeSubscription(adminReportsUnsubscribe);
-
-  adminReportsUnsubscribe = onSnapshot(q, (snap) => {
-    allFetchedReports = [];
-    snap.forEach(docSnap => allFetchedReports.push({ id: docSnap.id, ...docSnap.data() }));
-
-    allFetchedReports.sort((a, b) => {
-      const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-      const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-      return timeB - timeA;
-    });
-
-    window.renderAdminReports();
-  });
-}
-
-window.renderAdminReports = function() {
-  const box = document.getElementById('adminQuestionReportsList');
-  if (!box) return;
-
-  const queryStr = (document.getElementById('adminUserSearchInput')?.value || '').trim().toLocaleLowerCase('tr-TR');
-
-  let filtered = allFetchedReports.filter(d => {
-    if (!queryStr) return true;
-    const name = (d.userName || '').toLocaleLowerCase('tr-TR');
-    const email = (d.userEmail || '').toLocaleLowerCase('tr-TR');
-    const qText = (d.questionText || '').toLocaleLowerCase('tr-TR');
-    const comment = (d.userComment || '').toLocaleLowerCase('tr-TR');
-    const optionsStr = Array.isArray(d.questionOptions) ? d.questionOptions.join(' ').toLocaleLowerCase('tr-TR') : '';
-
-    return name.includes(queryStr) || email.includes(queryStr) || qText.includes(queryStr) || comment.includes(queryStr) || optionsStr.includes(queryStr);
-  });
-
-  if (filtered.length === 0) {
-    box.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">Aradığınız kriterlere uygun hatalı soru bildirimi bulunamadı.</p>';
-    return;
-  }
-
-  let html = '';
-  filtered.forEach(d => {
-    const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString('tr-TR') : '';
-    const isAnswered = d.status === 'yanitlandi' || (Array.isArray(d.mesajlar) && d.mesajlar.length > 1);
-
-    let optionsHTML = '';
-    if (Array.isArray(d.questionOptions) && d.questionOptions.length > 0) {
-      optionsHTML = d.questionOptions.map((opt, i) => {
-        const letter = String.fromCharCode(65 + i);
-        const isCorrect = (d.correctLetter || '').includes(letter);
-        return `<div style="padding:4px 8px; margin-top:2px; border-radius:4px; font-size:0.82rem; ${isCorrect ? 'background:#d1fae5; font-weight:bold; color:#065f46;' : 'background:#ffffff; color:#334155;'}">${letter}) ${opt}</div>`;
-      }).join('');
-    }
-
-    let chatBubblesHTML = '';
-    if (Array.isArray(d.mesajlar)) {
-      d.mesajlar.forEach(m => {
-        if (m.deletedByAdmin) return;
-        const isUser = m.senderRole === 'user';
-        const timeFormatted = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) : '';
-        let textContent = m.text;
-        if (m.deletedByUser) {
-          textContent = `<em style="color:#ef4444; font-weight:bold;">⚠️ (Kullanıcı bu mesajı sildi)</em><br><span style="text-decoration:line-through; opacity:0.6;">${m.text}</span>`;
-        }
-
-        const safeMsgText = (m.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const safeUserName = (d.userName || d.userEmail || '').replace(/'/g, "\\'");
-
-        chatBubblesHTML += `
-          <div class="chat-bubble ${isUser ? 'received' : 'sent'}">
-            <div style="font-weight:bold; font-size:0.72rem; color:${isUser ? '#065f46' : '#1e40af'}; margin-bottom:2px;">
-              ${isUser ? `👤 ${d.userName}` : '👨‍⚕️ Yönetici'}
-            </div>
-            <div style="white-space:pre-line;">${textContent}</div>
-            <div class="chat-meta">
-              <span>${timeFormatted}</span>
-              ${isUser ? `<button class="btn-action" style="font-size:0.62rem; padding:1px 4px; background:#fffbe6; color:#d97706; border-color:#fde68a;" onclick="openAdminWarnUserModal('${d.userId}', '${safeUserName}', '${safeMsgText}')">⚠️ Uyar</button>` : ''}
-              <button class="msg-delete-btn" onclick="deleteReportMessageByAdmin('${d.id}', '${m.id}')" title="Yönetici Olarak Mesajı Sil">🗑️</button>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    const safeComment = (d.userComment || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    const safeName = (d.userName || d.userEmail || '').replace(/'/g, "\\'");
-
-    html += `
-      <div style="background:#ffffff; border:1px solid var(--border); border-left:4px solid ${isAnswered ? '#10b981' : '#ef4444'}; border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" class="report-row-checkbox" value="${d.id}">
-            <span style="font-weight:bold; color:#0f172a;">👤 ${d.userName} (${d.userEmail})</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:0.75rem; color:#64748b;">${dateStr}</span>
-            <button class="btn-action" style="font-size:0.72rem; padding:3px 8px; background:#fffbe6; color:#d97706; border-color:#fde68a;" onclick="openAdminWarnUserModal('${d.userId}', '${safeName}', '${safeComment}')" title="Kullanıcıya Uyarı Gönder">⚠️ Uyar</button>
-            <button class="msg-delete-btn" onclick="promptDeleteSingleAdminReport('${d.id}')" title="Bildirimi Sil">🗑️</button>
-          </div>
-        </div>
-        
-        <div style="font-size:0.85rem; color:#334155; margin-bottom:6px; background:#f8fafc; padding:8px; border-radius:6px;">
-          <strong>Soru [${d.questionTopic}]:</strong> ${d.questionText}<br>
-          <span style="color:#2563eb; font-weight:bold;">Sistemdeki Doğru Cevap: ${d.correctLetter}</span>
-        </div>
-
-        ${optionsHTML ? `
-          <div style="background:#f1f5f9; padding:8px; border-radius:6px; margin-bottom:8px;">
-            <strong style="font-size:0.8rem; color:#475569;">Sorunun Tüm Şıkları:</strong>
-            ${optionsHTML}
-          </div>
-        ` : ''}
-
-        <div class="whatsapp-container" style="height:auto; max-height:320px; margin:10px 0;">
-          <div class="whatsapp-header" style="font-size:0.8rem; padding:6px 12px;">
-            <span>💬 Kullanıcı ile Canlı Bildirim Sohbeti</span>
-          </div>
-          <div class="whatsapp-messages" style="padding:10px;">
-            ${chatBubblesHTML || '<p style="text-align:center; color:#64748b; font-size:0.8rem;">Mesaj yok.</p>'}
-          </div>
-          <div class="whatsapp-footer" style="padding:6px 10px;">
-            <input type="text" id="adminReportReplyInput_${d.id}" class="modern-input" style="padding:4px 8px; font-size:0.8rem; flex:1;" placeholder="Kullanıcıya mesaj yanıtı yazın..." onkeydown="if(event.key==='Enter') sendAdminReportChatMessage('${d.id}')">
-            <button class="btn-action btn-toggle-on" style="padding:4px 12px; font-size:0.8rem;" onclick="sendAdminReportChatMessage('${d.id}')">Gönder ➔</button>
-          </div>
-        </div>
-
-      </div>
-    `;
-  });
-
-  box.innerHTML = html;
-};
-
-  window.sendAdminReportChatMessage = async function(docId) {
-    const input = document.getElementById(`adminReportReplyInput_${docId}`);
-    const text = input.value.trim();
-    if (!text) { showToast("Lütfen bir yanıt yazınız.", "warning"); return; }
-
-    const newMsg = {
-      id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
-      senderRole: "admin",
-      senderUid: "admin",
-      text: text,
-      timestamp: new Date().toISOString(),
-      deletedByUser: false,
-      deletedByAdmin: false
-    };
-
-    try {
-      await updateDoc(doc(db, "hatali_sorular", docId), {
-        mesajlar: arrayUnion(newMsg),
-        status: "yanitlandi"
-      });
-      input.value = '';
-      showToast("Yanıtınız gönderildi.", "success");
-    } catch(err) { showToast("Hata: " + err.message, "error"); }
-  };
-
-  window.deleteReportMessageByAdmin = async function(docId, msgId) {
-    try {
-      const docRef = doc(db, "hatali_sorular", docId);
-      const docSnap = await getDoc(docRef);
-      if (!docSnap.exists()) return;
-
-      let msgs = docSnap.data().mesajlar || [];
-      msgs = msgs.map(m => {
-        if (m.id === msgId) {
-          return { ...m, deletedByAdmin: true };
-        }
-        return m;
-      });
-
-      await updateDoc(docRef, { mesajlar: msgs });
-      showToast("Mesaj yönetici tarafından tamamen silindi.", "success");
-    } catch(err) {
-      showToast("Silme hatası: " + err.message, "error");
-    }
-  };
-
-async function loadAdminUploadedQuestions() {
-  const box = document.getElementById('adminUploadedQuestionsList');
-  box.innerHTML = '<p style="text-align:center; color:#64748b;">Yüklenen sorular listeleniyor...</p>';
-
-  try {
-    const snap = await getDocs(collection(db, "kullanici_yuklenen_sorular"));
-
-    if (snap.empty) {
-      box.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">Henüz kullanıcılar tarafından soru dosyası yüklenmemiş.</p>';
-      return;
-    }
-
-    let files = [];
-    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
-    const now = Date.now();
-
-    // 7 günlük yaşam döngüsü sunucu tarafındaki scheduled cleanup tarafından yönetilir.
-    // İstemci yalnızca mevcut kayıtları listeler ve artık veri silemez.
-    for (let docSnap of snap.docs) {
-      const f = docSnap.data();
-      files.push({ id: docSnap.id, ...f });
-    }
-
-    if (files.length === 0) {
-      box.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">Süresi dolan tüm dosyalar otomatik temizlendi. Aktif dosya yok.</p>';
-      return;
-    }
-
-    files.sort((a, b) => {
-      const timeA = a.uploadedAt?.toDate ? a.uploadedAt.toDate().getTime() : 0;
-      const timeB = b.uploadedAt?.toDate ? b.uploadedAt.toDate().getTime() : 0;
-      return timeB - timeA;
-    });
-
-    let html = '';
-    files.forEach(f => {
-      const dateStr = f.uploadedAt?.toDate ? f.uploadedAt.toDate().toLocaleString('tr-TR') : 'Tarih Belirtilmedi';
-      const downloadStatus = f.downloadedAt?.toDate ? ` (📥 İndirildi - 7 gün sonra silinecek)` : '';
-
-      html += `
-        <div style="background:#ffffff; border:1px solid var(--border); border-left:4px solid #2563eb; border-radius:8px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <div style="font-weight:bold; font-size:0.9rem; color:#0f172a;">📄 ${f.fileName} <span style="font-size:0.75rem; color:#d97706;">${downloadStatus}</span></div>
-            <div style="font-size:0.8rem; color:#64748b; margin-top:3px;">
-              👤 <strong>Yükleyen:</strong> ${f.userName} (${f.userEmail}) | <strong>Üyelik:</strong> ${f.userTier} | 📅 <strong>Tarih:</strong> ${dateStr}
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px;">
-            <button class="btn-action btn-toggle-on" style="font-size:0.8rem; padding:6px 14px; background:#10b981 !important; border-color:#059669 !important;" onclick="downloadUploadedQuestionFile('${f.id}', '${f.fileName}')">
-              📥 Tek Tıkla İndir
-            </button>
-            <button class="btn-action btn-finish-test" style="font-size:0.8rem; padding:6px 12px;" onclick="deleteUploadedQuestionFile('${f.id}')">
-              🗑️ Sil
-            </button>
-          </div>
-        </div>
-      `;
-    });
-
-    box.innerHTML = html;
-  } catch(err) {
-    box.innerHTML = `<span style="color:red;">Hata: ${err.message}</span>`;
-  }
-}
-
-window.downloadUploadedQuestionFile = async function(docId, fileName) {
-  try {
-    const docRef = doc(db, "kullanici_yuklenen_sorular", docId);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) { showToast("Dosya bulunamadı.", "error"); return; }
-    
-    const fileData = docSnap.data().fileData;
-    if (!fileData) { showToast("Dosya verisi eksik.", "error"); return; }
-
-    // Yönetici indirdiğinde 7 günlük silme sayacı başlatılır
-    await updateDoc(docRef, { downloadedAt: serverTimestamp() });
-
-    const link = document.createElement('a');
-    link.href = fileData;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast("Dosya indiriliyor. Dosya yaşam döngüsü sunucu tarafından otomatik yönetilir.", "success");
-  } catch(err) {
-    showToast("İndirme hatası: " + err.message, "error");
-  }
-};
-
-  window.deleteUploadedQuestionFile = async function(docId) {
-    if (!confirm("Bu yüklenen soru dosyasını silmek istediğinize emin misiniz?")) return;
-    try {
-      await deleteDoc(doc(db, "kullanici_yuklenen_sorular", docId));
-      showToast("Soru dosyası kaydı silindi.", "success");
-      loadAdminUploadedQuestions();
-    } catch(err) {
-      showToast("Silme hatası: " + err.message, "error");
-    }
-  };
-
-  window.toggleSelectAllReports = function(masterCb) {
-    document.querySelectorAll('.report-row-checkbox').forEach(cb => cb.checked = masterCb.checked);
-  };
-
-  window.openAdminBulkReplyModal = function() {
-    const selected = Array.from(document.querySelectorAll('.report-row-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) { showToast("Lütfen en az bir bildirim seçiniz.", "warning"); return; }
-    
-    document.getElementById('bulkReplyCountText').innerText = `${selected.length} adet seçili bildirim için toplu yanıt oluşturuluyor:`;
-    document.getElementById('adminBulkReplyText').value = '';
-    document.getElementById('adminBulkReplyModal').style.display = 'flex';
-  };
-
-  window.closeAdminBulkReplyModal = function() {
-    document.getElementById('adminBulkReplyModal').style.display = 'none';
-  };
-
-  window.executeAdminBulkReply = async function() {
-    const selected = Array.from(document.querySelectorAll('.report-row-checkbox:checked')).map(cb => cb.value);
-    const bulkText = document.getElementById('adminBulkReplyText').value.trim();
-    if (!bulkText) { showToast("Lütfen yanıt mesajını yazınız.", "warning"); return; }
-
-    for (let id of selected) {
-      const newMsg = {
-        id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
-        senderRole: "admin",
-        senderUid: "admin",
-        text: bulkText,
-        timestamp: new Date().toISOString(),
-        deletedByUser: false,
-        deletedByAdmin: false
-      };
-      await updateDoc(doc(db, "hatali_sorular", id), {
-        mesajlar: arrayUnion(newMsg),
-        status: "yanitlandi"
-      });
-    }
-    showToast(`${selected.length} bildirime toplu yanıt gönderildi.`, "success");
-    window.closeAdminBulkReplyModal();
-  };
-
-  window.promptDeleteSingleAdminReport = function(docId) {
-    reportsToDeleteTarget = [docId];
-    document.getElementById('deleteReportsWarningText').innerHTML = `Seçilen <strong>1 adet hatalı soru bildirimi</strong> sistemden kalıcı olarak silinecektir.`;
-    document.getElementById('adminConfirmDeleteReportsModal').style.display = 'flex';
-  };
-
-  window.promptDeleteSelectedAdminReports = function() {
-    const selected = Array.from(document.querySelectorAll('.report-row-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) { showToast("Lütfen silmek istediğiniz bildirimleri seçiniz.", "warning"); return; }
-    
-    reportsToDeleteTarget = selected;
-    document.getElementById('deleteReportsWarningText').innerHTML = `Seçtiğiniz <strong>${selected.length} adet hatalı soru bildirimi</strong> veritabanından kalıcı olarak silinecektir. Devam etmek istiyor musunuz?`;
-    document.getElementById('adminConfirmDeleteReportsModal').style.display = 'flex';
-  };
-
-  window.closeAdminConfirmDeleteReportsModal = function() {
-    document.getElementById('adminConfirmDeleteReportsModal').style.display = 'none';
-  };
-
-  window.executeDeleteAdminReports = async function() {
-    if (reportsToDeleteTarget.length === 0) return;
-    for (let id of reportsToDeleteTarget) {
-      await deleteDoc(doc(db, "hatali_sorular", id));
-    }
-    showToast(`${reportsToDeleteTarget.length} bildirim kalıcı olarak silindi.`, "success");
-    window.closeAdminConfirmDeleteReportsModal();
-  };
-
-  window.openUserChatModal = function() {
-    if (!auth.currentUser) { showToast("Lütfen önce giriş yapınız.", "warning"); return; }
-    document.getElementById('userChatModal').style.display = 'flex';
-    listenUserChatMessages(auth.currentUser.uid);
-  };
-
-  window.closeUserChatModal = function() {
-    document.getElementById('userChatModal').style.display = 'none';
-    chatUnsubscribe = disposeSubscription(chatUnsubscribe);
-  };
-
-  function listenUserChatMessages(userUid) {
-    const chatBox = document.getElementById('whatsappUserMessages');
-    chatBox.innerHTML = 'Mesajlar yükleniyor...';
-
-    const q = query(collection(db, "sohbetler", userUid, "mesajlar"));
-    
-    chatUnsubscribe = disposeSubscription(chatUnsubscribe);
-
-    chatUnsubscribe = onSnapshot(q, (snapshot) => {
-      chatBox.innerHTML = '';
-      
-      let messages = [];
-      const sevenDaysAgoMs = Date.now() - (7 * 24 * 60 * 60 * 1000);
-
-      snapshot.forEach(docSnap => {
-        const m = docSnap.data();
-        if (m.deletedByUser) return;
-
-        const msgTime = m.zaman?.toDate ? m.zaman.toDate().getTime() : Date.now();
-        if (msgTime < sevenDaysAgoMs) return;
-
-        messages.push({ id: docSnap.id, ...m });
-      });
-
-      messages.sort((a, b) => {
-        const tA = a.zaman?.toDate ? a.zaman.toDate().getTime() : 0;
-        const tB = b.zaman?.toDate ? b.zaman.toDate().getTime() : 0;
-        return tA - tB;
-      });
-
-      if (messages.length === 0) {
-        chatBox.innerHTML = '<p style="text-align:center; color:#64748b; font-size:0.8rem; margin:auto;">Henüz mesaj yok veya mesajlarınızın süresi (7 gün) doldu.</p>';
-        return;
-      }
-
-      messages.forEach(m => {
-        const isUserMsg = m.senderUid === userUid;
-        const timeStr = m.zaman?.toDate ? m.zaman.toDate().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) : '';
-
-        const bubble = document.createElement('div');
-        bubble.className = `chat-bubble ${isUserMsg ? 'sent' : 'received'}`;
-        
-        let deleteBtnHTML = isUserMsg ? `<button class="msg-delete-btn" onclick="deleteUserMessage('${m.id}')" title="Mesajı Sil">🗑️</button>` : '';
-
-// Aratın: listenUserChatMessages fonksiyonu içindeki bubble.innerHTML kısmını bulun
-
-let fileHTML = '';
-if (m.fileData && m.fileData.fileUrl) {
-  const isImage = m.fileData.fileType.startsWith('image/');
-  if (isImage) {
-    fileHTML = `<div style="margin-top:5px;"><a href="${m.fileData.fileUrl}" target="_blank"><img src="${m.fileData.fileUrl}" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid #cbd5e1;"></a></div>`;
-  } else {
-    fileHTML = `<div style="margin-top:5px;"><a href="${m.fileData.fileUrl}" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">📥 ${m.fileData.fileName} (İndir / Görüntüle)</a></div>`;
-  }
-}
-
-bubble.innerHTML = `
-  <div>${m.text}</div>
-  ${fileHTML} <!-- BURAYI EKLEYİN -->
-  <div class="chat-meta">
-    <span>${timeStr}</span>
-    ${deleteBtnHTML}
-  </div>
-`;
-        chatBox.appendChild(bubble);
-      });
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-  }
-
-  window.sendUserChatMessage = async function() {
-    const input = document.getElementById('userChatMessageInput');
-    const text = input.value.trim();
-    if (!text || !auth.currentUser) return;
-
-    input.value = '';
-    const userUid = auth.currentUser.uid;
-
-    await addDoc(collection(db, "sohbetler", userUid, "mesajlar"), {
-      senderUid: userUid,
-      senderName: auth.currentUser.displayName || auth.currentUser.email,
-      senderEmail: auth.currentUser.email,
-      text: text,
-      zaman: serverTimestamp(),
-      readByAdmin: false,
-      deletedByUser: false
-    });
-
-    await setDoc(doc(db, "sohbetler", userUid), {
-      lastMessageTime: serverTimestamp(),
-      lastMessageText: text,
-      userEmail: auth.currentUser.email,
-      userName: auth.currentUser.displayName || auth.currentUser.email,
-      unreadByAdmin: true
-    }, { merge: true });
-  };
-
-  window.deleteUserMessage = async function(msgId) {
-    if (!auth.currentUser) return;
-    await updateDoc(doc(db, "sohbetler", auth.currentUser.uid, "mesajlar", msgId), {
-      deletedByUser: true
-    });
-    showToast("Mesajınız silindi.", "success");
-  };
-
-let allFetchedChats = [];
-
-async function loadAdminChatList() {
-  const userListBox = document.getElementById('adminChatUserList');
-  userListBox.innerHTML = '<p style="padding:15px; font-size:0.8rem; color:#64748b;">Sohbetler getiriliyor...</p>';
-
-  const snap = await getDocs(collection(db, "sohbetler"));
-
-  if (snap.empty) {
-    userListBox.innerHTML = '<p style="padding:15px; font-size:0.8rem; color:#64748b;">Aktif sohbet bulunmuyor.</p>';
-    return;
-  }
-
-  allFetchedChats = [];
-  snap.forEach(docSnap => allFetchedChats.push({ uid: docSnap.id, ...docSnap.data() }));
-
-  allFetchedChats.sort((a, b) => {
-    const tA = a.lastMessageTime?.toDate ? a.lastMessageTime.toDate().getTime() : 0;
-    const tB = b.lastMessageTime?.toDate ? b.lastMessageTime.toDate().getTime() : 0;
-    return tB - tA;
-  });
-
-  renderAdminChatList();
-}
-
-window.renderAdminChatList = function() {
-  const userListBox = document.getElementById('adminChatUserList');
-  if (!userListBox) return;
-
-  const queryStr = (document.getElementById('adminUserSearchInput')?.value || '').trim().toLocaleLowerCase('tr-TR');
-
-  let filtered = allFetchedChats.filter(chat => {
-    if (!queryStr) return true;
-    const name = (chat.userName || '').toLocaleLowerCase('tr-TR');
-    const email = (chat.userEmail || '').toLocaleLowerCase('tr-TR');
-    return name.includes(queryStr) || email.includes(queryStr);
-  });
-
-  if (filtered.length === 0) {
-    userListBox.innerHTML = '<p style="padding:15px; font-size:0.8rem; color:#64748b;">Aranan kullanıcı sohbetlerde bulunamadı.</p>';
-    return;
-  }
-
-  let hasGlobalUnread = false;
-  userListBox.innerHTML = '';
-
-  filtered.forEach(chat => {
-    const isUnread = chat.unreadByAdmin === true;
-    if (isUnread) hasGlobalUnread = true;
-
-    const item = document.createElement('div');
-    item.style.padding = '10px 12px';
-    item.style.borderBottom = '1px solid #e2e8f0';
-    item.style.cursor = 'pointer';
-    item.className = isUnread ? 'unread-row' : '';
-    
-    item.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" class="chat-row-checkbox" value="${chat.uid}" onclick="event.stopPropagation()">
-          <strong style="font-size:0.85rem; color:#0f172a;">${chat.userName || chat.userEmail}</strong>
-        </div>
-        <div style="display:flex; align-items:center; gap:4px;">
-          ${isUnread ? '<span class="unread-badge-dot"></span>' : ''}
-          <button class="msg-delete-btn" style="opacity:0.8;" onclick="event.stopPropagation(); deleteSingleAdminChat('${chat.uid}')" title="Sohbeti Sil">🗑️</button>
-        </div>
-      </div>
-      <div style="font-size:0.75rem; color:#64748b; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${chat.lastMessageText || ''}</div>
-    `;
-    item.onclick = () => window.openAdminChatWithUser(chat.uid, chat.userName || chat.userEmail);
-    userListBox.appendChild(item);
-  });
-
-  const badge = document.getElementById('adminChatUnreadBadge');
-  if (badge) badge.style.display = hasGlobalUnread ? 'inline-block' : 'none';
-};
-
-  window.toggleSelectAllChats = function(masterCb) {
-    document.querySelectorAll('.chat-row-checkbox').forEach(cb => cb.checked = masterCb.checked);
-  };
-
-  window.deleteSingleAdminChat = async function(userUid) {
-    if (!confirm("Bu sohbeti tamamen silmek istediğinize emin misiniz?")) return;
-    await deleteDoc(doc(db, "sohbetler", userUid));
-    showToast("Sohbet silindi.", "success");
-    loadAdminChatList();
-    document.getElementById('adminChatDetailBox').innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); margin: auto;">👈 Lütfen sol listeden mesajlaşmak istediğiniz kullanıcıyı seçiniz.</div>';
-  };
-
-  window.deleteSelectedAdminChats = async function() {
-    const selected = Array.from(document.querySelectorAll('.chat-row-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) { showToast("Lütfen silmek istediğiniz sohbetleri seçiniz.", "warning"); return; }
-    if (!confirm(`${selected.length} adet seçili sohbet tamamen silinecektir. Onaylıyor musunuz?`)) return;
-
-    for (let uid of selected) {
-      await deleteDoc(doc(db, "sohbetler", uid));
-    }
-    showToast(`${selected.length} sohbet silindi.`, "success");
-    loadAdminChatList();
-    document.getElementById('adminChatDetailBox').innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); margin: auto;">👈 Lütfen sol listeden mesajlaşmak istediğiniz kullanıcıyı seçiniz.</div>';
-  };
-
-  window.openAdminChatWithUser = function(userUid, userName) {
-    selectedAdminChatUserUid = userUid;
-    const detailBox = document.getElementById('adminChatDetailBox');
-
-    updateDoc(doc(db, "sohbetler", userUid), { unreadByAdmin: false });
-
-    detailBox.innerHTML = `
-      <div class="whatsapp-header" style="border-radius:8px 8px 0 0;">
-        <span>👤 ${userName} ile Sohbet</span>
-      </div>
-      <div id="whatsappAdminMessages" class="whatsapp-messages" style="flex:1;">
-        Mesajlar yükleniyor...
-      </div>
-
-<div class="whatsapp-footer" id="adminChatFooter">
-  <input type="file" id="adminChatFileInput" style="display: none;" onchange="handleChatFileSelect(this.files, 'admin')">
-  <button class="btn-action" style="padding: 6px 10px; font-size: 1.2rem; background: transparent; border: none; font-weight: bold; color: #075e54;" onclick="triggerChatFilePicker('admin')" title="Dosya Gönder">+</button>
-
-  <div id="adminEmojiPicker" class="emoji-picker-popup" style="display: none;">
-          <span onclick="insertEmoji('adminChatMessageInput', '😀', 'adminEmojiPicker')">😀</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '😂', 'adminEmojiPicker')">😂</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '😊', 'adminEmojiPicker')">😊</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '😍', 'adminEmojiPicker')">😍</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '🙏', 'adminEmojiPicker')">🙏</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '👍', 'adminEmojiPicker')">👍</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '👎', 'adminEmojiPicker')">👎</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '🧠', 'adminEmojiPicker')">🧠</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '👨‍⚕️', 'adminEmojiPicker')">👨‍⚕️</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '🩺', 'adminEmojiPicker')">🩺</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '💊', 'adminEmojiPicker')">💊</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '⚠️', 'adminEmojiPicker')">⚠️</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '✅', 'adminEmojiPicker')">✅</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '❌', 'adminEmojiPicker')">❌</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '❓', 'adminEmojiPicker')">❓</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '🎉', 'adminEmojiPicker')">🎉</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '🔥', 'adminEmojiPicker')">🔥</span>
-          <span onclick="insertEmoji('adminChatMessageInput', '👏', 'adminEmojiPicker')">👏</span>
-  </div>
-
-  <button class="btn-action" style="padding: 6px 10px; font-size: 1.1rem; background: transparent; border: none;" onclick="toggleEmojiPicker('adminEmojiPicker')">😊</button>
-  <input type="text" id="adminChatMessageInput" class="modern-input" style="flex:1;" placeholder="Yanıt yazın veya dosya yapıştırın...">
-  <button class="btn-action btn-toggle-on" onclick="sendAdminChatMessage()">Gönder ➔</button>
-</div>
-    `;
-
-    const q = query(collection(db, "sohbetler", userUid, "mesajlar"));
-    
-    chatUnsubscribe = disposeSubscription(chatUnsubscribe);
-
-    chatUnsubscribe = onSnapshot(q, (snapshot) => {
-      const msgContainer = document.getElementById('whatsappAdminMessages');
-      if (!msgContainer) return;
-      msgContainer.innerHTML = '';
-
-      let messages = [];
-      snapshot.forEach(docSnap => messages.push({ id: docSnap.id, ...docSnap.data() }));
-
-      messages.sort((a, b) => {
-        const tA = a.zaman?.toDate ? a.zaman.toDate().getTime() : 0;
-        const tB = b.zaman?.toDate ? b.zaman.toDate().getTime() : 0;
-        return tA - tB;
-      });
-
-      messages.forEach(m => {
-        const isAdminMsg = m.senderUid === "admin" || m.senderRole === "admin";
-        const timeStr = m.zaman?.toDate ? m.zaman.toDate().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) : '';
-
-        const bubble = document.createElement('div');
-        bubble.className = `chat-bubble ${isAdminMsg ? 'sent' : 'received'}`;
-        
-        let userDeletedBadge = m.deletedByUser ? `<div style="font-size:0.7rem; color:#dc2626; font-weight:bold;">⚠️ (Kullanıcı bu mesajı sildi)</div>` : '';
-
-        const safeText = (m.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const safeName = (userName || '').replace(/'/g, "\\'");
-
-        let warnBtnHTML = !isAdminMsg ? `
-          <button class="btn-action" style="font-size:0.65rem; padding:1px 5px; background:#fffbe6; color:#d97706; border-color:#fde68a; margin-left:6px;" onclick="openAdminWarnUserModal('${userUid}', '${safeName}', '${safeText}')" title="Bu mesaj için kullanıcıyı uyar">⚠️ Uyar</button>
-        ` : '';
-
-// Aratın: openAdminChatWithUser fonksiyonu içindeki bubble.innerHTML kısmını bulun
-
-let fileHTML = '';
-if (m.fileData && m.fileData.fileUrl) {
-  const isImage = m.fileData.fileType.startsWith('image/');
-  if (isImage) {
-    fileHTML = `<div style="margin-top:5px;"><a href="${m.fileData.fileUrl}" target="_blank"><img src="${m.fileData.fileUrl}" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid #cbd5e1;"></a></div>`;
-  } else {
-    fileHTML = `<div style="margin-top:5px;"><a href="${m.fileData.fileUrl}" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">📥 ${m.fileData.fileName} (İndir / Görüntüle)</a></div>`;
-  }
-}
-
-bubble.innerHTML = `
-  ${userDeletedBadge}
-  <div>${m.text}</div>
-  ${fileHTML} <!-- BURAYI EKLEYİN -->
-  <div class="chat-meta">
-    <span>${timeStr}</span>
-    ${warnBtnHTML}
-    <button class="msg-delete-btn" onclick="deleteMessageByAdmin('${userUid}', '${m.id}')" title="Yönetici Olarak Tamamen Sil">🗑️</button>
-  </div>
-`;
-        msgContainer.appendChild(bubble);
-      });
-      msgContainer.scrollTop = msgContainer.scrollHeight;
-    });
-  };
-
-  window.sendAdminChatMessage = async function() {
-    if (!selectedAdminChatUserUid) return;
-    const input = document.getElementById('adminChatMessageInput');
-    const text = input.value.trim();
-    if (!text) return;
-
-    input.value = '';
-
-    await addDoc(collection(db, "sohbetler", selectedAdminChatUserUid, "mesajlar"), {
-      senderUid: "admin",
-      senderRole: "admin",
-      senderName: "Yönetici",
-      text: text,
-      zaman: serverTimestamp(),
-      deletedByUser: false
-    });
-
-    await setDoc(doc(db, "sohbetler", selectedAdminChatUserUid), {
-      lastMessageTime: serverTimestamp(),
-      lastMessageText: `Yönetici: ${text}`
-    }, { merge: true });
-  };
-
-  window.deleteMessageByAdmin = async function(userUid, msgId) {
-    await deleteDoc(doc(db, "sohbetler", userUid, "mesajlar", msgId));
-    showToast("Mesaj yönetici tarafından silindi.", "success");
-  };
-
-window.openReportQuestionModal = function(index) {
-    currentReportingQuestionIndex = index;
-    const q = currentQuestionsList[index];
-    if (!q) return;
-
-    const modalContent = document.getElementById('reportModalQuestionSummary');
-    if (!modalContent) return;
-
-    const cleanOpts = extractAndCleanOptions(q);
-    const correctIndices = getCorrectIndices(q);
-
-    const optionsHTML = cleanOpts.map((opt, idx) => {
-      const harf = String.fromCharCode(65 + idx);
-      const isCorrect = correctIndices.includes(idx);
-      const style = isCorrect 
-        ? 'background: #dcfce7; border-color: #86efac; font-weight: bold; color: #166534;' 
-        : 'background: #ffffff; border-color: #e2e8f0; color: #334155;';
-      return `<div style="padding: 6px 10px; margin-bottom: 4px; border-radius: 6px; border: 1px solid; font-size: 0.83rem; ${style}">${harf}) ${opt} ${isCorrect ? ' ✓ (Doğru Cevap)' : ''}</div>`;
-    }).join('');
-
-    modalContent.innerHTML = `
-      <div style="margin-bottom: 10px;">
-        <label style="font-weight: 600; font-size: 0.82rem; color: #475569;">Soru Kökü:</label>
-        <div style="padding: 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 4px; font-size: 0.88rem; font-weight: bold; color: #0f172a;">
-          ${cleanMultiParagraphs(q.soruMetni)}
-        </div>
-      </div>
-      <div style="margin-bottom: 10px;">
-        <label style="font-weight: 600; font-size: 0.82rem; color: #475569; display:block; margin-bottom:4px;">Şıklar ve Doğru Cevap:</label>
-        <div>${optionsHTML}</div>
-      </div>
-      <div style="margin-bottom: 10px;">
-        <label style="font-weight: 600; font-size: 0.82rem; color: #475569;">Açıklama / Çözüm:</label>
-        <div style="padding: 8px; background: #eff6ff; border-radius: 6px; margin-top: 4px; font-size: 0.83rem; color: #1e40af; border: 1px solid #bfdbfe; white-space: pre-line;">
-          ${getExplanation(q)}
-        </div>
-      </div>
-    `;
-
-    document.getElementById('reportUserSuggestedOption').value = "";
-    document.getElementById('reportUserComment').value = "";
-    document.getElementById('reportQuestionModal').style.display = 'flex';
-  };
-
-  window.closeReportQuestionModal = function() {
-    document.getElementById('reportQuestionModal').style.display = 'none';
-  };
-
-  window.submitQuestionReport = async function() {
-    if (currentReportingQuestionIndex === null) return;
-    const q = currentQuestionsList[currentReportingQuestionIndex];
-    const suggestedOpt = document.getElementById('reportUserSuggestedOption').value;
-    const comment = document.getElementById('reportUserComment').value.trim();
-    const meta = parseQuestionMeta(q);
-    const cleanOptions = extractAndCleanOptions(q);
-
-    const initialMsg = {
-      id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
-      senderRole: "user",
-      senderUid: auth.currentUser ? auth.currentUser.uid : "anonim",
-      text: `👉 Önerilen Şık: ${suggestedOpt || 'Belirtilmedi'}\n📝 İtiraz Açıklaması: ${comment || 'Açıklama belirtilmedi.'}`,
-      timestamp: new Date().toISOString(),
-      deletedByUser: false,
-      deletedByAdmin: false
-    };
-
-    try {
-      await addDoc(collection(db, "hatali_sorular"), {
-        userId: auth.currentUser ? auth.currentUser.uid : "anonim",
-        userEmail: auth.currentUser ? auth.currentUser.email : "Anonim",
-        userName: auth.currentUser ? (auth.currentUser.displayName || auth.currentUser.email) : "Anonim",
-        questionText: q.soruMetni,
-        questionOptions: cleanOptions,
-        questionTopic: meta.displayName,
-        correctLetter: getCorrectLetter(q),
-        userSuggestedOption: suggestedOpt,
-        userComment: comment,
-        status: "bekliyor",
-        mesajlar: [initialMsg],
-        createdAt: serverTimestamp()
-      });
-
-      window.closeReportQuestionModal();
-      showToast("Geri bildiriminiz yöneticiye ulaştı, değerlendirme başlatıldı.", "success");
-    } catch(err) {
-      showToast("Bildirim gönderilirken hata oluştu: " + err.message, "error");
-    }
-  };
-
-  window.generateNewLicense = async function() {
-    const days = parseInt(document.getElementById('licenseDaysInput').value) || 30;
-    const tier = document.getElementById('licenseTierSelect').value;
-    const serial = "NR-2026-" + Math.floor(100 + Math.random() * 900);
-    const key = Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
-    const pin = Math.floor(1000 + Math.random() * 9000).toString();
-
-    await addDoc(collection(db, "promosyon_kodlari"), {
-      seriNo: serial, anahtar: key, pin: pin, tur: tier, gun: days, isUsed: false, createdTime: serverTimestamp()
-    });
-
-    document.getElementById('resCodeMeta').innerText = `${days} Günlük ${tier}`;
-    document.getElementById('resCodeSerial').innerText = serial;
-    document.getElementById('resCodeKey').innerText = key;
-    document.getElementById('resCodePin').innerText = pin;
-    document.getElementById('generatedCodeBox').style.display = 'block';
-    showToast(`${days} Günlük ${tier} kodu üretildi.`, "success");
-  };
-
-window.changeAdminPassword = async function() {
-  if (window.currentUserIsAdmin !== true || !auth.currentUser) {
-    showToast("Bu işlem için yönetici yetkisi gereklidir.", "error");
-    return;
-  }
-
-  const newEmail = document.getElementById('adminNewUsernameInput').value.trim();
-  const oldP = document.getElementById('adminOldPassInput').value;
-  const newP = document.getElementById('adminNewPassInput').value;
-  const confirmP = document.getElementById('adminNewPassConfirmInput').value;
-
-  if (!oldP) {
-    showToast("İşlem yapabilmek için mevcut şifrenizi girmeniz gerekmektedir!", "warning");
-    return;
-  }
-
-  const changes = [];
-  try {
-    // Hassas işlemler için yakın zamanda kimlik doğrulaması gerekir.
-    const credential = EmailAuthProvider.credential(auth.currentUser.email, oldP);
-    await reauthenticateWithCredential(auth.currentUser, credential);
-
-    if (newP) {
-      if (newP === oldP) {
-        showToast("Yeni şifre mevcut şifre ile aynı olamaz!", "error");
-        return;
-      }
-      if (newP.length < 6) {
-        showToast("Yeni şifre en az 6 karakter olmalıdır.", "warning");
-        return;
-      }
-      if (newP !== confirmP) {
-        showToast("Yeni şifreler uyuşmuyor!", "warning");
-        return;
-      }
-      await updatePassword(auth.currentUser, newP);
-      changes.push("şifre");
-    }
-
-    if (newEmail) {
-      if (newEmail.toLowerCase() === (auth.currentUser.email || '').toLowerCase()) {
-        showToast("Yeni e-posta adresi mevcut adresle aynı.", "warning");
-        return;
-      }
-      await updateEmail(auth.currentUser, newEmail);
-      changes.push("e-posta adresi");
-    }
-
-    if (changes.length === 0) {
-      showToast("Lütfen güncellemek istediğiniz e-posta veya yeni şifreyi giriniz.", "warning");
-      return;
-    }
-
-    showToast(`Yönetici ${changes.join(' ve ')} başarıyla güncellendi.`, "success");
-    document.getElementById('adminNewUsernameInput').value = '';
-    document.getElementById('adminOldPassInput').value = '';
-    document.getElementById('adminNewPassInput').value = '';
-    document.getElementById('adminNewPassConfirmInput').value = '';
-  } catch(err) {
-    console.error("Yönetici bilgisi güncelleme hatası:", err);
-    const message = err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
-      ? 'Mevcut şifreniz hatalı.'
-      : err.code === 'auth/email-already-in-use'
-        ? 'Bu e-posta adresi başka bir Firebase hesabında kullanılıyor.'
-        : 'Güncelleme başarısız: ' + err.message;
-    showToast(message, "error");
-  }
-};
-
-window.changeUserStatus = async function(uid, newStatus) {
-    if (!newStatus) return;
-    if (newStatus === 'Engellendi') {
-      await updateDoc(doc(db, "kullanicilar", uid), {
-        durum: "Engellendi",
-        engellenmeSuresiText: "Süresiz / Kalıcı (Yönetici Tarafından)"
-      });
-    } else {
-      // Engeli kaldır veya başka bir role geçir (Yıldızları ve engel nedenlerini de sıfırlar)
-      await updateDoc(doc(db, "kullanicilar", uid), { 
-        durum: newStatus,
-        uyariSayisi: 0,
-        engellenmeNedenleri: [],
-        activeWarning: null
-      });
-    }
-    showToast(`Kullanıcı durumu "${newStatus}" olarak güncellendi ve kısıtlamaları kaldırıldı.`, 'success');
-    await fetchAndRenderUsers(currentCategoryFilter);
-  };
-  // --- MODERN ÖZEL UYARI / ONAY PENCERESİ FONKSİYONLARI ---
-  window.showCustomAlert = function(title, message, icon = '🚨') {
-    const iconEl = document.getElementById('customAlertIcon');
-    const titleEl = document.getElementById('customAlertTitle');
-    const msgEl = document.getElementById('customAlertMessage');
-    if (iconEl) iconEl.innerText = icon;
-    if (titleEl) titleEl.innerText = title;
-    if (msgEl) msgEl.innerHTML = message;
-    document.getElementById('customAlertModal').style.display = 'flex';
-  };
-
-  window.closeCustomAlert = function() {
-    document.getElementById('customAlertModal').style.display = 'none';
-  };
-
-  let customConfirmCallback = null;
-  window.showCustomConfirm = function(title, message, onConfirm, icon = '❓') {
-    const iconEl = document.getElementById('customConfirmIcon');
-    const titleEl = document.getElementById('customConfirmTitle');
-    const msgEl = document.getElementById('customConfirmMessage');
-    if (iconEl) iconEl.innerText = icon;
-    if (titleEl) titleEl.innerText = title;
-    if (msgEl) msgEl.innerHTML = message;
-    customConfirmCallback = onConfirm;
-    document.getElementById('customConfirmModal').style.display = 'flex';
-  };
-
-  window.closeCustomConfirm = function() {
-    document.getElementById('customConfirmModal').style.display = 'none';
-    customConfirmCallback = null;
-  };
-
-  const confirmYesBtn = document.getElementById('customConfirmYesBtn');
-  if (confirmYesBtn) {
-    confirmYesBtn.addEventListener('click', () => {
-      if (typeof customConfirmCallback === 'function') {
-        customConfirmCallback();
-      }
-      closeCustomConfirm();
-    });
-  }
-
-  // --- SEKMELER ARASI GEÇİŞ VE YETKİ/ROL SIRALAMASINI OTOMATİK SIFIRLAMA ---
-  const originalSwitchAdminTab = window.switchAdminTab;
-  window.switchAdminTab = function(tabName) {
-    // Sekme değiştiğinde Sıralama kutusunu varsayılan olan 'role_desc' (👑 Yetki / Rol Sırası) yap
-    const sortSelect = document.getElementById('adminUserSortSelect');
-    if (sortSelect) sortSelect.value = 'role_desc';
-
-    document.getElementById('adminTabUsers').style.display = tabName === 'users' ? 'flex' : 'none';
-    document.getElementById('adminTabWarned').style.display = tabName === 'warned' ? 'flex' : 'none';
-    document.getElementById('adminTabReports').style.display = tabName === 'reports' ? 'flex' : 'none';
-    document.getElementById('adminTabUploadedQuestions').style.display = tabName === 'uploadedQuestions' ? 'flex' : 'none';
-    document.getElementById('adminTabChat').style.display = tabName === 'chat' ? 'flex' : 'none';
-    document.getElementById('adminTabLicenses').style.display = tabName === 'licenses' ? 'block' : 'none';
-    document.getElementById('adminTabAnnouncements').style.display = tabName === 'announcements' ? 'flex' : 'none';
-    document.getElementById('adminTabSettings').style.display = tabName === 'settings' ? 'block' : 'none';
-
-    document.getElementById('tabUsersBtn').className = tabName === 'users' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabWarnedBtn').className = tabName === 'warned' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabReportsBtn').className = tabName === 'reports' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabUploadedQuestionsBtn').className = tabName === 'uploadedQuestions' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabChatBtn').className = tabName === 'chat' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabLicensesBtn').className = tabName === 'licenses' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabAnnounceBtn').className = tabName === 'announcements' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-    document.getElementById('tabSettingsBtn').className = tabName === 'settings' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
-
-    window.currentAdminTab = tabName;
-    const searchWrapper = document.getElementById('adminSearchBoxWrapper');
-    if (searchWrapper) {
-      searchWrapper.style.display = (tabName === 'users' || tabName === 'warned' || tabName === 'reports' || tabName === 'chat') ? 'block' : 'none';
-    }
-
-    if (tabName === 'warned') renderWarnedUserRows();
-    if (tabName === 'users') renderUserRows();
-    if (tabName === 'reports') loadAdminQuestionReports();
-    if (tabName === 'uploadedQuestions') loadAdminUploadedQuestions();
-    if (tabName === 'chat') loadAdminChatList();
-    if (tabName === 'announcements') loadAnnouncementUsersList();
-  };
-
-  const originalFilterAdminUsers = window.filterAdminUsers;
-  window.filterAdminUsers = function(cat, btnElem) {
-    // Sekmeler/Roller arasında gezerken sıralamayı yetki/rol sırasına sıfırla
-    const sortSelect = document.getElementById('adminUserSortSelect');
-    if (sortSelect) sortSelect.value = 'role_desc';
-
     document.querySelectorAll('.filter-btn').forEach(b => b.className = 'btn-action filter-btn btn-toggle-off');
     if (btnElem) btnElem.className = 'btn-action filter-btn btn-toggle-on';
     currentCategoryFilter = cat;
     renderUserRows();
   };
 
-  // --- KULLANICILAR TABLOSU (YILDIZ SÜTUNU ÇIKARILMIŞ HALİ) ---
-  window.renderUserRows = function() {
+  window.filterAdminUsersSearch = () => {
+    if (window.currentAdminTab === 'warned') renderWarnedUserRows();
+    else renderUserRows();
+  };
+
+  function renderUserRows() {
     const tbody = document.getElementById('adminUserTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -5548,7 +3756,9 @@ window.changeUserStatus = async function(uid, newStatus) {
 
     list.sort((a, b) => {
       if (sortVal === 'name_asc') {
-        return (a.adSoyad || a.email || '').localeCompare((b.adSoyad || b.email || ''), 'tr-TR');
+        const nameA = (a.adSoyad || a.email || '');
+        const nameB = (b.adSoyad || b.email || '');
+        return nameA.localeCompare(nameB, 'tr-TR');
       } else {
         const roleOrder = { 'admin': 1, 'VIP': 2, 'Premium': 3, 'Deneme': 4, 'Ücretsiz': 5, 'Engellendi': 6 };
         const getOrder = (u) => (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com') ? 1 : (roleOrder[u.durum] || 99);
@@ -5564,18 +3774,25 @@ window.changeUserStatus = async function(uid, newStatus) {
     list.forEach(u => {
       const isRoleAdmin = (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
       const statusText = isRoleAdmin ? '👑 Yönetici' : (u.durum || 'Ücretsiz');
-      const formattedName = formatNameSurname(u.adSoyad || u.email);
+      
+      let rawName = u.adSoyad;
+      if (isRoleAdmin && (!rawName || rawName === "Belirtilmedi" || rawName === "...")) {
+        if (u.email === 'kgulsen1994@gmail.com') rawName = "Dr. Kadir GÜLŞEN";
+        else if (u.email === 'yonetici@noroloji.com') rawName = "Yönetici";
+        else rawName = "Sistem Yöneticisi";
+      }
+      const formattedName = formatNameSurname(rawName || u.email);
 
       let actionTdHTML = `<button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px;" onclick="viewUserActivities('${u.id}', '${u.email}')">👁️ Aktivite</button>`;
 
       if (!isRoleAdmin) {
         actionTdHTML += `
           <select class="modern-input" style="padding: 2px 6px; font-size: 0.75rem; width: auto;" onchange="changeUserStatus('${u.id}', this.value)">
-            <option value="" disabled selected>Aksiyon / Yetki</option>
-            <option value="VIP">👑 VIP Yap</option>
-            <option value="Premium">⭐ Premium Yap</option>
-            <option value="Deneme">⏳ Deneme Yap</option>
-            <option value="Ücretsiz">🔄 Ücretsiz Yap</option>
+            <option value="" disabled selected>Aksiyon</option>
+            <option value="VIP">👑 VIP</option>
+            <option value="Premium">⭐ Premium</option>
+            <option value="Deneme">⏳ Deneme</option>
+            <option value="Ücretsiz">🔄 Ücretsiz</option>
             <option value="Engellendi">🚫 Engelle</option>
           </select>
           <button class="btn-action btn-finish-test" style="font-size: 0.75rem; padding: 4px 8px;" onclick="promptDeleteUser('${u.id}')">🗑️ Sil</button>
@@ -5585,36 +3802,31 @@ window.changeUserStatus = async function(uid, newStatus) {
       }
 
       const row = document.createElement('tr');
-      row.style.borderBottom = '1px solid #e2e8f0';
       if (isRoleAdmin) row.style.background = '#fcf5ff';
 
       row.innerHTML = `
-        <td style="padding: 10px; text-align: center;">${!isRoleAdmin ? `<input type="checkbox" class="user-row-checkbox" value="${u.id}">` : ''}</td>
-        <td style="padding: 10px; font-weight: 600;">${formattedName}</td>
-        <td style="padding: 10px; color: #64748b;">${u.email}</td>
-        <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #e2e8f0;">${statusText}</span></td>
-        <td style="padding: 10px; text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;">${actionTdHTML}</td>
+        <td style="text-align: center;">${!isRoleAdmin ? `<input type="checkbox" class="user-row-checkbox" value="${u.id}">` : ''}</td>
+        <td style="font-weight: 600;">${formattedName}</td>
+        <td style="color: #64748b;">${u.email}</td>
+        <td><span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #e2e8f0;">${statusText}</span></td>
+        <td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;">${actionTdHTML}</td>
       `;
       tbody.appendChild(row);
     });
-  };
+  }
 
-  // --- YENİ "UYARI ALANLAR" SEKME TABLOSU (ÇOKTAN AZA SIRALAMA & YILDIZ YÖNETİMİ) ---
-  window.renderWarnedUserRows = function() {
+  function renderWarnedUserRows() {
     const tbody = document.getElementById('adminWarnedUserTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
     const queryStr = document.getElementById('adminUserSearchInput')?.value.trim().toLocaleLowerCase('tr-TR') || '';
-    
-    // Sadece uyarı sayısı > 0 olan kullanıcıları filtrele
     let list = allFetchedUsers.filter(u => (u.uyariSayisi || 0) > 0);
 
     if (queryStr !== '') {
       list = list.filter(u => (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(queryStr) || (u.email || '').toLocaleLowerCase('tr-TR').includes(queryStr));
     }
 
-    // UYARI SAYISINA GÖRE ÇOKTAN AZA SIRALA (Z -> A)
     list.sort((a, b) => (b.uyariSayisi || 0) - (a.uyariSayisi || 0));
 
     const badge = document.getElementById('warnedUserCountBadge');
@@ -5633,32 +3845,31 @@ window.changeUserStatus = async function(uid, newStatus) {
       const statusText = u.durum || 'Ücretsiz';
 
       const row = document.createElement('tr');
-      row.style.borderBottom = '1px solid #e2e8f0';
-      row.style.background = warnCount >= 3 ? '#fef2f2' : '#ffffff';
+      if (warnCount >= 3) row.style.background = '#fef2f2';
 
       row.innerHTML = `
-        <td style="padding: 10px; font-weight: 600;">${formattedName}</td>
-        <td style="padding: 10px; color: #64748b;">${u.email}</td>
-        <td style="padding: 10px; text-align: center;">
+        <td style="font-weight: 600;">${formattedName}</td>
+        <td style="color: #64748b;">${u.email}</td>
+        <td style="text-align: center;">
           <div style="font-size: 1rem; margin-bottom: 4px;">${starsHTML} <span style="font-size: 0.8rem; font-weight: bold; color: #b45309;">(${warnCount})</span></div>
           <div style="display: flex; gap: 4px; justify-content: center;">
-            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#dcfce7; color:#15803d; border-color:#86efac;" onclick="increaseUserWarning('${u.id}')" title="Uyarı/Yıldız Artır">➕ Artır</button>
-            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fef3c7; color:#b45309; border-color:#fde68a;" onclick="reduceUserWarning('${u.id}')" title="Uyarı/Yıldız Eksilt">➖ Sil</button>
-            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="clearUserWarnings('${u.id}')" title="Tüm Uyarıları Temizle">🧹 Sıfırla</button>
+            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#dcfce7; color:#15803d; border-color:#86efac;" onclick="increaseUserWarning('${u.id}')">➕ Artır</button>
+            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fef3c7; color:#b45309; border-color:#fde68a;" onclick="reduceUserWarning('${u.id}')">➖ Sil</button>
+            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="clearUserWarnings('${u.id}')">🧹 Sıfırla</button>
           </div>
         </td>
-        <td style="padding: 10px;">
+        <td>
           <span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: ${u.durum === 'Engellendi' ? '#fee2e2' : '#e2e8f0'}; color: ${u.durum === 'Engellendi' ? '#dc2626' : '#475569'};">
             ${statusText}
           </span>
         </td>
-        <td style="padding: 10px; text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+        <td style="text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
           <select class="modern-input" style="padding: 2px 6px; font-size: 0.75rem; width: auto;" onchange="changeUserStatus('${u.id}', this.value)">
-            <option value="" disabled selected>Yetki / Rol Ver...</option>
-            <option value="VIP">👑 VIP Yap</option>
-            <option value="Premium">⭐ Premium Yap</option>
-            <option value="Deneme">⏳ Deneme Yap</option>
-            <option value="Ücretsiz">🔄 Ücretsiz Yap</option>
+            <option value="" disabled selected>Aksiyon</option>
+            <option value="VIP">👑 VIP</option>
+            <option value="Premium">⭐ Premium</option>
+            <option value="Deneme">⏳ Deneme</option>
+            <option value="Ücretsiz">🔄 Ücretsiz</option>
             <option value="Engellendi">🚫 Engelle</option>
           </select>
           <button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px;" onclick="viewUserActivities('${u.id}', '${u.email}')">👁️ Aktivite</button>
@@ -5666,9 +3877,8 @@ window.changeUserStatus = async function(uid, newStatus) {
       `;
       tbody.appendChild(row);
     });
-  };
+  }
 
-  // --- UYARI ARTIRMA FONKSİYONU VE MODERN UYARI PENCERESİ BAĞLANTISI ---
   window.increaseUserWarning = async function(uid) {
     try {
       const uRef = doc(db, "kullanicilar", uid);
@@ -5695,55 +3905,100 @@ window.changeUserStatus = async function(uid, newStatus) {
     }
   };
 
-  // --- NATIVE CONFIRM / ALERT ÇAĞRILARININ MODERN HALE GETİRİLMESİ ---
-  window.deleteUserReport = function(docId) {
-    showCustomConfirm("Bildirim Silme Onayı", "Bu bildirim kaydını tamamen silmek istediğinize emin misiniz?", async () => {
-      try {
-        await deleteDoc(doc(db, "hatali_sorular", docId));
-        showToast("Bildiriminiz silindi.", "success");
-      } catch(err) {
-        showToast("Silme hatası: " + err.message, "error");
+  window.reduceUserWarning = async function(uid) {
+    try {
+      const uRef = doc(db, "kullanicilar", uid);
+      const uSnap = await getDoc(uRef);
+      if (uSnap.exists()) {
+        const currentWarns = uSnap.data().uyariSayisi || 0;
+        const newWarns = Math.max(0, currentWarns - 1);
+        await updateDoc(uRef, { uyariSayisi: newWarns });
+        showToast("Kullanıcının 1 uyarısı silindi.", "success");
+        await fetchAndRenderUsers(currentCategoryFilter);
+        if (window.currentAdminTab === 'warned') renderWarnedUserRows();
       }
-    });
+    } catch(err) {
+      showToast("İşlem sırasında hata oluştu: " + err.message, "error");
+    }
   };
 
-  window.deleteUploadedQuestionFile = function(docId) {
-    showCustomConfirm("Dosya Silme Onayı", "Bu yüklenen soru dosyasını silmek istediğinize emin misiniz?", async () => {
-      try {
-        await deleteDoc(doc(db, "kullanici_yuklenen_sorular", docId));
-        showToast("Soru dosyası kaydı silindi.", "success");
-        loadAdminUploadedQuestions();
-      } catch(err) {
-        showToast("Silme hatası: " + err.message, "error");
+  window.clearUserWarnings = async function(uid) {
+    try {
+      await updateDoc(doc(db, "kullanicilar", uid), { uyariSayisi: 0 });
+      showToast("Kullanıcının tüm uyarı alarmları temizlendi.", "success");
+      await fetchAndRenderUsers(currentCategoryFilter);
+      if (window.currentAdminTab === 'warned') renderWarnedUserRows();
+    } catch(err) {
+      showToast("İşlem sırasında hata oluştu: " + err.message, "error");
+    }
+  };
+
+  window.toggleSelectAllUsers = function(masterCb) {
+    document.querySelectorAll('.user-row-checkbox').forEach(cb => cb.checked = masterCb.checked);
+  };
+
+  window.applyBulkAction = async function() {
+    if (window.currentUserIsAdmin !== true) {
+      showToast("Bu işlemi yapmaya yetkiniz bulunmamaktadır!", "error");
+      return;
+    }
+
+    const action = document.getElementById('bulkActionSelect').value;
+    const selectedCbs = Array.from(document.querySelectorAll('.user-row-checkbox:checked')).map(cb => cb.value);
+    if (!action || selectedCbs.length === 0) { showToast("Lütfen yetki ve en az bir kullanıcı seçiniz.", "warning"); return; }
+
+    if (action === 'DELETE') {
+      userToDeleteTarget = selectedCbs;
+      document.getElementById('adminConfirmDeleteModal').style.display = 'flex';
+    } else {
+      for (let uid of selectedCbs) {
+        if (action === 'Engellendi') {
+          await updateDoc(doc(db, "kullanicilar", uid), {
+            durum: "Engellendi",
+            engellenmeSuresiText: "Süresiz / Kalıcı (Toplu İşlem)"
+          });
+        } else {
+          await updateDoc(doc(db, "kullanicilar", uid), { durum: action });
+        }
       }
-    });
+      showToast(`${selectedCbs.length} kullanıcının durumu ${action} olarak güncellendi.`, "success");
+      await fetchAndRenderUsers(currentCategoryFilter);
+    }
   };
 
-  window.deleteSingleAdminChat = function(userUid) {
-    showCustomConfirm("Sohbet Silme Onayı", "Bu sohbeti tamamen silmek istediğinize emin misiniz?", async () => {
-      await deleteDoc(doc(db, "sohbetler", userUid));
-      showToast("Sohbet silindi.", "success");
-      loadAdminChatList();
-      document.getElementById('adminChatDetailBox').innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); margin: auto;">👈 Lütfen sol listeden mesajlaşmak istediğiniz kullanıcıyı seçiniz.</div>';
-    });
+  window.promptDeleteUser = function(uid) {
+    userToDeleteTarget = [uid];
+    document.getElementById('adminConfirmDeleteModal').style.display = 'flex';
   };
 
-  window.deleteSelectedAdminChats = function() {
-    const selected = Array.from(document.querySelectorAll('.chat-row-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) { showToast("Lütfen silmek istediğiniz sohbetleri seçiniz.", "warning"); return; }
-    
-    showCustomConfirm("Toplu Sohbet Silme Onayı", `${selected.length} adet seçili sohbet tamamen silinecektir. Onaylıyor musunuz?`, async () => {
-      for (let uid of selected) {
-        await deleteDoc(doc(db, "sohbetler", uid));
+  window.closeAdminConfirmDeleteModal = () => document.getElementById('adminConfirmDeleteModal').style.display = 'none';
+
+  window.executeUserDeletion = async function() {
+    if (window.currentUserIsAdmin !== true) {
+      showToast("Bu işlem için yönetici yetkisi gereklidir.", "error");
+      return;
+    }
+
+    if (Array.isArray(userToDeleteTarget)) {
+      for (let uid of userToDeleteTarget) {
+        await deleteDoc(doc(db, "kullanicilar", uid));
       }
-      showToast(`${selected.length} sohbet silindi.`, "success");
-      loadAdminChatList();
-      document.getElementById('adminChatDetailBox').innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); margin: auto;">👈 Lütfen sol listeden mesajlaşmak istediğiniz kullanıcıyı seçiniz.</div>';
-    });
+      showToast(`${userToDeleteTarget.length} kullanıcı veritabanından kalıcı olarak silindi.`, "success");
+    }
+    window.closeAdminConfirmDeleteModal();
+    await fetchAndRenderUsers(currentCategoryFilter);
   };
 
-  // Yönetici kullanıcıya uyarı verdiğinde çıkan eski alert uyarısını modern moda aktarma:
-  const originalExecuteSendUserWarning = window.executeSendUserWarning;
+  window.openAdminWarnUserModal = function(userUid, userName, messageText = "") {
+    currentWarnUserUid = userUid;
+    currentWarnUserName = userName;
+    document.getElementById('warnTargetUserText').innerText = `Hedef Kullanıcı: ${userName}`;
+    document.getElementById('adminWarnReasonInput').value = messageText;
+    document.getElementById('adminWarnUserModal').style.display = 'flex';
+  };
+
+  window.closeAdminWarnUserModal = () => document.getElementById('adminWarnUserModal').style.display = 'none';
+
   window.executeSendUserWarning = async function() {
     if (!currentWarnUserUid) return;
     const reasonText = document.getElementById('adminWarnReasonInput').value.trim();
@@ -5786,6 +4041,176 @@ window.changeUserStatus = async function(uid, newStatus) {
       showToast("Uyarı gönderilemedi: " + err.message, "error");
     }
   };
+
+  window.publishAnnouncement = async function() {
+    const title = document.getElementById('announceTitleInput')?.value.trim();
+    const text = document.getElementById('announceTextInput')?.value.trim();
+    const duration = document.getElementById('announceDurationSelect')?.value;
+
+    if (!title || !text) {
+      showToast("Lütfen duyuru başlığı ve metnini doldurunuz.", "warning");
+      return;
+    }
+
+    const targetTypeElem = document.getElementById('announcementTargetType');
+    const targetType = targetTypeElem ? targetTypeElem.value : 'all';
+
+    if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
+      showToast("Lütfen listeden arama yaparak bir kullanıcı seçiniz.", "warning");
+      return;
+    }
+
+    try {
+      const announcementData = {
+        title: title,
+        text: text,
+        targetType: targetType,
+        targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
+        durationDays: parseInt(duration) || 0,
+        createdAt: serverTimestamp(),
+        active: true
+      };
+
+      await addDoc(collection(db, "sistem_duyurulari"), announcementData);
+      showToast("Duyuru başarıyla yayınlandı!", "success");
+      
+      document.getElementById('announceTitleInput').value = '';
+      document.getElementById('announceTextInput').value = '';
+      if (targetTypeElem) targetTypeElem.value = 'all';
+      window.toggleAnnouncementTargetInput('all');
+    } catch (error) {
+      console.error("Duyuru yayınlama hatası:", error);
+      showToast("Duyuru yayınlanırken hata: " + error.message, "error");
+    }
+  };
+
+  window.changeAdminPassword = async function() {
+    if (window.currentUserIsAdmin !== true || !auth.currentUser) {
+      showToast("Bu işlem için yönetici yetkisi gereklidir.", "error");
+      return;
+    }
+
+    const newEmail = document.getElementById('adminNewUsernameInput').value.trim();
+    const oldP = document.getElementById('adminOldPassInput').value;
+    const newP = document.getElementById('adminNewPassInput').value;
+    const confirmP = document.getElementById('adminNewPassConfirmInput').value;
+
+    if (!oldP) {
+      showToast("İşlem yapabilmek için mevcut şifrenizi girmeniz gerekmektedir!", "warning");
+      return;
+    }
+
+    const changes = [];
+    try {
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, oldP);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+
+      if (newP) {
+        if (newP === oldP) {
+          showToast("Yeni şifre mevcut şifre ile aynı olamaz!", "error");
+          return;
+        }
+        if (newP.length < 6) {
+          showToast("Yeni şifre en az 6 karakter olmalıdır.", "warning");
+          return;
+        }
+        if (newP !== confirmP) {
+          showToast("Yeni şifreler uyuşmuyor!", "warning");
+          return;
+        }
+        await updatePassword(auth.currentUser, newP);
+        changes.push("şifre");
+      }
+
+      if (newEmail) {
+        if (newEmail.toLowerCase() === (auth.currentUser.email || '').toLowerCase()) {
+          showToast("Yeni e-posta adresi mevcut adresle aynı.", "warning");
+          return;
+        }
+        await updateEmail(auth.currentUser, newEmail);
+        changes.push("e-posta adresi");
+      }
+
+      if (changes.length === 0) {
+        showToast("Lütfen güncellemek istediğiniz e-posta veya yeni şifreyi giriniz.", "warning");
+        return;
+      }
+
+      showToast(`Yönetici ${changes.join(' ve ')} başarıyla güncellendi.`, "success");
+      document.getElementById('adminNewUsernameInput').value = '';
+      document.getElementById('adminOldPassInput').value = '';
+      document.getElementById('adminNewPassInput').value = '';
+      document.getElementById('adminNewPassConfirmInput').value = '';
+    } catch(err) {
+      console.error("Yönetici bilgisi güncelleme hatası:", err);
+      const message = err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
+        ? 'Mevcut şifreniz hatalı.'
+        : err.code === 'auth/email-already-in-use'
+          ? 'Bu e-posta adresi başka bir Firebase hesabında kullanılıyor.'
+          : 'Güncelleme başarısız: ' + err.message;
+      showToast(message, "error");
+    }
+  };
+
+  window.changeUserStatus = async function(uid, newStatus) {
+    if (!newStatus) return;
+    if (newStatus === 'Engellendi') {
+      await updateDoc(doc(db, "kullanicilar", uid), {
+        durum: "Engellendi",
+        engellenmeSuresiText: "Süresiz / Kalıcı (Yönetici Tarafından)"
+      });
+    } else {
+      await updateDoc(doc(db, "kullanicilar", uid), { 
+        durum: newStatus,
+        uyariSayisi: 0,
+        engellenmeNedenleri: [],
+        activeWarning: null
+      });
+    }
+    showToast(`Kullanıcı durumu "${newStatus}" olarak güncellendi.`, 'success');
+    await fetchAndRenderUsers(currentCategoryFilter);
+  };
+
+  window.showCustomAlert = function(title, message, icon = '🚨') {
+    const iconEl = document.getElementById('customAlertIcon');
+    const titleEl = document.getElementById('customAlertTitle');
+    const msgEl = document.getElementById('customAlertMessage');
+    if (iconEl) iconEl.innerText = icon;
+    if (titleEl) titleEl.innerText = title;
+    if (msgEl) msgEl.innerHTML = message;
+    document.getElementById('customAlertModal').style.display = 'flex';
+  };
+
+  window.closeCustomAlert = function() {
+    document.getElementById('customAlertModal').style.display = 'none';
+  };
+
+  let customConfirmCallback = null;
+  window.showCustomConfirm = function(title, message, onConfirm, icon = '❓') {
+    const iconEl = document.getElementById('customConfirmIcon');
+    const titleEl = document.getElementById('customConfirmTitle');
+    const msgEl = document.getElementById('customConfirmMessage');
+    if (iconEl) iconEl.innerText = icon;
+    if (titleEl) titleEl.innerText = title;
+    if (msgEl) msgEl.innerHTML = message;
+    customConfirmCallback = onConfirm;
+    document.getElementById('customConfirmModal').style.display = 'flex';
+  };
+
+  window.closeCustomConfirm = function() {
+    document.getElementById('customConfirmModal').style.display = 'none';
+    customConfirmCallback = null;
+  };
+
+  const confirmYesBtn = document.getElementById('customConfirmYesBtn');
+  if (confirmYesBtn) {
+    confirmYesBtn.addEventListener('click', () => {
+      if (typeof customConfirmCallback === 'function') {
+        customConfirmCallback();
+      }
+      closeCustomConfirm();
+    });
+  }
 </script>
 
 </body>
