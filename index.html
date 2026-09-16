@@ -1435,9 +1435,9 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         <div class="modal-title" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <span>⚙️ Yönetici Kontrol Merkezi</span>
-            <button id="btnManualLoadQuestions" class="btn-action btn-toggle-on" style="background: #0284c7 !important; border-color: #0369a1 !important; font-size: 0.8rem; padding: 4px 10px;">
-              📥 Soruları Yükle
-            </button>
+<button id="btnManualLoadQuestions" class="btn-action btn-toggle-on" style="background: #0284c7 !important; border-color: #0369a1 !important; font-size: 0.8rem; padding: 4px 10px;">
+  📥 Soruları Yükle
+</button>
           </div>
           <button class="btn-action" style="background: #ef4444; border-color: #dc2626; color: white;" onclick="logoutAdminSession()">
             🚪 Çıkış Yap
@@ -3614,14 +3614,11 @@ window.uploadQuestionFile = async function() {
     }
   };
 
-  window.switchAdminTab = function(tabName) {
+window.switchAdminTab = function(tabName) {
     const uCb = document.getElementById('selectAllUsersCheckbox');
     if (uCb) uCb.checked = false;
     document.querySelectorAll('.user-row-checkbox').forEach(cb => cb.checked = false);
 
-// switchAdminTab fonksiyonu içine şunu ekleyin:
-if (tabName === 'announcements') loadAnnouncementUsersList();
-    
     const rCb = document.getElementById('selectAllReportsCheckbox');
     if (rCb) rCb.checked = false;
     document.querySelectorAll('.report-row-checkbox').forEach(cb => cb.checked = false);
@@ -3630,39 +3627,44 @@ if (tabName === 'announcements') loadAnnouncementUsersList();
     if (cCb) cCb.checked = false;
     document.querySelectorAll('.chat-row-checkbox').forEach(cb => cb.checked = false);
 
+    // Sekme görünürlüklerini ayarla
     document.getElementById('adminTabUsers').style.display = tabName === 'users' ? 'flex' : 'none';
     document.getElementById('adminTabReports').style.display = tabName === 'reports' ? 'flex' : 'none';
     document.getElementById('adminTabUploadedQuestions').style.display = tabName === 'uploadedQuestions' ? 'flex' : 'none';
     document.getElementById('adminTabChat').style.display = tabName === 'chat' ? 'flex' : 'none';
     document.getElementById('adminTabLicenses').style.display = tabName === 'licenses' ? 'block' : 'none';
+    document.getElementById('adminTabAnnouncements').style.display = tabName === 'announcements' ? 'flex' : 'none'; // 👈 DÜZELTME BURADA
     document.getElementById('adminTabSettings').style.display = tabName === 'settings' ? 'block' : 'none';
     
+    // Buton aktiflik sınıflarını güncelle
     document.getElementById('tabUsersBtn').className = tabName === 'users' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabReportsBtn').className = tabName === 'reports' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabUploadedQuestionsBtn').className = tabName === 'uploadedQuestions' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabChatBtn').className = tabName === 'chat' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     document.getElementById('tabLicensesBtn').className = tabName === 'licenses' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
+    document.getElementById('tabAnnounceBtn').className = tabName === 'announcements' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off'; // 👈 DÜZELTME BURADA
     document.getElementById('tabSettingsBtn').className = tabName === 'settings' ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
     
     window.currentAdminTab = tabName;
-const searchWrapper = document.getElementById('adminSearchBoxWrapper');
-const searchInput = document.getElementById('adminUserSearchInput');
+    const searchWrapper = document.getElementById('adminSearchBoxWrapper');
+    const searchInput = document.getElementById('adminUserSearchInput');
 
-if (tabName === 'users' || tabName === 'reports' || tabName === 'chat') {
-  searchWrapper.style.display = 'block';
-  if (searchInput) {
-    searchInput.value = '';
-    if (tabName === 'users') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
-    else if (tabName === 'reports') searchInput.placeholder = "🔍 Ad, E-posta, Soru veya Şık Metni Ara...";
-    else if (tabName === 'chat') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
-  }
-} else {
-  searchWrapper.style.display = 'none';
-}
+    if (tabName === 'users' || tabName === 'reports' || tabName === 'chat') {
+      searchWrapper.style.display = 'block';
+      if (searchInput) {
+        searchInput.value = '';
+        if (tabName === 'users') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
+        else if (tabName === 'reports') searchInput.placeholder = "🔍 Ad, E-posta, Soru veya Şık Metni Ara...";
+        else if (tabName === 'chat') searchInput.placeholder = "🔍 Ad, Soyad veya E-posta İle Ara...";
+      }
+    } else {
+      searchWrapper.style.display = 'none';
+    }
 
     if (tabName === 'reports') loadAdminQuestionReports();
     if (tabName === 'uploadedQuestions') loadAdminUploadedQuestions();
     if (tabName === 'chat') loadAdminChatList();
+    if (tabName === 'announcements') loadAnnouncementUsersList(); // 👈 ÇALIŞMASINI SAĞLAYAN TETİKLEYİCİ
   };
 
   window.openAdminModal = async function() {
@@ -3718,15 +3720,24 @@ async function loadAnnouncementUsersList() {
   window.filterAdminUsersSearch = () => renderUserRows();
 
   // MADDE 3 YENİLİK: DİNAMİK SIRALAMA VE UYARI ALAN KULLANICI FİLTRELEME
-  function renderUserRows() {
+function renderUserRows() {
     const tbody = document.getElementById('adminUserTableBody');
     tbody.innerHTML = '';
     const queryStr = document.getElementById('adminUserSearchInput')?.value.trim().toLocaleLowerCase('tr-TR') || '';
     let list = [...allFetchedUsers];
 
-    if (currentCategoryFilter === 'admin') list = list.filter(u => u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com');
-    else if (currentCategoryFilter === 'UyarıAlanlar') list = list.filter(u => (u.uyariSayisi || 0) > 0);
-    else if (currentCategoryFilter !== 'Tümü') list = list.filter(u => u.durum === currentCategoryFilter && u.rol !== 'admin');
+    // YÖNETİCİ GİZLEME MANTIĞI:
+    // Eğer "Tümü" filtresindeysek yöneticileri listeden gizle. Sadece "admin" (Yönetici) filtresine basıldıysa göster.
+    if (currentCategoryFilter === 'admin') {
+      list = list.filter(u => u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
+    } else if (currentCategoryFilter === 'UyarıAlanlar') {
+      list = list.filter(u => (u.uyariSayisi || 0) > 0 && !(u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com'));
+    } else if (currentCategoryFilter !== 'Tümü') {
+      list = list.filter(u => u.durum === currentCategoryFilter && u.rol !== 'admin');
+    } else {
+      // "Tümü" sekmesindeyken yöneticileri tamamen listeden çıkar
+      list = list.filter(u => u.rol !== 'admin' && u.email !== 'kgulsen1994@gmail.com' && u.email !== 'kadir@kadir.com' && u.email !== 'yonetici@noroloji.com');
+    }
 
     if (queryStr !== '') {
       list = list.filter(u => (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(queryStr) || (u.email || '').toLocaleLowerCase('tr-TR').includes(queryStr));
@@ -3764,31 +3775,35 @@ async function loadAnnouncementUsersList() {
     }
 
     list.forEach(u => {
-      const isRoleAdmin = (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com');
+      const isRoleAdmin = (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
       const statusText = isRoleAdmin ? '👑 Yönetici' : (u.durum || 'Ücretsiz');
-      const formattedName = formatNameSurname(u.adSoyad || u.email);
+      
+      // Yönetici isimleri "Belirtilmedi" yazıyorsa burada adını düzgün gösterebilir veya Firebase üzerinden ad Soyad yazabilirsiniz
+      let rawName = u.adSoyad;
+      if (isRoleAdmin && (!rawName || rawName === "Belirtilmedi" || rawName === "...")) {
+        if (u.email === 'kgulsen1994@gmail.com') rawName = "Dr. Kadir GÜLŞEN";
+        else if (u.email === 'yonetici@noroloji.com') rawName = "Yönetici";
+        else rawName = "Sistem Yöneticisi";
+      }
+      const formattedName = formatNameSurname(rawName || u.email);
 
-// Aratın ve Değiştirin:
-const warnCount = u.uyariSayisi || 0;
-let starsHTML = '';
-if (warnCount > 0) {
-  starsHTML = '🚨'.repeat(warnCount);
-  if (warnCount >= 3) starsHTML += ' <span style="color:#ef4444; font-weight:bold;" title="3 veya üzeri uyarı aldı!">⛔</span>';
-} else {
-  starsHTML = '<span style="color:#cbd5e1;">-</span>';
-}
+      const warnCount = u.uyariSayisi || 0;
+      let starsHTML = '';
+      if (warnCount > 0) {
+        starsHTML = '🚨'.repeat(warnCount);
+      } else {
+        starsHTML = '<span style="color:#cbd5e1;">-</span>';
+      }
 
-let warnControlsHTML = '';
-if (!isRoleAdmin && warnCount > 0) {
-  warnControlsHTML = `
-    <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="reduceUserWarning('${u.id}')" title="1 Alarm/Uyarı Eksilt">➖ Alarm Sil</button>
-    <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="clearUserWarnings('${u.id}')" title="Tüm Alarmları Sıfırla">🧹 Sıfırla</button>
-  `;
-}
+      let warnControlsHTML = '';
+      if (!isRoleAdmin && warnCount > 0) {
+        warnControlsHTML = `
+          <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="reduceUserWarning('${u.id}')">➖ Alarm Sil</button>
+          <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="clearUserWarnings('${u.id}')">🧹 Sıfırla</button>
+        `;
+      }
 
-      let actionTdHTML = `
-        <button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px;" onclick="viewUserActivities('${u.id}', '${u.email}')">👁️ Aktivite</button>
-      `;
+      let actionTdHTML = `<button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px;" onclick="viewUserActivities('${u.id}', '${u.email}')">👁️ Aktivite</button>`;
 
       if (!isRoleAdmin) {
         actionTdHTML += `
@@ -3809,20 +3824,12 @@ if (!isRoleAdmin && warnCount > 0) {
       const row = document.createElement('tr');
       row.style.borderBottom = '1px solid #e2e8f0';
       if (isRoleAdmin) row.style.background = '#fcf5ff';
-      if (warnCount >= 3) row.style.background = '#fff5f5';
 
       row.innerHTML = `
-        <td style="padding: 10px; text-align: center;">
-          ${!isRoleAdmin ? `<input type="checkbox" class="user-row-checkbox" value="${u.id}">` : ''}
-        </td>
+        <td style="padding: 10px; text-align: center;">${!isRoleAdmin ? `<input type="checkbox" class="user-row-checkbox" value="${u.id}">` : ''}</td>
         <td style="padding: 10px; font-weight: 600;">${formattedName}</td>
         <td style="padding: 10px; color: #64748b;">${u.email}</td>
-        <td style="padding: 10px; text-align: center;">
-          <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
-            <span>${starsHTML}</span>
-            ${warnControlsHTML}
-          </div>
-        </td>
+        <td style="padding: 10px; text-align: center;">${starsHTML} ${warnControlsHTML}</td>
         <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #e2e8f0;">${statusText}</span></td>
         <td style="padding: 10px; text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;">${actionTdHTML}</td>
       `;
