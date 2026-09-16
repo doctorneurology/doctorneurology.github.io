@@ -1342,7 +1342,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
   <!-- GİRİŞ EKRANI -->
   <div id="loginScreen">
-    <button id="btnOpenAdminAuth" class="btn-admin-subtle">admin</button>
+<button id="btnOpenAdminAuth" class="btn-admin-subtle" onclick="openAdminAuthModal()">admin</button>
 
     <div class="login-card">
       <div class="login-title">🧠 Nöroloji Soru Bankası</div>
@@ -2826,14 +2826,21 @@ if (window.checkDailyLimitAndIncrement) {
     document.getElementById('configScreen').style.display = 'block';
   }
 
-  window.openLoginOptionsModal = () => document.getElementById('loginOptionsModal').style.display = 'flex';
-  window.closeLoginOptionsModal = () => document.getElementById('loginOptionsModal').style.display = 'none';
-  window.openAdminAuthModal = () => {
-    document.getElementById('adminUsernameInput').value = '';
-    document.getElementById('adminPasswordInput').value = '';
-    document.getElementById('adminAuthModal').style.display = 'flex';
-  };
-  window.closeAdminAuthModal = () => document.getElementById('adminAuthModal').style.display = 'none';
+window.openLoginOptionsModal = function() { 
+  document.getElementById('loginOptionsModal').style.display = 'flex'; 
+};
+window.closeLoginOptionsModal = function() { 
+  document.getElementById('loginOptionsModal').style.display = 'none'; 
+};
+
+window.openAdminAuthModal = function() {
+  document.getElementById('adminUsernameInput').value = '';
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('adminAuthModal').style.display = 'flex';
+};
+window.closeAdminAuthModal = function() { 
+  document.getElementById('adminAuthModal').style.display = 'none'; 
+};
 
   function initDragAndDrop() {
     const dropArea = document.getElementById('dragDropArea');
@@ -3000,70 +3007,46 @@ window.selectSpecificAnnouncementUser = function(uid, nameText) {
 };
 
 window.publishAnnouncement = async function() {
-    const title = document.getElementById('announceTitleInput')?.value.trim();
-    const text = document.getElementById('announceTextInput')?.value.trim();
-    const duration = document.getElementById('announceDurationSelect')?.value;
+  const title = document.getElementById('announceTitleInput')?.value.trim();
+  const text = document.getElementById('announceTextInput')?.value.trim();
+  const duration = document.getElementById('announceDurationSelect')?.value;
 
-    if (!title || !text) {
-      showToast("Lütfen duyuru başlığı ve metnini doldurunuz.", "warning");
-      return;
-    }
+  if (!title || !text) {
+    showToast("Lütfen duyuru başlığı ve metnini doldurunuz.", "warning");
+    return;
+  }
 
-    const targetTypeElem = document.getElementById('announcementTargetType');
-    const targetType = targetTypeElem ? targetTypeElem.value : 'all';
+  const targetTypeElem = document.getElementById('announcementTargetType');
+  const targetType = targetTypeElem ? targetTypeElem.value : 'all';
 
-    if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
-      showToast("Lütfen listeden arama yaparak bir kullanıcı seçiniz.", "warning");
-      return;
-    }
+  if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
+    showToast("Lütfen listeden arama yaparak bir kullanıcı seçiniz.", "warning");
+    return;
+  }
 
-    try {
-      const announcementData = {
-        title: title,
-        text: text,
-        targetType: targetType,
-        targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
-        durationDays: parseInt(duration) || 0,
-        createdAt: serverTimestamp(),
-        active: true
-      };
+  try {
+    const announcementData = {
+      title: title,
+      text: text,
+      targetType: targetType,
+      targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
+      durationDays: parseInt(duration) || 0,
+      createdAt: serverTimestamp(),
+      active: true
+    };
 
-      await addDoc(collection(db, "sistem_duyurulari"), announcementData);
-      showToast("Duyuru başarıyla yayınlandı!", "success");
-      
-      document.getElementById('announceTitleInput').value = '';
-      document.getElementById('announceTextInput').value = '';
-      
-      if (targetTypeElem) targetTypeElem.value = 'all';
-      window.toggleAnnouncementTargetInput('all');
-    } catch (error) {
-      console.error("Duyuru yayınlama hatası:", error);
-      showToast("Duyuru yayınlanırken hata: " + error.message, "error");
-    }
-  };
-
-  window.announcementUsersCache = [];
-
-
-    window.selectedAnnouncementTargetUserId = null;
-
-    try {
-      const snap = await getDocs(collection(db, "kullanicilar"));
-      window.announcementUsersCache = [];
-      snap.forEach(docSnap => {
-        const u = docSnap.data();
-        const isRoleAdmin = (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
-        
-        // YÖNETİCİLERİ DUYURU HEDEF LİSTESİNDEN TAMAMEN ÇIKAR
-        if (!isRoleAdmin) {
-          window.announcementUsersCache.push({ id: docSnap.id, ...u });
-        }
-      });
-    } catch(e) {
-      console.error("Duyuru için kullanıcı listesi çekilemedi:", e);
-    }
-  };
-
+    await addDoc(collection(db, "sistem_duyurulari"), announcementData);
+    showToast("Duyuru başarıyla yayınlandı!", "success");
+    
+    document.getElementById('announceTitleInput').value = '';
+    document.getElementById('announceTextInput').value = '';
+    if (targetTypeElem) targetTypeElem.value = 'all';
+    window.toggleAnnouncementTargetInput('all');
+  } catch (error) {
+    console.error("Duyuru yayınlama hatası:", error);
+    showToast("Duyuru yayınlanırken hata: " + error.message, "error");
+  }
+};
   window.selectedAnnouncementTargetUserId = null;
   window.selectSpecificAnnouncementUser = function(uid, nameText, emailText) {
     window.selectedAnnouncementTargetUserId = uid;
