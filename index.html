@@ -1284,6 +1284,9 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button class="btn-action btn-toggle-on" style="flex: 1; justify-content: center;" onclick="closeHeaderCustomizerModal()">👍 Kaydet ve Kapat</button>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 8px; text-align: center; line-height: 1.3;">
+  Not: Yazdırma seçeneklerinde üst ve alt bilgiyi kapalı tutmanız önerilir.
+</div>
       </div>
     </div>
   </div>
@@ -1435,9 +1438,6 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         <div class="modal-title" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <span>⚙️ Yönetici Kontrol Merkezi</span>
-<button id="btnManualLoadQuestions" class="btn-action btn-toggle-on" style="background: #0284c7 !important; border-color: #0369a1 !important; font-size: 0.8rem; padding: 4px 10px;">
-  📥 Soruları Yükle
-</button>
           </div>
           <button class="btn-action" style="background: #ef4444; border-color: #dc2626; color: white;" onclick="logoutAdminSession()">
             🚪 Çıkış Yap
@@ -1624,7 +1624,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             </select>
           </div>
 
-          <button class="btn-action btn-toggle-on" style="padding: 10px;" onclick="sendSystemAnnouncement()">🚀 Duyuruyu Yayınla</button>
+          <button class="btn-action btn-toggle-on" style="padding: 10px;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
         </div>
         
         <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
@@ -2273,6 +2273,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
   function resetTestState() {
     isTestActive = false;
     isAnalysisActive = false;
+    updateAnalysisButtonUI();
     userAnswers = {};
     clearInterval(testTimerInterval);
     currentKeyMode = 'none';
@@ -2646,6 +2647,22 @@ if (window.checkDailyLimitAndIncrement) {
   function closeResultModal() { document.getElementById('testResultModal').style.display = 'none'; }
   window.closeResultModal = closeResultModal;
 
+function updateAnalysisButtonUI() {
+    const analysisBtn = document.getElementById('btnOpenSideAnalysis');
+    if (!analysisBtn) return;
+    if (isAnalysisActive) {
+      analysisBtn.className = 'btn-action btn-toggle-on';
+      analysisBtn.style.background = '#2563eb';
+      analysisBtn.style.borderColor = '#1d4ed8';
+      analysisBtn.style.color = '#fff';
+    } else {
+      analysisBtn.className = 'btn-action btn-toggle-off';
+      analysisBtn.style.background = '#f1f5f9';
+      analysisBtn.style.borderColor = '#cbd5e1';
+      analysisBtn.style.color = '#475569';
+    }
+  }
+
   function activateAnalysisMode() {
     closeResultModal();
     isAnalysisActive = true;
@@ -2654,6 +2671,7 @@ if (window.checkDailyLimitAndIncrement) {
     document.getElementById('expModeSelect').value = 'inline';
     document.getElementById('keyModeSelect').value = 'none';
 
+    updateAnalysisButtonUI();
     openSideAnalysisPanel();
     buildPaperView(currentQuestionsList);
     showToast("Analiz modu aktif.", "success");
@@ -2823,31 +2841,109 @@ if (window.checkDailyLimitAndIncrement) {
 
 let currentAnnouncementId = null;
 
-window.sendSystemAnnouncement = async function() {
-  const target = document.getElementById('announceTargetSelect').value;
-  const title = document.getElementById('announceTitleInput').value.trim();
-  const text = document.getElementById('announceTextInput').value.trim();
-  const durationDays = parseInt(document.getElementById('announceDurationSelect').value);
+window.loadAnnouncementUsersList = function() {
+  const container = document.getElementById('announceTargetSelect')?.parentElement;
+  if (!container) return;
+  
+  let html = `
+    <label style="font-weight:600; font-size:0.85rem; color:#475569; display:block; margin-bottom:4px;">Hedef Kullanıcı:</label>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <select id="announcementTargetType" class="modern-input" onchange="toggleAnnouncementTargetInput(this.value)">
+        <option value="all">🌍 Tüm Kullanıcılar</option>
+        <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
+        <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
+        <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
+        <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
+        <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
+      </select>
+      <div id="specificUserSearchWrapper" style="display: none; margin-top: 5px;">
+        <input type="text" id="announcementUserSearch" class="modern-input" placeholder="Kullanıcı adı veya e-posta yazın..." oninput="filterAnnouncementUsers(this.value)">
+        <div id="announcementUserDropdownList" style="max-height: 150px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 4px; background: #fff; display: none;"></div>
+      </div>
+    </div>
+  `;
+  container.innerHTML = html;
+};
 
-  if (!title || !text) {
-    showToast("Lütfen duyuru başlığı ve metnini doldurunuz.", "warning");
+window.toggleAnnouncementTargetInput = function(val) {
+  const wrapper = document.getElementById('specificUserSearchWrapper');
+  if (wrapper) wrapper.style.display = val === 'specific' ? 'block' : 'none';
+  if (val === 'specific' && typeof allFetchedUsers !== 'undefined') {
+    renderAnnouncementUserDropdown('');
+  }
+};
+
+window.filterAnnouncementUsers = function(query) {
+  renderAnnouncementUserDropdown(query);
+};
+
+window.renderAnnouncementUserDropdown = function(query) {
+  const listDiv = document.getElementById('announcementUserDropdownList');
+  if (!listDiv || typeof allFetchedUsers === 'undefined') return;
+  
+  const q = query.toLocaleLowerCase('tr-TR');
+  const filtered = allFetchedUsers.filter(u => (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(q) || (u.email || '').toLocaleLowerCase('tr-TR').includes(q));
+  
+  if (filtered.length === 0) {
+    listDiv.style.display = 'block';
+    listDiv.innerHTML = '<div style="padding: 8px; font-size: 0.8rem; color: #64748b;">Kullanıcı bulunamadı.</div>';
+    return;
+  }
+
+  listDiv.style.display = 'block';
+  listDiv.innerHTML = filtered.map(u => `
+    <div onclick="selectSpecificAnnouncementUser('${u.id}', '${u.adSoyad || u.email}')" style="padding: 6px 10px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+      <b>${u.adSoyad || 'Belirtilmedi'}</b> (${u.email})
+    </div>
+  `).join('');
+};
+
+window.selectedAnnouncementTargetUserId = null;
+window.selectSpecificAnnouncementUser = function(uid, nameText) {
+  window.selectedAnnouncementTargetUserId = uid;
+  const searchInput = document.getElementById('announcementUserSearch');
+  if (searchInput) searchInput.value = nameText;
+  const listDiv = document.getElementById('announcementUserDropdownList');
+  if (listDiv) listDiv.style.display = 'none';
+  showToast(`Hedef kullanıcı seçildi: ${nameText}`, "success");
+};
+
+window.publishAnnouncement = async function() {
+  const text = document.getElementById('announceTextInput')?.value.trim();
+  const title = document.getElementById('announceTitleInput')?.value.trim() || "Sistem Duyurusu";
+  if (!text) {
+    showToast("Lütfen duyuru metnini boş bırakmayın.", "warning");
+    return;
+  }
+
+  const targetTypeElem = document.getElementById('announcementTargetType');
+  const targetType = targetTypeElem ? targetTypeElem.value : 'all';
+  const durationElem = document.getElementById('announceDurationSelect');
+  const duration = durationElem ? durationElem.value : '1';
+
+  if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
+    showToast("Lütfen listeden spesifik bir kullanıcı seçin.", "warning");
     return;
   }
 
   try {
-    await addDoc(collection(db, "sistem_duyurulari"), {
-      targetUserUid: target,
+    const announcementData = {
       title: title,
       text: text,
-      durationDays: durationDays,
-      createdAt: serverTimestamp()
-    });
+      targetType: targetType,
+      targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
+      durationDays: parseInt(duration) || 1,
+      createdAt: serverTimestamp(),
+      active: true
+    };
 
-    showToast("Duyuru başarıyla yayınlandı.", "success");
-    document.getElementById('announceTitleInput').value = '';
+    await addDoc(collection(db, "sistem_duyurulari"), announcementData);
+    showToast("Duyuru başarıyla yayınlandı!", "success");
     document.getElementById('announceTextInput').value = '';
-  } catch (err) {
-    showToast("Duyuru yayınlanırken hata: " + err.message, "error");
+    document.getElementById('announceTitleInput').value = '';
+  } catch (error) {
+    console.error("Duyuru yayınlama hatası:", error);
+    showToast("Duyuru yayınlanırken hata: " + error.message, "error");
   }
 };
 
@@ -5002,10 +5098,45 @@ bubble.innerHTML = `
     showToast("Mesaj yönetici tarafından silindi.", "success");
   };
 
-  window.openReportQuestionModal = function(index) {
+window.openReportQuestionModal = function(index) {
     currentReportingQuestionIndex = index;
     const q = currentQuestionsList[index];
-    document.getElementById('reportModalQuestionSummary').innerText = `Soru ${index + 1}: ${q.soruMetni.substring(0, 90)}...`;
+    if (!q) return;
+
+    const modalContent = document.getElementById('reportModalQuestionSummary');
+    if (!modalContent) return;
+
+    const cleanOpts = extractAndCleanOptions(q);
+    const correctIndices = getCorrectIndices(q);
+
+    const optionsHTML = cleanOpts.map((opt, idx) => {
+      const harf = String.fromCharCode(65 + idx);
+      const isCorrect = correctIndices.includes(idx);
+      const style = isCorrect 
+        ? 'background: #dcfce7; border-color: #86efac; font-weight: bold; color: #166534;' 
+        : 'background: #ffffff; border-color: #e2e8f0; color: #334155;';
+      return `<div style="padding: 6px 10px; margin-bottom: 4px; border-radius: 6px; border: 1px solid; font-size: 0.83rem; ${style}">${harf}) ${opt} ${isCorrect ? ' ✓ (Doğru Cevap)' : ''}</div>`;
+    }).join('');
+
+    modalContent.innerHTML = `
+      <div style="margin-bottom: 10px;">
+        <label style="font-weight: 600; font-size: 0.82rem; color: #475569;">Soru Kökü:</label>
+        <div style="padding: 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 4px; font-size: 0.88rem; font-weight: bold; color: #0f172a;">
+          ${cleanMultiParagraphs(q.soruMetni)}
+        </div>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <label style="font-weight: 600; font-size: 0.82rem; color: #475569; display:block; margin-bottom:4px;">Şıklar ve Doğru Cevap:</label>
+        <div>${optionsHTML}</div>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <label style="font-weight: 600; font-size: 0.82rem; color: #475569;">Açıklama / Çözüm:</label>
+        <div style="padding: 8px; background: #eff6ff; border-radius: 6px; margin-top: 4px; font-size: 0.83rem; color: #1e40af; border: 1px solid #bfdbfe; white-space: pre-line;">
+          ${getExplanation(q)}
+        </div>
+      </div>
+    `;
+
     document.getElementById('reportUserSuggestedOption').value = "";
     document.getElementById('reportUserComment').value = "";
     document.getElementById('reportQuestionModal').style.display = 'flex';
