@@ -2958,30 +2958,60 @@ async function checkSystemAnnouncements(userUid) {
     if (snap.empty) return;
 
     let validAnnouncements = [];
+    const userTier = (window.currentUserTier || 'Ücretsiz').toLowerCase();
 
     snap.forEach(docSnap => {
       const data = docSnap.data();
       const annId = docSnap.id;
 
-      if (data.targetUserUid !== 'ALL' && data.targetUserUid !== userUid) return;
-      if (data.durationDays === 0 && localStorage.getItem(`closed_ann_${annId}`)) return;
+      // 1. Hedef Kullanıcı / Rol Uyumluluk Kontrolü
+      let isTarget = false;
+      const targetType = data.targetType || (data.targetUserUid === 'ALL' ? 'all' : 'specific');
 
-      const createdDate = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
-      if (data.durationDays > 0) {
+      if (targetType === 'all') {
+        isTarget = true;
+      } else if (targetType === 'specific') {
+        if (data.targetUserId === userUid || data.targetUserUid === userUid) isTarget = true;
+      } else if (targetType.startsWith('role_')) {
+        const targetRole = targetType.replace('role_', '').toLowerCase();
+        if (userTier.includes(targetRole) || targetRole.includes(userTier)) {
+          isTarget = true;
+        }
+      }
+
+      if (!isTarget) return;
+
+      // 2. Kapatılmış Duyuru Kontrolü
+      if (localStorage.getItem(`closed_ann_${annId}`)) return;
+
+      // 3. Tarih ve Yayın Süresi Kontrolü
+      const createdDate = data.createdAt?.toDate 
+        ? data.createdAt.toDate() 
+        : (data.createdAt ? new Date(data.createdAt) : new Date());
+      
+      const durationDays = parseInt(data.durationDays) || 1;
+
+      if (durationDays > 0) {
         const diffDays = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-        if (diffDays > data.durationDays) return;
+        if (diffDays > durationDays) return;
       }
 
       validAnnouncements.push({ id: annId, ...data });
     });
 
     if (validAnnouncements.length > 0) {
-      validAnnouncements.sort((a, b) => (b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0) - (a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0));
-      const activeAnn = validAnnouncements[0];
+      validAnnouncements.sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
 
+      const activeAnn = validAnnouncements[0];
       currentAnnouncementId = activeAnn.id;
-      document.getElementById('announcementModalTitle').innerText = `📢 ${activeAnn.title}`;
-      document.getElementById('announcementModalContent').innerText = activeAnn.text;
+
+      const titleDisplay = activeAnn.title || "Sistem Duyurusu";
+      document.getElementById('announcementModalTitle').innerText = titleDisplay.startsWith('📢') ? titleDisplay : `📢 ${titleDisplay}`;
+      document.getElementById('announcementModalContent').innerText = activeAnn.text || '';
       document.getElementById('chkDoNotShowToday').checked = false;
       document.getElementById('systemAnnouncementModal').style.display = 'flex';
     }
