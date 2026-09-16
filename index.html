@@ -2236,10 +2236,20 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     }
   };
 
-  function cancelQuestionLoading() {
-    if (activeFetchAbortController) { activeFetchAbortController.abort(); activeFetchAbortController = null; }
-    hideLoading();
-    if (window.forceSignOutToLogin) window.forceSignOutToLogin();
+function cancelQuestionLoading() {
+    if (activeFetchAbortController) {
+      activeFetchAbortController.abort();
+      activeFetchAbortController = null;
+    }
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
+    
+    if (window.forceSignOutToLogin) {
+      window.forceSignOutToLogin();
+    } else {
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
   }
   window.cancelQuestionLoading = cancelQuestionLoading;
 
@@ -3447,16 +3457,14 @@ const redeemLicenseCodeServer = httpsCallable(functions, "redeemLicenseCode");
     });
   });
 
-  window.forceSignOutToLogin = function() {
+window.forceSignOutToLogin = function() {
     window.isAdminSessionActive = false;
     window.currentUserIsAdmin = false;
-    signOut(auth).then(() => {
-      document.getElementById('mainApp').style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-    }).catch(() => {
-      document.getElementById('mainApp').style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-    });
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    signOut(auth).catch(() => {});
   };
 
   function checkAndHandleBannedUser(data) {
@@ -3642,14 +3650,13 @@ function listenIncomingAdminNotifications(uid) {
         await checkSystemAnnouncements(user.uid);
       }
 
-      // Sadece Google veya normal kullanıcı girişlerinde soru havuzunu yükle
-      // Yönetici e-posta/şifre girişlerinde soru yükleme işlemini atla
-      if (!window.isAdminEmailLogin) {
+// Yönetici veya admin yetkili hesaplarda otomatik soru yüklemeyi tetikleme
+      if (!isAdminClaim && !window.isAdminEmailLogin) {
         if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
           window.loadDataAndInit();
         }
       } else {
-        hideLoading(); // Yükleme ekranı varsa kapat
+        hideLoading(); // Yükleme ekranını derhal kapat
       }
 
     } else {
