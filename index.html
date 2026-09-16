@@ -1638,11 +1638,21 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         <div id="adminTabAnnouncements" style="display: none; flex-direction: column; gap: 15px; max-width: 600px;">
           <h4 style="color: var(--bg-dark);">📢 Kullanıcı Ekranlarına Duyuru / Bildirim Gönder</h4>
           
-          <div class="input-control">
-            <label>Hedef Kullanıcı:</label>
-            <select id="announceTargetSelect" class="modern-input">
-              <option value="ALL" selected>🌐 Tüm Kullanıcılar</option>
+<div class="input-control" id="announcementTargetControlWrapper">
+            <label style="font-weight: 600; font-size: 0.85rem; color: #475569; display: block; margin-bottom: 6px;">Hedef Kitle / Kullanıcı Seçimi:</label>
+            <select id="announcementTargetType" class="modern-input" onchange="toggleAnnouncementTargetInput(this.value)">
+              <option value="all" selected>🌐 Tüm Kullanıcılar</option>
+              <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
+              <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
+              <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
+              <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
+              <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
             </select>
+
+            <div id="specificUserSearchWrapper" style="display: none; margin-top: 8px; position: relative;">
+              <input type="text" id="announcementUserSearch" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazarak arayın..." oninput="filterAnnouncementUsers(this.value)">
+              <div id="announcementUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 190px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
+            </div>
           </div>
 
           <div class="input-control">
@@ -2883,9 +2893,18 @@ if (window.checkDailyLimitAndIncrement) {
 
 let currentAnnouncementId = null;
 
-window.loadAnnouncementUsersList = function() {
-  const container = document.getElementById('announceTargetSelect')?.parentElement;
-  if (!container) return;
+window.announcementUsersCache = [];
+
+  // Yöneticileri filtreleyen ve kullanıcı listesini hafızaya alan fonksiyon
+  window.loadAnnouncementUsersList = async function() {
+    const typeSelect = document.getElementById('announcementTargetType');
+    if (typeSelect) typeSelect.value = 'all';
+    
+    const wrapper = document.getElementById('specificUserSearchWrapper');
+    if (wrapper) wrapper.style.display = 'none';
+
+    const searchInput = document.getElementById('announcementUserSearch');
+    if (searchInput) searchInput.value = '';
   
   let html = `
     <label style="font-weight:600; font-size:0.85rem; color:#475569; display:block; margin-bottom:4px;">Hedef Kullanıcı:</label>
@@ -2908,37 +2927,57 @@ window.loadAnnouncementUsersList = function() {
 };
 
 window.toggleAnnouncementTargetInput = function(val) {
-  const wrapper = document.getElementById('specificUserSearchWrapper');
-  if (wrapper) wrapper.style.display = val === 'specific' ? 'block' : 'none';
-  if (val === 'specific' && typeof allFetchedUsers !== 'undefined') {
-    renderAnnouncementUserDropdown('');
-  }
-};
+    const wrapper = document.getElementById('specificUserSearchWrapper');
+    if (wrapper) {
+      wrapper.style.display = val === 'specific' ? 'block' : 'none';
+    }
+    if (val === 'specific') {
+      window.renderAnnouncementUserDropdown('');
+    } else {
+      window.selectedAnnouncementTargetUserId = null;
+    }
+  };
 
 window.filterAnnouncementUsers = function(query) {
-  renderAnnouncementUserDropdown(query);
-};
+    window.renderAnnouncementUserDropdown(query);
+  };
 
 window.renderAnnouncementUserDropdown = function(query) {
-  const listDiv = document.getElementById('announcementUserDropdownList');
-  if (!listDiv || typeof allFetchedUsers === 'undefined') return;
-  
-  const q = query.toLocaleLowerCase('tr-TR');
-  const filtered = allFetchedUsers.filter(u => (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(q) || (u.email || '').toLocaleLowerCase('tr-TR').includes(q));
-  
-  if (filtered.length === 0) {
-    listDiv.style.display = 'block';
-    listDiv.innerHTML = '<div style="padding: 8px; font-size: 0.8rem; color: #64748b;">Kullanıcı bulunamadı.</div>';
-    return;
-  }
+    const listDiv = document.getElementById('announcementUserDropdownList');
+    if (!listDiv) return;
+    
+    const q = query.toLocaleLowerCase('tr-TR').trim();
+    const filtered = (window.announcementUsersCache || []).filter(u => 
+      (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(q) || 
+      (u.email || '').toLocaleLowerCase('tr-TR').includes(q)
+    );
+    
+    if (filtered.length === 0) {
+      listDiv.style.display = 'block';
+      listDiv.innerHTML = '<div style="padding: 10px; font-size: 0.82rem; color: #64748b; text-align: center;">Kullanıcı bulunamadı.</div>';
+      return;
+    }
 
-  listDiv.style.display = 'block';
-  listDiv.innerHTML = filtered.map(u => `
-    <div onclick="selectSpecificAnnouncementUser('${u.id}', '${u.adSoyad || u.email}')" style="padding: 6px 10px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
-      <b>${u.adSoyad || 'Belirtilmedi'}</b> (${u.email})
-    </div>
-  `).join('');
-};
+    listDiv.style.display = 'block';
+    listDiv.innerHTML = filtered.map(u => {
+      const nameDisplay = formatNameSurname(u.adSoyad || u.email);
+      const safeName = nameDisplay.replace(/'/g, "\\'");
+      const safeEmail = (u.email || '').replace(/'/g, "\\'");
+      
+      return `
+        <div onclick="selectSpecificAnnouncementUser('${u.id}', '${safeName}', '${safeEmail}')" 
+             style="padding: 8px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;" 
+             onmouseover="this.style.background='#f8fafc'" 
+             onmouseout="this.style.background='#fff'">
+          <div>
+            <strong style="color: #0f172a;">👤 ${nameDisplay}</strong>
+            <div style="font-size: 0.75rem; color: #64748b;">${u.email}</div>
+          </div>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 8px; background: #e2e8f0; color: #475569; font-weight: bold;">${u.durum || 'Ücretsiz'}</span>
+        </div>
+      `;
+    }).join('');
+  };
 
 window.selectedAnnouncementTargetUserId = null;
 window.selectSpecificAnnouncementUser = function(uid, nameText) {
@@ -2951,43 +2990,79 @@ window.selectSpecificAnnouncementUser = function(uid, nameText) {
 };
 
 window.publishAnnouncement = async function() {
-  const text = document.getElementById('announceTextInput')?.value.trim();
-  const title = document.getElementById('announceTitleInput')?.value.trim() || "Sistem Duyurusu";
-  if (!text) {
-    showToast("Lütfen duyuru metnini boş bırakmayın.", "warning");
-    return;
-  }
+    const title = document.getElementById('announceTitleInput')?.value.trim();
+    const text = document.getElementById('announceTextInput')?.value.trim();
+    const duration = document.getElementById('announceDurationSelect')?.value;
 
-  const targetTypeElem = document.getElementById('announcementTargetType');
-  const targetType = targetTypeElem ? targetTypeElem.value : 'all';
-  const durationElem = document.getElementById('announceDurationSelect');
-  const duration = durationElem ? durationElem.value : '1';
+    if (!title || !text) {
+      showToast("Lütfen duyuru başlığı ve metnini doldurunuz.", "warning");
+      return;
+    }
 
-  if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
-    showToast("Lütfen listeden spesifik bir kullanıcı seçin.", "warning");
-    return;
-  }
+    const targetTypeElem = document.getElementById('announcementTargetType');
+    const targetType = targetTypeElem ? targetTypeElem.value : 'all';
 
-  try {
-    const announcementData = {
-      title: title,
-      text: text,
-      targetType: targetType,
-      targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
-      durationDays: parseInt(duration) || 1,
-      createdAt: serverTimestamp(),
-      active: true
-    };
+    if (targetType === 'specific' && !window.selectedAnnouncementTargetUserId) {
+      showToast("Lütfen listeden arama yaparak bir kullanıcı seçiniz.", "warning");
+      return;
+    }
 
-    await addDoc(collection(db, "sistem_duyurulari"), announcementData);
-    showToast("Duyuru başarıyla yayınlandı!", "success");
-    document.getElementById('announceTextInput').value = '';
-    document.getElementById('announceTitleInput').value = '';
-  } catch (error) {
-    console.error("Duyuru yayınlama hatası:", error);
-    showToast("Duyuru yayınlanırken hata: " + error.message, "error");
-  }
-};
+    try {
+      const announcementData = {
+        title: title,
+        text: text,
+        targetType: targetType,
+        targetUserId: targetType === 'specific' ? window.selectedAnnouncementTargetUserId : null,
+        durationDays: parseInt(duration) || 0,
+        createdAt: serverTimestamp(),
+        active: true
+      };
+
+      await addDoc(collection(db, "sistem_duyurulari"), announcementData);
+      showToast("Duyuru başarıyla yayınlandı!", "success");
+      
+      document.getElementById('announceTitleInput').value = '';
+      document.getElementById('announceTextInput').value = '';
+      
+      if (targetTypeElem) targetTypeElem.value = 'all';
+      window.toggleAnnouncementTargetInput('all');
+    } catch (error) {
+      console.error("Duyuru yayınlama hatası:", error);
+      showToast("Duyuru yayınlanırken hata: " + error.message, "error");
+    }
+  };
+
+  window.announcementUsersCache = [];
+
+
+    window.selectedAnnouncementTargetUserId = null;
+
+    try {
+      const snap = await getDocs(collection(db, "kullanicilar"));
+      window.announcementUsersCache = [];
+      snap.forEach(docSnap => {
+        const u = docSnap.data();
+        const isRoleAdmin = (u.rol === 'admin' || u.email === 'kgulsen1994@gmail.com' || u.email === 'kadir@kadir.com' || u.email === 'yonetici@noroloji.com');
+        
+        // YÖNETİCİLERİ DUYURU HEDEF LİSTESİNDEN TAMAMEN ÇIKAR
+        if (!isRoleAdmin) {
+          window.announcementUsersCache.push({ id: docSnap.id, ...u });
+        }
+      });
+    } catch(e) {
+      console.error("Duyuru için kullanıcı listesi çekilemedi:", e);
+    }
+  };
+
+  window.selectedAnnouncementTargetUserId = null;
+  window.selectSpecificAnnouncementUser = function(uid, nameText, emailText) {
+    window.selectedAnnouncementTargetUserId = uid;
+    const searchInput = document.getElementById('announcementUserSearch');
+    if (searchInput) searchInput.value = `${nameText} (${emailText})`;
+    const listDiv = document.getElementById('announcementUserDropdownList');
+    if (listDiv) listDiv.style.display = 'none';
+    showToast(`Hedef kullanıcı seçildi: ${nameText}`, "success");
+  };
 
 async function checkSystemAnnouncements(userUid) {
   const todayStr = new Date().toISOString().split('T')[0];
