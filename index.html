@@ -2843,21 +2843,46 @@ function updateAnalysisButtonUI() {
     if (currentQuestionsList && currentQuestionsList.length) buildPaperView(currentQuestionsList);
   };
 
-  async function triggerPrint() {
-const userTier = window.currentUserTier || 'Ücretsiz';
-const userEmail = window.currentUserEmail || 'Kullanıcı Maili';
+async function triggerPrint() {
+  const userTier = window.currentUserTier || 'Ücretsiz';
+  const userEmail = window.currentUserEmail || '';
 
-if (window.checkDailyLimitAndIncrement) {
-  const isAllowed = await window.checkDailyLimitAndIncrement('print', currentQuestionsList.length);
-  if (!isAllowed) return;
+  if (window.checkDailyLimitAndIncrement) {
+    const isAllowed = await window.checkDailyLimitAndIncrement('print', currentQuestionsList.length);
+    if (!isAllowed) return;
+  }
+
+  const screenWatermark = document.getElementById('screenWatermark');
+  const printWatermark = document.getElementById('printWatermark');
+
+  // Akıllı ve Dinamik Filigran Kontrolü
+  if (window.systemLimits && window.systemLimits.enableWatermark && (userTier === 'Ücretsiz' || userTier === 'Deneme') && !window.currentUserIsAdmin) {
+    const text = `${window.systemLimits.watermarkText}\n${userEmail}`;
+    if (printWatermark) {
+      printWatermark.innerText = text;
+      printWatermark.style.display = 'block';
+    }
+    if (screenWatermark) {
+      screenWatermark.innerText = text;
+      screenWatermark.style.display = userTier === 'Ücretsiz' ? 'block' : 'none';
+    }
+  } else {
+    if (printWatermark) {
+      printWatermark.innerText = '';
+      printWatermark.style.display = 'none';
+    }
+    if (screenWatermark) {
+      screenWatermark.innerText = '';
+      screenWatermark.style.display = 'none';
+    }
+  }
+
+  if (window.logUserActivity) {
+    window.logUserActivity("Baskı / PDF Alındı", `${currentQuestionsList.length} Soru Çıktı Alındı.`);
+  }
+  window.print();
 }
-
-    const screenWatermark = document.getElementById('screenWatermark');
-    const printWatermark = document.getElementById('printWatermark');
-
-// Akıllı ve Dinamik Filigran Kontrolü
-const userTier = window.currentUserTier || 'Ücretsiz';
-const userEmail = window.currentUserEmail || '';
+window.triggerPrint = triggerPrint;
 
 if (window.systemLimits && window.systemLimits.enableWatermark && (userTier === 'Ücretsiz' || userTier === 'Deneme') && !window.currentUserIsAdmin) {
   const text = `${window.systemLimits.watermarkText}\n${userEmail}`;
