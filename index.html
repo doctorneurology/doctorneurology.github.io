@@ -2884,34 +2884,6 @@ async function triggerPrint() {
 }
 window.triggerPrint = triggerPrint;
 
-if (window.systemLimits && window.systemLimits.enableWatermark && (userTier === 'Ücretsiz' || userTier === 'Deneme') && !window.currentUserIsAdmin) {
-  const text = `${window.systemLimits.watermarkText}\n${userEmail}`;
-  if (printWatermark) {
-    printWatermark.innerText = text;
-    printWatermark.style.display = 'block';
-  }
-  if (screenWatermark) {
-    screenWatermark.innerText = text;
-    screenWatermark.style.display = userTier === 'Ücretsiz' ? 'block' : 'none';
-  }
-} else {
-  if (printWatermark) {
-    printWatermark.innerText = '';
-    printWatermark.style.display = 'none';
-  }
-  if (screenWatermark) {
-    screenWatermark.innerText = '';
-    screenWatermark.style.display = 'none';
-  }
-}
-
-    if (window.logUserActivity) {
-      window.logUserActivity("Baskı / PDF Alındı", `${currentQuestionsList.length} Soru Çıktı Alındı.`);
-    }
-    window.print();
-  }
-  window.triggerPrint = triggerPrint;
-
   function backToConfig() {
     if (isTestActive) document.getElementById('confirmModal').style.display = 'flex';
     else performBackToConfig();
@@ -4526,7 +4498,7 @@ window.closeAnnouncementModal = function() {
               </div> 
  
               <div style="display:flex; gap:8px; margin-top:8px;"> 
-                <input type="text" id="userReportFollowupInput_${d.id}" class="modern-input" style="padding:6px 10px; font-size:0.82rem;" placeholder="Yöneticiye ek yanıt yazın..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); sendUserReportChatMessage('${d.id}')"> 
+                <input type="text" id="userReportFollowupInput_${d.id}" class="modern-input" style="padding:6px 10px; font-size:0.82rem;" placeholder="Yöneticiye ek yanıt yazın..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); sendUserReportChatMessage('${d.id}'); }"> 
                 <button class="btn-action btn-toggle-on" style="padding:6px 14px; font-size:0.82rem;" onclick="sendUserReportChatMessage('${d.id}')">Gönder ➔</button> 
               </div> 
             </div> 
