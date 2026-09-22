@@ -690,16 +690,45 @@
       user-select: none !important;
     }
 
-    .screen-watermark {
+.screen-watermark, .print-watermark {
       display: none;
-      position: absolute;
-      top: 40%; left: 50%;
-      transform: translate(-50%, -50%) rotate(-25deg);
-      font-size: 24pt; font-weight: bold;
-      color: rgba(148, 163, 184, 0.15);
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-35deg);
+      font-size: 26pt;
+      font-weight: bold;
+      color: rgba(100, 116, 139, 0.18) !important;
       pointer-events: none;
-      z-index: 50; text-align: center;
-      white-space: pre-line; width: 90%;
+      z-index: 9999;
+      text-align: center;
+      white-space: pre-line;
+      width: 100%;
+      line-height: 1.5;
+      letter-spacing: 1px;
+    }
+
+    .maintenance-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      z-index: 999999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .maintenance-card {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 20px;
+      padding: 36px 28px;
+      max-width: 500px;
+      width: 92%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-top: 6px solid #f59e0b;
     }
 
     .whatsapp-container {
@@ -1043,6 +1072,17 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         <button id="customConfirmYesBtn" class="btn-action btn-finish-test" style="flex: 1; justify-content: center;">Evet, Devam Et</button>
         <button class="btn-action" style="flex: 1; justify-content: center;" onclick="closeCustomConfirm()">İptal</button>
       </div>
+    </div>
+  </div>
+  <!-- SİSTEM BAKIMA ALINDI KİLİTLİ EKRANI -->
+  <div id="systemMaintenanceScreen" class="maintenance-overlay" style="display: none;">
+    <div class="maintenance-card">
+      <div style="font-size: 3.8rem; margin-bottom: 10px;">🛠️</div>
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: #b45309; margin-bottom: 10px;">SİSTEM BAKIMA ALINDI</h2>
+      <p style="font-size: 0.9rem; color: #475569; margin-bottom: 15px;">Sistemimizi sizler için güncelliyor ve optimize ediyoruz. Belirtilen süre boyunca işlem gerçekleştirilemez.</p>
+      <div id="maintenanceTimeBox" style="font-size: 0.88rem; font-weight: bold; color: #1e40af; background: #eff6ff; padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe; margin-bottom: 15px;"></div>
+      <div id="maintenanceMsgBox" style="font-size: 0.85rem; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; white-space: pre-line;"></div>
+      <button class="btn-proceed" style="background: #475569;" onclick="signOutAndReload()">🚪 Çıkış Yap</button>
     </div>
   </div>
   <!-- ENGELLENMİŞ KULLANICI EKRANI -->
@@ -1635,105 +1675,161 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         </div>
 
 
-        <!-- YENİ EKLENECEK DUYURU SEKME İÇERİĞİ BURAYA -->
-        <div id="adminTabAnnouncements" style="display: none; flex-direction: column; gap: 15px; max-width: 600px;">
-          <h4 style="color: var(--bg-dark);">📢 Kullanıcı Ekranlarına Duyuru / Bildirim Gönder</h4>
+<!-- DUYURU VE BAKIM PLANLAMA SEKMESİ -->
+        <div id="adminTabAnnouncements" style="display: none; flex-direction: row; gap: 20px; flex-wrap: wrap;">
           
-<div class="input-control" id="announcementTargetControlWrapper">
-            <label style="font-weight: 600; font-size: 0.85rem; color: #475569; display: block; margin-bottom: 6px;">Hedef Kitle / Kullanıcı Seçimi:</label>
-            <select id="announcementTargetType" class="modern-input" onchange="toggleAnnouncementTargetInput(this.value)">
-              <option value="all" selected>🌐 Tüm Kullanıcılar</option>
-              <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
-              <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
-              <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
-              <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
-              <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
-            </select>
+          <!-- SOL TARAF: NORMAL DUYURU -->
+          <div style="flex: 1; min-width: 300px; background: var(--surface); padding: 18px; border-radius: 12px; border: 1px solid var(--border);">
+            <h4 style="color: var(--bg-dark); margin-bottom: 12px;">📢 Genen Duyuru / Bildirim Gönder</h4>
+            
+            <div class="input-control" id="announcementTargetControlWrapper">
+              <label style="font-weight: 600; font-size: 0.85rem; color: #475569; display: block; margin-bottom: 6px;">Hedef Kitle / Kullanıcı Seçimi:</label>
+              <select id="announcementTargetType" class="modern-input" onchange="toggleAnnouncementTargetInput(this.value)">
+                <option value="all" selected>🌐 Tüm Kullanıcılar</option>
+                <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
+                <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
+                <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
+                <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
+                <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
+              </select>
 
-            <div id="specificUserSearchWrapper" style="display: none; margin-top: 8px; position: relative;">
-              <input type="text" id="announcementUserSearch" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazarak arayın..." oninput="filterAnnouncementUsers(this.value)">
-              <div id="announcementUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 190px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
+              <div id="specificUserSearchWrapper" style="display: none; margin-top: 8px; position: relative;">
+                <input type="text" id="announcementUserSearch" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazarak arayın..." oninput="filterAnnouncementUsers(this.value)">
+                <div id="announcementUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 190px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
+              </div>
+            </div>
+
+            <div class="input-control">
+              <label>Duyuru Başlığı:</label>
+              <input type="text" id="announceTitleInput" class="modern-input" placeholder="Örn: Yeni Güncelleme">
+            </div>
+
+            <div class="input-control">
+              <label>Duyuru Metni:</label>
+              <textarea id="announceTextInput" class="modern-input" rows="4" placeholder="Kullanıcıların ekranında görünecek mesajı yazın..."></textarea>
+            </div>
+
+            <div class="input-control">
+              <label>Gösterim Süresi:</label>
+              <select id="announceDurationSelect" class="modern-input">
+                <option value="0">⚡ Tek Seferlik (İlk Girişte Görünür)</option>
+                <option value="1" selected>📅 1 Gün Boyunca</option>
+                <option value="3">📅 3 Gün Boyunca</option>
+                <option value="7">📅 7 Gün Boyunca</option>
+                <option value="30">📅 30 Gün Boyunca</option>
+              </select>
+            </div>
+
+            <button class="btn-action btn-toggle-on" style="padding: 10px; width: 100%; justify-content: center;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
+          </div>
+
+          <!-- SAĞ TARAF: BAKIM MODU & BAKIM DUYURUSU -->
+          <div style="flex: 1; min-width: 300px; background: #fffbe6; padding: 18px; border-radius: 12px; border: 1px solid #fde68a;">
+            <h4 style="color: #b45309; margin-bottom: 12px;">🛠️ Sistem Bakım Modu & Duyuru Paneli</h4>
+            <p style="font-size:0.8rem; color:#78350f; margin-bottom:12px;">Planlanan tarih ve saatler geldiğinde seçtiğiniz kullanıcıların ekranı otomatik olarak kapanacak ve "Sistem Bakıma Alındı" ekranı çıkacaktır.</p>
+
+            <div class="input-control">
+              <label style="color:#78350f;">Bakım Hedef Kitlesi:</label>
+              <select id="maintTargetType" class="modern-input">
+                <option value="all" selected>🌐 Tüm Kullanıcılar (Adminler Hariç)</option>
+                <option value="Ucretsiz">🔄 Sadece Ücretsiz Üyeler</option>
+                <option value="Deneme">⏳ Sadece Deneme Üyeleri</option>
+                <option value="Premium">⭐ Sadece Premium Üyeler</option>
+                <option value="VIP">👑 Sadece VIP Üyeler</option>
+              </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold; color:#78350f;">Başlangıç Tarih & Saat:</label>
+                <input type="datetime-local" id="maintStartTime" class="modern-input">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold; color:#78350f;">Bitiş Tarih & Saat:</label>
+                <input type="datetime-local" id="maintEndTime" class="modern-input">
+              </div>
+            </div>
+
+            <div class="input-control">
+              <label style="color:#78350f;">Bakım Açıklaması / Kullanıcıya Bildirim Metni:</label>
+              <textarea id="maintMessageInput" class="modern-input" rows="3" placeholder="Örn: Sistem altyapı çalışmaları nedeniyle saat 22:00-23:00 arası bakımdadır."></textarea>
+            </div>
+
+            <div class="toggle-tile" style="margin-bottom: 15px; background: white;">
+              <span style="font-weight:bold; color:#b45309;">Bakım Modunu Aktif Et</span>
+              <label class="switch">
+                <input type="checkbox" id="chkEnableMaintenance">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <button class="btn-action btn-toggle-on" style="background:#d97706 !important; border-color:#b45309 !important; padding:10px; width:100%; justify-content:center;" onclick="saveMaintenanceSettings()">💾 Bakım Ayarlarını Kaydet ve Yayınla</button>
+          </div>
+
+        </div>
+<!-- SEKME: SORU VE BASKI SINIRLAMALARI -->
+        <div id="adminTabLimits" style="display: none; flex-direction: column; gap: 15px; max-width: 650px;">
+          <h4 style="color: var(--bg-dark);">⚙️ Günlük Kullanım Limitleri ve Filigran Ayarları</h4>
+          <p style="font-size:0.83rem; color:#64748b;">Üyelik tiplerine göre günlük soru oluşturma, baskı alma limitlerini ve filigran ayarlarını buradan yönetebilirsiniz.</p>
+
+          <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+            <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">📊 Üyelik Tiplerine Göre Günlük Soru Limitleri</h5>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Soru Limit:</label>
+                <input type="number" id="limitFreeCreate" class="modern-input" value="10" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Yazdırma Limit:</label>
+                <input type="number" id="limitFreePrint" class="modern-input" value="5" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Soru Limit:</label>
+                <input type="number" id="limitTrialCreate" class="modern-input" value="25" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Yazdırma Limit:</label>
+                <input type="number" id="limitTrialPrint" class="modern-input" value="15" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Soru Limit:</label>
+                <input type="number" id="limitPremiumCreate" class="modern-input" value="100" min="0">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Yazdırma Limit:</label>
+                <input type="number" id="limitPremiumPrint" class="modern-input" value="50" min="0">
+              </div>
             </div>
           </div>
 
-          <div class="input-control">
-            <label>Duyuru Başlığı:</label>
-            <input type="text" id="announceTitleInput" class="modern-input" placeholder="Örn: Sistem Bakımı / Yeni Güncelleme">
+          <!-- YENİ: GÜNLÜK HAKLARI YENİLEME / SIFIRLAMA BUTONU -->
+          <div style="background: #eff6ff; padding: 16px; border-radius: 10px; border: 1px solid #bfdbfe;">
+            <h5 style="font-size:0.9rem; margin-bottom:6px; color:#1e40af;">🔄 Günlük Kullanıcı Haklarını Yenile</h5>
+            <p style="font-size:0.8rem; color:#3b82f6; margin-bottom:10px;">Tüm kullanıcıların bugün harcadığı soru ve yazdırma haklarını anında sıfırlayarak limitlerini tekrar doldurabilirsiniz.</p>
+            <button class="btn-action btn-toggle-on" style="background:#2563eb !important; padding:8px 16px;" onclick="resetAllUsersDailyLimits()">🔄 Tüm Kullanıcıların Bugünkü Haklarını Yenile / Sıfırla</button>
           </div>
 
-          <div class="input-control">
-            <label>Duyuru Metni:</label>
-            <textarea id="announceTextInput" class="modern-input" rows="4" placeholder="Kullanıcıların ekranında görünecek mesajı yazın..."></textarea>
+          <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+            <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">🖼️ Çapraz Filigran Ayarları (Baskı / PDF)</h5>
+            
+            <label style="font-size:0.8rem; font-weight:bold; color:#475569; display:block; margin-bottom:6px;">Filigran Hangi Üyelik Tiplerinde Görünsün?</label>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; background:white; padding:10px; border-radius:8px; border:1px solid var(--border);">
+              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierFree" checked> 🔄 Ücretsiz</label>
+              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierTrial" checked> ⏳ Deneme</label>
+              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierPremium"> ⭐ Premium</label>
+              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierVIP"> 👑 VIP</label>
+            </div>
+
+            <div class="input-control">
+              <label style="font-size:0.8rem; font-weight:bold;">Filigran Alt Metni (Sabit Yazı):</label>
+              <input type="text" id="watermarkCustomText" class="modern-input" value="Nöroloji Soru Hazırlama Paneli ®">
+              <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">* Üst satırda otomatik olarak kullanıcının Gmail adresi, alt satırda ise yukarıdaki yazı çapraz şekilde görünecektir.</div>
+            </div>
           </div>
 
-          <div class="input-control">
-            <label>Gösterim Süresi (Ekranda Kaç Gün Kalacak?):</label>
-            <select id="announceDurationSelect" class="modern-input">
-              <option value="0">⚡ Tek Seferlik (İlk Girişte Görünür ve Kapanır)</option>
-              <option value="1" selected>📅 1 Gün Boyunca</option>
-              <option value="3">📅 3 Gün Boyunca</option>
-              <option value="7">📅 7 Gün Boyunca</option>
-              <option value="30">📅 30 Gün Boyunca</option>
-            </select>
-          </div>
-
-          <button class="btn-action btn-toggle-on" style="padding: 10px;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
+          <button class="btn-action btn-toggle-on" style="padding:10px;" onclick="saveSystemLimits()">💾 Limit ve Filigran Ayarlarını Kaydet</button>
         </div>
-        <!-- SEKME: SORU VE BASKI SINIRLAMALARI -->
-<div id="adminTabLimits" style="display: none; flex-direction: column; gap: 15px; max-width: 650px;">
-  <h4 style="color: var(--bg-dark);">⚙️ Günlük Kullanım Limitleri ve Filigran Ayarları</h4>
-  <p style="font-size:0.83rem; color:#64748b;">Üyelik tiplerine göre günlük soru oluşturma, baskı alma limitlerini ve filigran ayarlarını buradan yönetebilirsiniz.</p>
-
-  <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
-    <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">📊 Üyelik Tiplerine Göre Günlük Soru Limitleri</h5>
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
-      <div>
-        <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Soru Limit:</label>
-        <input type="number" id="limitFreeCreate" class="modern-input" value="10" min="0">
-      </div>
-      <div>
-        <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Yazdırma Limit:</label>
-        <input type="number" id="limitFreePrint" class="modern-input" value="5" min="0">
-      </div>
-      <div>
-        <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Soru Limit:</label>
-        <input type="number" id="limitTrialCreate" class="modern-input" value="25" min="0">
-      </div>
-      <div>
-        <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Yazdırma Limit:</label>
-        <input type="number" id="limitTrialPrint" class="modern-input" value="15" min="0">
-      </div>
-      <div>
-        <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Soru Limit:</label>
-        <input type="number" id="limitPremiumCreate" class="modern-input" value="100" min="0">
-      </div>
-      <div>
-        <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Yazdırma Limit:</label>
-        <input type="number" id="limitPremiumPrint" class="modern-input" value="50" min="0">
-      </div>
-    </div>
-  </div>
-
-  <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
-    <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">🖼️ Filigran Ayarları (Baskı / PDF)</h5>
-    
-    <div class="toggle-tile" style="margin-bottom:10px;">
-      <span>Ücretsiz & Deneme Üyelerde Filigran Göster</span>
-      <label class="switch">
-        <input type="checkbox" id="chkEnableWatermark" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="input-control">
-      <label style="font-size:0.8rem; font-weight:bold;">Filigran Metni (Sabit Yazı):</label>
-      <input type="text" id="watermarkCustomText" class="modern-input" value="Nöroloji Soru Hazırlama Paneli ®">
-    </div>
-  </div>
-
-  <button class="btn-action btn-toggle-on" style="padding:10px;" onclick="saveSystemLimits()">💾 Limit ve Filigran Ayarlarını Kaydet</button>
-</div>
         <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
         <div id="adminTabSettings" style="display: none; max-width: 450px;">
           <h4 style="margin-bottom: 12px; color: var(--bg-dark);">🔐 Yönetici Kullanıcı Adı & Şifre Güncelle</h4>
@@ -2855,16 +2951,20 @@ async function triggerPrint() {
   const screenWatermark = document.getElementById('screenWatermark');
   const printWatermark = document.getElementById('printWatermark');
 
-  // Akıllı ve Dinamik Filigran Kontrolü
-  if (window.systemLimits && window.systemLimits.enableWatermark && (userTier === 'Ücretsiz' || userTier === 'Deneme') && !window.currentUserIsAdmin) {
-    const text = `${window.systemLimits.watermarkText}\n${userEmail}`;
+  // Dinamik ve Seçilebilir Filigran Katman Kontrolü
+  const enabledTiers = window.systemLimits?.watermarkTiers || ['Ücretsiz', 'Deneme'];
+  const shouldShowWM = !window.currentUserIsAdmin && enabledTiers.includes(userTier);
+
+  if (shouldShowWM) {
+    const baseText = window.systemLimits?.watermarkText || "Nöroloji Soru Hazırlama Paneli ®";
+    const text = `${userEmail}\n${baseText}`;
     if (printWatermark) {
       printWatermark.innerText = text;
       printWatermark.style.display = 'block';
     }
     if (screenWatermark) {
       screenWatermark.innerText = text;
-      screenWatermark.style.display = userTier === 'Ücretsiz' ? 'block' : 'none';
+      screenWatermark.style.display = 'block';
     }
   } else {
     if (printWatermark) {
@@ -3658,7 +3758,7 @@ window.closeAnnouncementModal = function() {
       let docData = userSnap.exists() ? userSnap.data() : {};
 
       // Esnek Yönetici Doğrulaması (Custom Claim VEYA E-posta Listesi VEYA Firestore 'admin' rolü)
-      const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
+const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
       const isClaimAdmin = tokenResult.claims.admin === true;
       const isRoleAdmin = docData.rol === 'admin';
       const isAdmin = isClaimAdmin || isEmailAdmin || isRoleAdmin;
@@ -3667,11 +3767,19 @@ window.closeAnnouncementModal = function() {
       window.isAdminSessionActive = isAdmin; 
       sessionStartTime = Date.now(); 
       window.currentUserEmail = user.email; 
+
+      // Admin ve Kullanıcı İsmi Düzeltmesi
+      let resolvedName = user.displayName || docData.adSoyad;
+      if (!resolvedName || resolvedName === "Belirtilmedi" || resolvedName === "...") {
+        if (user.email === 'kgulsen1994@gmail.com') resolvedName = "Dr. Kadir GÜLŞEN";
+        else if (user.email) resolvedName = user.email.split('@')[0];
+        else resolvedName = "Kullanıcı";
+      }
  
       if (!userSnap.exists()) { 
         currentUserData = { 
           email: user.email, 
-          adSoyad: user.displayName || "Belirtilmedi", 
+          adSoyad: resolvedName, 
           sonGirisTarihi: serverTimestamp(), 
           denemeBaslangicTarihi: serverTimestamp(), 
           durum: isAdmin ? "VIP" : "Deneme", 
@@ -3682,10 +3790,10 @@ window.closeAnnouncementModal = function() {
         await setDoc(userRef, currentUserData); 
       } else { 
         currentUserData = docData; 
-        currentUserData = { ...currentUserData, rol: isAdmin ? "admin" : (currentUserData.rol || "kullanici") }; 
+        currentUserData = { ...currentUserData, adSoyad: resolvedName, rol: isAdmin ? "admin" : (currentUserData.rol || "kullanici") }; 
         await updateDoc(userRef, {  
           sonGirisTarihi: serverTimestamp(), 
-          adSoyad: user.displayName || currentUserData.adSoyad || "Belirtilmedi" 
+          adSoyad: resolvedName 
         }); 
       } 
  
@@ -3693,21 +3801,27 @@ window.closeAnnouncementModal = function() {
       if (checkAndHandleBannedUser(currentUserData)) return; 
  
       window.currentUserTier = isAdmin ? 'VIP' : currentUserData.durum; 
-      const formattedName = formatNameSurname(currentUserData.adSoyad || user.displayName || user.email); 
+      const formattedName = formatNameSurname(currentUserData.adSoyad); 
       document.querySelectorAll('.user-name-target').forEach(el => el.textContent = formattedName); 
  
       updateMainUserStarsDisplay(currentUserData.uyariSayisi || 0); 
  
       const btnRedeem = document.getElementById('btnRedeemLicense'); 
       const btnAdmin = document.getElementById('btnAdminPanel'); 
- 
+      const btnCheckReports = document.getElementById('btnCheckMyReports');
+      const btnContact = document.getElementById('btnContactAdmin');
+
       if (isAdmin) { 
         if (btnRedeem) btnRedeem.style.display = 'none'; 
         if (btnAdmin) btnAdmin.style.display = 'inline-flex'; 
+        if (btnCheckReports) btnCheckReports.style.display = 'none';
+        if (btnContact) btnContact.style.display = 'none';
       } else { 
         if (btnRedeem) btnRedeem.style.display = 'inline-flex'; 
         if (btnAdmin) btnAdmin.style.display = 'none'; 
-      } 
+        if (btnCheckReports) btnCheckReports.style.display = 'inline-flex';
+        if (btnContact) btnContact.style.display = 'inline-flex';
+      }
  
       const tierBadge = document.getElementById('userTierBadge'); 
       if (tierBadge) { 
@@ -3741,16 +3855,22 @@ window.closeAnnouncementModal = function() {
     } 
   }); 
 
-  window.systemLimits = {
+window.systemLimits = {
     freeCreate: 10, freePrint: 5,
     trialCreate: 25, trialPrint: 15,
     premiumCreate: 100, premiumPrint: 50,
-    enableWatermark: true,
+    watermarkTiers: ['Ücretsiz', 'Deneme'],
     watermarkText: "Nöroloji Soru Hazırlama Paneli ®"
   };
 
   window.saveSystemLimits = async function() {
     try {
+      const selectedTiers = [];
+      if (document.getElementById('wmTierFree')?.checked) selectedTiers.push('Ücretsiz');
+      if (document.getElementById('wmTierTrial')?.checked) selectedTiers.push('Deneme');
+      if (document.getElementById('wmTierPremium')?.checked) selectedTiers.push('Premium');
+      if (document.getElementById('wmTierVIP')?.checked) selectedTiers.push('VIP');
+
       const limits = {
         freeCreate: parseInt(document.getElementById('limitFreeCreate').value) || 10,
         freePrint: parseInt(document.getElementById('limitFreePrint').value) || 5,
@@ -3758,7 +3878,7 @@ window.closeAnnouncementModal = function() {
         trialPrint: parseInt(document.getElementById('limitTrialPrint').value) || 15,
         premiumCreate: parseInt(document.getElementById('limitPremiumCreate').value) || 100,
         premiumPrint: parseInt(document.getElementById('limitPremiumPrint').value) || 50,
-        enableWatermark: document.getElementById('chkEnableWatermark').checked,
+        watermarkTiers: selectedTiers,
         watermarkText: document.getElementById('watermarkCustomText').value.trim() || "Nöroloji Soru Hazırlama Paneli ®"
       };
 
@@ -3771,6 +3891,59 @@ window.closeAnnouncementModal = function() {
     } catch(err) {
       showToast("Limitler kaydedilirken hata: " + err.message, "error");
     }
+  };
+
+  window.resetAllUsersDailyLimits = function() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('used_q_') || key.startsWith('used_print_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    window.updateUserLimitBadgeDisplay();
+    showToast("Tüm kullanıcıların bugünkü hakları başarıyla sıfırlandı ve yenilendi!", "success");
+  };
+
+  window.saveMaintenanceSettings = async function() {
+    try {
+      const maint = {
+        targetType: document.getElementById('maintTargetType').value,
+        startTime: document.getElementById('maintStartTime').value,
+        endTime: document.getElementById('maintEndTime').value,
+        message: document.getElementById('maintMessageInput').value.trim(),
+        active: document.getElementById('chkEnableMaintenance').checked,
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(doc(db, "ayarlar", "sistem_bakim"), maint);
+      showToast("Bakım modu ayarları başarıyla yayınlandı!", "success");
+    } catch(err) {
+      showToast("Bakım ayarları kaydedilemedi: " + err.message, "error");
+    }
+  };
+
+  window.checkSystemMaintenanceStatus = async function() {
+    if (window.currentUserIsAdmin) return;
+    try {
+      const snap = await getDoc(doc(db, "ayarlar", "sistem_bakim"));
+      if (!snap.exists()) return;
+      const m = snap.data();
+      if (!m.active) return;
+
+      const now = new Date().getTime();
+      const start = new Date(m.startTime).getTime();
+      const end = new Date(m.endTime).getTime();
+
+      const userTier = window.currentUserTier || 'Ücretsiz';
+      const isTarget = m.targetType === 'all' || m.targetType === userTier;
+
+      if (isTarget && now >= start && now <= end) {
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('systemMaintenanceScreen').style.display = 'flex';
+        document.getElementById('maintenanceTimeBox').innerText = `🕒 Bakım Süresi: ${new Date(m.startTime).toLocaleString('tr-TR')} - ${new Date(m.endTime).toLocaleString('tr-TR')}`;
+        document.getElementById('maintenanceMsgBox').innerText = m.message || 'Sistem bakım modundadır.';
+      }
+    } catch(e) {}
   };
 
   window.loadSystemLimits = async function() {
@@ -5400,7 +5573,7 @@ window.closeAnnouncementModal = function() {
     } 
   }; 
  
-  window.changeUserStatus = async function(uid, newStatus) { 
+window.changeUserStatus = async function(uid, newStatus) { 
     if (!newStatus) return; 
     if (newStatus === 'Engellendi') { 
       await updateDoc(doc(db, "kullanicilar", uid), { 
@@ -5414,10 +5587,19 @@ window.closeAnnouncementModal = function() {
         engellenmeNedenleri: [], 
         activeWarning: null 
       }); 
+
+      // Oturum açmış olan kullanıcının yetkisi değiştirildiyse haklarını ve rozetini anında güncelle
+      if (auth.currentUser && auth.currentUser.uid === uid) {
+        window.currentUserTier = newStatus;
+        const todayStr = new Date().toISOString().split('T')[0];
+        localStorage.removeItem(`used_q_${uid}_${todayStr}`);
+        localStorage.removeItem(`used_print_${uid}_${todayStr}`);
+        window.updateUserLimitBadgeDisplay();
+      }
     } 
-    showToast(`Kullanıcı durumu "${newStatus}" olarak güncellendi ve kısıtlamaları kaldırıldı.`, 'success'); 
+    showToast(`Kullanıcı durumu "${newStatus}" olarak güncellendi, soru hakları ve kısıtlamaları otomatik yenilendi.`, 'success'); 
     await fetchAndRenderUsers(currentCategoryFilter); 
-  }; 
+  };
 
   window.showCustomAlert = function(title, message, icon = '🚨') { 
     const iconEl = document.getElementById('customAlertIcon'); 
