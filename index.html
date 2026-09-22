@@ -1303,11 +1303,11 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         </label>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: 15px;">
-        <button class="btn-action btn-toggle-on" style="flex: 1; justify-content: center;" onclick="closeHeaderCustomizerModal()">👍 Kaydet ve Kapat</button>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 8px; text-align: center; line-height: 1.3;">
-  Not: Yazdırma seçeneklerinde üst ve alt bilgiyi kapalı tutmanız önerilir.
-</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+        <button class="btn-action btn-toggle-on" style="width: 100%; justify-content: center;" onclick="closeHeaderCustomizerModal()">👍 Kaydet ve Kapat</button>
+        <div style="width: 100%; font-size: 0.75rem; color: #64748b; margin-top: 0; text-align: center; line-height: 1.3;">
+          Not: Yazdırma seçeneklerinde üst ve alt bilgiyi kapalı tutmanız önerilir.
+        </div>
       </div>
     </div>
   </div>
@@ -1869,7 +1869,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         </div>
 
         <div class="action-btn-group">
-          <button id="btnOpenSideAnalysis" class="btn-action btn-toggle-on" style="display: none; background: #8b5cf6 !important; border-color: #7c3aed !important;" onclick="openSideAnalysisPanel()">
+          <button id="btnOpenSideAnalysis" class="btn-action analysis-toggle-btn" style="display: none;" onclick="openSideAnalysisPanel()">
             📊 Detaylı Konu Analizi
           </button>
 
@@ -2716,28 +2716,25 @@ if (window.checkDailyLimitAndIncrement) {
 function updateAnalysisButtonUI() {
     const analysisBtn = document.getElementById('btnOpenSideAnalysis');
     if (!analysisBtn) return;
-    if (isAnalysisActive) {
-      analysisBtn.className = 'btn-action btn-toggle-on';
-      analysisBtn.style.background = '#2563eb';
-      analysisBtn.style.borderColor = '#1d4ed8';
-      analysisBtn.style.color = '#fff';
-    } else {
-      analysisBtn.className = 'btn-action btn-toggle-off';
-      analysisBtn.style.background = '#f1f5f9';
-      analysisBtn.style.borderColor = '#cbd5e1';
-      analysisBtn.style.color = '#475569';
-    }
-  }
 
+    // Cevap Anahtarı:GİZLİ butonu gibi koyu/siyah ton.
+    analysisBtn.className = 'btn-action analysis-toggle-btn';
+    analysisBtn.style.display = 'inline-flex';
+    analysisBtn.style.background = '#1e293b';
+    analysisBtn.style.borderColor = '#475569';
+    analysisBtn.style.color = '#f8fafc';
+    analysisBtn.style.boxShadow = isAnalysisActive
+      ? '0 0 0 1px rgba(148,163,184,0.25), 0 0 12px rgba(15,23,42,0.45)'
+      : 'none';
+  }
   function activateAnalysisMode() {
     closeResultModal();
-    isAnalysisActive = true;
+    isAnalysisActive = false;
     currentExpMode = 'inline';
     currentKeyMode = 'none';
     document.getElementById('expModeSelect').value = 'inline';
     document.getElementById('keyModeSelect').value = 'none';
 
-    updateAnalysisButtonUI();
     openSideAnalysisPanel();
     buildPaperView(currentQuestionsList);
     showToast("Analiz modu aktif.", "success");
@@ -2745,32 +2742,48 @@ function updateAnalysisButtonUI() {
 
   window.openSideAnalysisPanel = function() {
     const userTier = window.currentUserTier || 'Ücretsiz';
-    if (userTier === 'Ücretsiz') return;
+    if (userTier === 'Ücretsiz') {
+      showToast('Detaylı Konu Analizi Premium ve üzeri üyeliklerde kullanılabilir.', 'warning');
+      return;
+    }
 
     const panel = document.getElementById('sideAnalysisPanel');
     const content = document.getElementById('sideAnalysisContent');
-    
-    if (window.lastTestTopicStats && panel && content) {
-      const st = window.lastTestTopicStats;
-      let html = `<div style="margin-bottom:12px; font-weight:bold;">Toplam ${st.total} Soru<br><span style="color:#10b981;">Doğru: ${st.correct}</span> | <span style="color:#ef4444;">Yanlış: ${st.wrong}</span> | <span style="color:#8b5cf6;">Boş: ${st.blank}</span></div><hr style="margin:10px 0; border:none; border-top:1px solid #e2e8f0;">`;
-      for (const [tName, data] of Object.entries(st.topicStats)) {
-        html += `
-          <div style="margin-bottom: 10px; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--primary);">
-            <div style="font-weight: bold; color: #1e293b;">${tName} (${data.total} Soru)</div>
-            <div style="font-size: 0.8rem; color: #475569; margin-top: 2px;">
-              ✅ ${data.correct} Doğru | ❌ ${data.wrong} Yanlış | ❓ ${data.blank} Boş
-            </div>
-          </div>
-        `;
-      }
-      content.innerHTML = html;
-      panel.style.display = 'block';
+    if (!panel || !content || !window.lastTestTopicStats) return;
+
+    // Aynı tuşa tekrar basılırsa analiz panelini kapat.
+    if (panel.style.display === 'block') {
+      panel.style.display = 'none';
+      isAnalysisActive = false;
+      updateAnalysisButtonUI();
+      buildPaperView(currentQuestionsList);
+      return;
     }
+
+    isAnalysisActive = true;
+    const st = window.lastTestTopicStats;
+    let html = `<div style="margin-bottom:12px; font-weight:bold;">Toplam ${st.total} Soru<br><span style="color:#10b981;">Doğru: ${st.correct}</span> | <span style="color:#ef4444;">Yanlış: ${st.wrong}</span> | <span style="color:#8b5cf6;">Boş: ${st.blank}</span></div><hr style="margin:10px 0; border:none; border-top:1px solid #e2e8f0;">`;
+    for (const [tName, data] of Object.entries(st.topicStats || {})) {
+      html += `
+        <div style="margin-bottom: 10px; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--primary);">
+          <div style="font-weight: bold; color: #1e293b;">${tName} (${data.total} Soru)</div>
+          <div style="font-size: 0.8rem; color: #475569; margin-top: 2px;">
+            ✅ ${data.correct} Doğru | ❌ ${data.wrong} Yanlış | ❓ ${data.blank} Boş
+          </div>
+        </div>
+      `;
+    }
+    content.innerHTML = html;
+    panel.style.display = 'block';
+    updateAnalysisButtonUI();
   };
 
   window.closeSideAnalysisPanel = function() {
     const panel = document.getElementById('sideAnalysisPanel');
     if (panel) panel.style.display = 'none';
+    isAnalysisActive = false;
+    updateAnalysisButtonUI();
+    if (currentQuestionsList && currentQuestionsList.length) buildPaperView(currentQuestionsList);
   };
 
   async function triggerPrint() {
@@ -3634,13 +3647,12 @@ function listenIncomingAdminNotifications(uid) {
         await window.checkSystemAnnouncements(user.uid); 
       } 
  
-// Yönetici veya admin yetkili hesaplarda otomatik soru yüklemeyi tetikleme 
-      if (!isAdminClaim && !window.isAdminEmailLogin) { 
-        if (typeof masterPool !== 'undefined' && masterPool.length === 0) { 
-          window.loadDataAndInit(); 
-        } 
-      } else { 
-        hideLoading(); // Yükleme ekranını derhal kapat 
+// Yönetici dahil giriş yapan her hesapta soru havuzu boşsa yüklemeyi başlat.
+      // Admin ekranına erişim, soru havuzunun yüklenmesini engellememelidir.
+      if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
+        await window.loadDataAndInit();
+      } else {
+        hideLoading();
       } 
  
     } else { 
