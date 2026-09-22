@@ -1773,16 +1773,26 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
         </div>
 <!-- SEKME: SORU VE BASKI SINIRLAMALARI -->
-        <div id="adminTabLimits" style="display: none; flex-direction: row; gap: 20px; flex-wrap: wrap;">
+        <div id="adminTabLimits" style="display: none; flex-direction: column; gap: 15px; width: 100%;">
           
-          <!-- SOL SÜTUN: GÜNLÜK LİMİTLER VE FİLİGRAN AYARLARI -->
-          <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
-            <h4 style="color: var(--bg-dark);">⚙️ Günlük Kullanım Limitleri ve Filigran Ayarları</h4>
-            
-            <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+          <h4 style="color: var(--bg-dark); margin-bottom: 5px;">⚙️ Soru Sınırlamaları ve Filigran Yönetimi</h4>
+
+          <!-- 🔘 ALT SEKME BUTONLARI -->
+          <div style="display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+            <button id="btnSubLimit" type="button" class="btn-action btn-toggle-on" style="padding: 8px 16px; font-weight: bold;" onclick="switchLimitSubTab('limit')">
+              📊 Günlük Kullanım Limitleri
+            </button>
+            <button id="btnSubWatermark" type="button" class="btn-action btn-toggle-off" style="padding: 8px 16px; font-weight: bold;" onclick="switchLimitSubTab('watermark')">
+              🖼️ Filigran Ayarları
+            </button>
+          </div>
+
+          <!-- 🟢 1. ALT SEKME: GÜNLÜK KULLANIM LİMİTLERİ VE HAK SIFIRLAMA -->
+          <div id="subTabContentLimit" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <!-- Sol: Limitler -->
+            <div style="flex: 1; min-width: 300px; background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
               <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">📊 Üyelik Tiplerine Göre Günlük Soru Limitleri</h5>
-              
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <div>
                   <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Soru Limit:</label>
                   <input type="number" id="limitFreeCreate" class="modern-input" value="10" min="0">
@@ -1810,81 +1820,57 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               </div>
             </div>
 
-            <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
-              <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">🖼️ Çapraz Filigran Ayarları (Baskı / PDF)</h5>
+            <!-- Sağ: Hak Sıfırlama -->
+            <div style="flex: 1; min-width: 300px; background: #eff6ff; padding: 16px; border-radius: 10px; border: 1px solid #bfdbfe;">
+              <h5 style="font-size:0.9rem; margin-bottom:8px; color:#1e40af;">🔄 Günlük Kullanıcı Haklarını Yenile / Sıfırla</h5>
+              <p style="font-size:0.8rem; color:#3b82f6; margin-bottom:12px;">Hedef kitle veya tek bir kullanıcının bugün harcadığı soru/yazdırma limitlerini sıfırlayabilirsiniz.</p>
               
-              <label style="font-size:0.8rem; font-weight:bold; color:#475569; display:block; margin-bottom:6px;">Filigran Hangi Üyelik Tiplerinde Görünsün?</label>
-              <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; background:white; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierFree" checked> 🔄 Ücretsiz</label>
-                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierTrial" checked> ⏳ Deneme</label>
-                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierPremium"> ⭐ Premium</label>
-                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierVIP"> 👑 VIP</label>
+              <div class="input-control" style="margin-bottom:12px;">
+                <label style="font-size:0.82rem; font-weight:bold; color:#1e3a8a; display:block; margin-bottom:4px;">Sıfırlama Yapılacak Hedef Kitle:</label>
+                <select id="resetTargetType" class="modern-input" onchange="toggleResetUserSearchInput(this.value)">
+                  <option value="all" selected>🌐 Tüm Kullanıcılar</option>
+                  <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
+                  <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
+                  <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
+                  <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
+                  <option value="specific">👤 Belirli Bir Kullanıcı (Arayarak Seç)</option>
+                </select>
+
+                <div id="resetSpecificUserWrapper" style="display: none; margin-top: 8px; position: relative;">
+                  <input type="text" id="resetUserSearchInput" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazın..." oninput="filterResetTargetUsers(this.value)">
+                  <input type="hidden" id="selectedResetUserId" value="">
+                  <div id="resetUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 180px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
+                </div>
               </div>
 
-              <div class="input-control">
-                <label style="font-size:0.8rem; font-weight:bold;">Filigran Alt Metni (Sabit Yazı):</label>
-                <input type="text" id="watermarkCustomText" class="modern-input" value="Nöroloji Soru Hazırlama Paneli ®">
-                <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">* Üst satırda otomatik olarak kullanıcının Gmail adresi, alt satırda ise yukarıdaki yazı çapraz şekilde görünecektir.</div>
-              </div>
+              <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center;" onclick="executeTargetedLimitReset()">🔄 Seçilen Hedef İçin Hakları Sıfırla</button>
             </div>
-
-            <button class="btn-action btn-toggle-on" style="padding:10px;" onclick="saveSystemLimits()">💾 Limit ve Filigran Ayarlarını Kaydet</button>
           </div>
 
-          <!-- SAĞ SÜTUN: GELİŞMİŞ GÜNLÜK HAK SIFIRLAMA / YENİLEME -->
-          <div style="flex: 1; min-width: 320px; background: #eff6ff; padding: 18px; border-radius: 12px; border: 1px solid #bfdbfe; height: fit-content;">
-            <h5 style="font-size:0.95rem; margin-bottom:8px; color:#1e40af;">🔄 Günlük Kullanıcı Haklarını Yenile / Sıfırla</h5>
-            <p style="font-size:0.8rem; color:#3b82f6; margin-bottom:14px;">Belirleyeceğiniz hedef kitle veya tek bir kullanıcının bugün harcadığı soru ve yazdırma limitlerini sıfırlayabilirsiniz.</p>
+          <!-- 🔵 2. ALT SEKME: FİLİGRAN AYARLARI -->
+          <div id="subTabContentWatermark" style="display: none; flex-direction: column; gap: 15px; background: var(--surface); padding: 18px; border-radius: 10px; border: 1px solid var(--border);">
+            <h5 style="font-size:0.95rem; color:#1e293b;">🖼️ Çapraz Filigran Ayarları (Baskı / PDF)</h5>
             
-            <div class="input-control" style="margin-bottom:12px;">
-              <label style="font-size:0.82rem; font-weight:bold; color:#1e3a8a; display:block; margin-bottom:4px;">Sıfırlama Yapılacak Hedef Kitle:</label>
-              <select id="resetTargetType" class="modern-input" onchange="toggleResetUserSearchInput(this.value)">
-                <option value="all" selected>🌐 Tüm Kullanıcılar</option>
-                <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
-                <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
-                <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
-                <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
-                <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
-              </select>
-
-              <div id="resetSpecificUserWrapper" style="display: none; margin-top: 8px; position: relative;">
-                <input type="text" id="resetUserSearchInput" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazın..." oninput="filterResetTargetUsers(this.value)">
-                <input type="hidden" id="selectedResetUserId" value="">
-                <div id="resetUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 180px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
-              </div>
-            </div>
-
-            <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center; margin-top:10px;" onclick="executeTargetedLimitReset()">🔄 Seçilen Hedef İçin Hakları Sıfırla</button>
-          </div>
-
-        </div>
-
-          <!-- YENİ: GÜNLÜK HAKLARI YENİLEME / SIFIRLAMA BUTONU -->
-          <div style="background: #eff6ff; padding: 16px; border-radius: 10px; border: 1px solid #bfdbfe;">
-            <h5 style="font-size:0.9rem; margin-bottom:6px; color:#1e40af;">🔄 Günlük Kullanıcı Haklarını Yenile</h5>
-            <p style="font-size:0.8rem; color:#3b82f6; margin-bottom:10px;">Tüm kullanıcıların bugün harcadığı soru ve yazdırma haklarını anında sıfırlayarak limitlerini tekrar doldurabilirsiniz.</p>
-            <button class="btn-action btn-toggle-on" style="background:#2563eb !important; padding:8px 16px;" onclick="resetAllUsersDailyLimits()">🔄 Tüm Kullanıcıların Bugünkü Haklarını Yenile / Sıfırla</button>
-          </div>
-
-          <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
-            <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">🖼️ Çapraz Filigran Ayarları (Baskı / PDF)</h5>
-            
-            <label style="font-size:0.8rem; font-weight:bold; color:#475569; display:block; margin-bottom:6px;">Filigran Hangi Üyelik Tiplerinde Görünsün?</label>
-            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; background:white; padding:10px; border-radius:8px; border:1px solid var(--border);">
-              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierFree" checked> 🔄 Ücretsiz</label>
-              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierTrial" checked> ⏳ Deneme</label>
-              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierPremium"> ⭐ Premium</label>
-              <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierVIP"> 👑 VIP</label>
+            <label style="font-size:0.8rem; font-weight:bold; color:#475569; display:block;">Filigran Hangi Üyelik Tiplerinde Görünsün?</label>
+            <div style="display:flex; gap:15px; flex-wrap:wrap; background:white; padding:12px; border-radius:8px; border:1px solid var(--border);">
+              <label style="font-size:0.85rem; cursor:pointer;"><input type="checkbox" id="wmTierFree" checked> 🔄 Ücretsiz</label>
+              <label style="font-size:0.85rem; cursor:pointer;"><input type="checkbox" id="wmTierTrial" checked> ⏳ Deneme</label>
+              <label style="font-size:0.85rem; cursor:pointer;"><input type="checkbox" id="wmTierPremium"> ⭐ Premium</label>
+              <label style="font-size:0.85rem; cursor:pointer;"><input type="checkbox" id="wmTierVIP"> 👑 VIP</label>
             </div>
 
             <div class="input-control">
-              <label style="font-size:0.8rem; font-weight:bold;">Filigran Alt Metni (Sabit Yazı):</label>
+              <label style="font-size:0.85rem; font-weight:bold;">Filigran Alt Metni (Sabit Yazı):</label>
               <input type="text" id="watermarkCustomText" class="modern-input" value="Nöroloji Soru Hazırlama Paneli ®">
               <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">* Üst satırda otomatik olarak kullanıcının Gmail adresi, alt satırda ise yukarıdaki yazı çapraz şekilde görünecektir.</div>
             </div>
           </div>
 
-          <button class="btn-action btn-toggle-on" style="padding:10px;" onclick="saveSystemLimits()">💾 Limit ve Filigran Ayarlarını Kaydet</button>
+          <!-- 💾 ORTAK KAYDET BUTONU -->
+          <button class="btn-action btn-toggle-on" style="padding:12px; width:100%; justify-content:center; font-weight:bold; margin-top:5px;" onclick="saveSystemLimits()">
+            💾 Limit ve Filigran Ayarlarını Kaydet
+          </button>
+
         </div>
         <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
         <div id="adminTabSettings" style="display: none; max-width: 450px;">
@@ -3933,7 +3919,9 @@ if (currentUserData.durum === 'Deneme' && !isAdmin) {
         await window.checkSystemAnnouncements(user.uid); 
       } 
  
-      if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
+if (isAdmin) {
+        hideLoading(); // Admin girişi yapıldığında soruları arka planda yüklemeyi engeller
+      } else if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
         await window.loadDataAndInit();
       } else {
         hideLoading();
@@ -3953,7 +3941,24 @@ window.systemLimits = {
     watermarkTiers: ['Ücretsiz', 'Deneme'],
     watermarkText: "Nöroloji Soru Hazırlama Paneli ®"
   };
+window.switchLimitSubTab = function(tab) {
+    const limitDiv = document.getElementById('subTabContentLimit');
+    const wmDiv = document.getElementById('subTabContentWatermark');
+    const btnLimit = document.getElementById('btnSubLimit');
+    const btnWm = document.getElementById('btnSubWatermark');
 
+    if (tab === 'limit') {
+      if (limitDiv) limitDiv.style.display = 'flex';
+      if (wmDiv) wmDiv.style.display = 'none';
+      if (btnLimit) btnLimit.className = 'btn-action btn-toggle-on';
+      if (btnWm) btnWm.className = 'btn-action btn-toggle-off';
+    } else {
+      if (limitDiv) limitDiv.style.display = 'none';
+      if (wmDiv) wmDiv.style.display = 'flex';
+      if (btnWm) btnWm.className = 'btn-action btn-toggle-on';
+      if (btnLimit) btnLimit.className = 'btn-action btn-toggle-off';
+    }
+  };
   window.saveSystemLimits = async function() {
     try {
       const selectedTiers = [];
