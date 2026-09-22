@@ -1092,6 +1092,11 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
       <h2 style="font-size: 1.4rem; font-weight: 800; color: #991b1b; margin-bottom: 10px;">HESABINIZ ENGELLENDİ</h2>
       <p id="bannedDurationText" style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; background: #fee2e2; padding: 10px; border-radius: 8px;"></p>
       <div id="bannedReasonsBox" style="font-size: 0.88rem; color: #475569; text-align: left; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; line-height: 1.5;"></div>
+      <!-- SİSTEMİ YENİLE BUTONU (SADECE ADMİN VE YÖNETİCİLER GÖRÜR) -->
+<!-- TÜM KULLANICILAR İÇİN SAYFAYI YENİLE BUTONU -->
+<button id="btnRefreshSystemPage" onclick="location.reload()" style="background: #10b981; color: white; border: none; padding: 7px 13px; border-radius: 8px; font-weight: bold; font-size: 0.83rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); margin-right: 8px; transition: transform 0.1s;" title="Sayfayı Yenile ve Güncellemeleri Yükle">
+  <span style="font-size: 1rem; display: inline-block;">🔄</span> Sayfayı Yenile
+</button>
       <button class="btn-proceed" style="background: #991b1b;" onclick="signOutAndReload()">🚪 Çıkış Yap</button>
     </div>
   </div>
@@ -1768,40 +1773,91 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
         </div>
 <!-- SEKME: SORU VE BASKI SINIRLAMALARI -->
-        <div id="adminTabLimits" style="display: none; flex-direction: column; gap: 15px; max-width: 650px;">
-          <h4 style="color: var(--bg-dark);">⚙️ Günlük Kullanım Limitleri ve Filigran Ayarları</h4>
-          <p style="font-size:0.83rem; color:#64748b;">Üyelik tiplerine göre günlük soru oluşturma, baskı alma limitlerini ve filigran ayarlarını buradan yönetebilirsiniz.</p>
-
-          <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
-            <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">📊 Üyelik Tiplerine Göre Günlük Soru Limitleri</h5>
+        <div id="adminTabLimits" style="display: none; flex-direction: row; gap: 20px; flex-wrap: wrap;">
+          
+          <!-- SOL SÜTUN: GÜNLÜK LİMİTLER VE FİLİGRAN AYARLARI -->
+          <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
+            <h4 style="color: var(--bg-dark);">⚙️ Günlük Kullanım Limitleri ve Filigran Ayarları</h4>
             
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
-              <div>
-                <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Soru Limit:</label>
-                <input type="number" id="limitFreeCreate" class="modern-input" value="10" min="0">
-              </div>
-              <div>
-                <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Yazdırma Limit:</label>
-                <input type="number" id="limitFreePrint" class="modern-input" value="5" min="0">
-              </div>
-              <div>
-                <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Soru Limit:</label>
-                <input type="number" id="limitTrialCreate" class="modern-input" value="25" min="0">
-              </div>
-              <div>
-                <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Yazdırma Limit:</label>
-                <input type="number" id="limitTrialPrint" class="modern-input" value="15" min="0">
-              </div>
-              <div>
-                <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Soru Limit:</label>
-                <input type="number" id="limitPremiumCreate" class="modern-input" value="100" min="0">
-              </div>
-              <div>
-                <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Yazdırma Limit:</label>
-                <input type="number" id="limitPremiumPrint" class="modern-input" value="50" min="0">
+            <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+              <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">📊 Üyelik Tiplerine Göre Günlük Soru Limitleri</h5>
+              
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div>
+                  <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Soru Limit:</label>
+                  <input type="number" id="limitFreeCreate" class="modern-input" value="10" min="0">
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Yazdırma Limit:</label>
+                  <input type="number" id="limitFreePrint" class="modern-input" value="5" min="0">
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Soru Limit:</label>
+                  <input type="number" id="limitTrialCreate" class="modern-input" value="25" min="0">
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Yazdırma Limit:</label>
+                  <input type="number" id="limitTrialPrint" class="modern-input" value="15" min="0">
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Soru Limit:</label>
+                  <input type="number" id="limitPremiumCreate" class="modern-input" value="100" min="0">
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Yazdırma Limit:</label>
+                  <input type="number" id="limitPremiumPrint" class="modern-input" value="50" min="0">
+                </div>
               </div>
             </div>
+
+            <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+              <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">🖼️ Çapraz Filigran Ayarları (Baskı / PDF)</h5>
+              
+              <label style="font-size:0.8rem; font-weight:bold; color:#475569; display:block; margin-bottom:6px;">Filigran Hangi Üyelik Tiplerinde Görünsün?</label>
+              <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; background:white; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierFree" checked> 🔄 Ücretsiz</label>
+                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierTrial" checked> ⏳ Deneme</label>
+                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierPremium"> ⭐ Premium</label>
+                <label style="font-size:0.82rem; cursor:pointer;"><input type="checkbox" id="wmTierVIP"> 👑 VIP</label>
+              </div>
+
+              <div class="input-control">
+                <label style="font-size:0.8rem; font-weight:bold;">Filigran Alt Metni (Sabit Yazı):</label>
+                <input type="text" id="watermarkCustomText" class="modern-input" value="Nöroloji Soru Hazırlama Paneli ®">
+                <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">* Üst satırda otomatik olarak kullanıcının Gmail adresi, alt satırda ise yukarıdaki yazı çapraz şekilde görünecektir.</div>
+              </div>
+            </div>
+
+            <button class="btn-action btn-toggle-on" style="padding:10px;" onclick="saveSystemLimits()">💾 Limit ve Filigran Ayarlarını Kaydet</button>
           </div>
+
+          <!-- SAĞ SÜTUN: GELİŞMİŞ GÜNLÜK HAK SIFIRLAMA / YENİLEME -->
+          <div style="flex: 1; min-width: 320px; background: #eff6ff; padding: 18px; border-radius: 12px; border: 1px solid #bfdbfe; height: fit-content;">
+            <h5 style="font-size:0.95rem; margin-bottom:8px; color:#1e40af;">🔄 Günlük Kullanıcı Haklarını Yenile / Sıfırla</h5>
+            <p style="font-size:0.8rem; color:#3b82f6; margin-bottom:14px;">Belirleyeceğiniz hedef kitle veya tek bir kullanıcının bugün harcadığı soru ve yazdırma limitlerini sıfırlayabilirsiniz.</p>
+            
+            <div class="input-control" style="margin-bottom:12px;">
+              <label style="font-size:0.82rem; font-weight:bold; color:#1e3a8a; display:block; margin-bottom:4px;">Sıfırlama Yapılacak Hedef Kitle:</label>
+              <select id="resetTargetType" class="modern-input" onchange="toggleResetUserSearchInput(this.value)">
+                <option value="all" selected>🌐 Tüm Kullanıcılar</option>
+                <option value="role_VIP">👑 Tüm VIP Kullanıcılar</option>
+                <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
+                <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
+                <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
+                <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
+              </select>
+
+              <div id="resetSpecificUserWrapper" style="display: none; margin-top: 8px; position: relative;">
+                <input type="text" id="resetUserSearchInput" class="modern-input" placeholder="🔍 Ad Soyad veya E-posta yazın..." oninput="filterResetTargetUsers(this.value)">
+                <input type="hidden" id="selectedResetUserId" value="">
+                <div id="resetUserDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 180px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px;"></div>
+              </div>
+            </div>
+
+            <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center; margin-top:10px;" onclick="executeTargetedLimitReset()">🔄 Seçilen Hedef İçin Hakları Sıfırla</button>
+          </div>
+
+        </div>
 
           <!-- YENİ: GÜNLÜK HAKLARI YENİLEME / SIFIRLAMA BUTONU -->
           <div style="background: #eff6ff; padding: 16px; border-radius: 10px; border: 1px solid #bfdbfe;">
@@ -3389,7 +3445,6 @@ window.closeAnnouncementModal = function() {
   const ADMIN_EMAILS = new Set([
     'kgulsen1994@gmail.com',
     'kadir@kadir.com',
-    'yonetici@noroloji.com'
   ]);
  
   let pendingChatFile = null; 
@@ -3799,6 +3854,42 @@ const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
  
       window.currentUserData = currentUserData; 
       if (checkAndHandleBannedUser(currentUserData)) return; 
+      // ============================================================
+// 3 GÜNLÜK PREMIUM DENEME KONTROLÜ VE OTOMATİK DÜŞÜRME MANTIĞI
+// ============================================================
+if (currentUserData.durum === 'Deneme' && !isAdmin) {
+  let trialStartMs = currentUserData.denemeBaslangicTarihi?.toMillis 
+    ? currentUserData.denemeBaslangicTarihi.toMillis() 
+    : new Date(currentUserData.denemeBaslangicTarihi || Date.now()).getTime();
+
+  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000; // 3 Gün = 72 Saat
+  const trialEndMs = trialStartMs + THREE_DAYS_MS;
+  const nowMs = Date.now();
+
+  if (nowMs >= trialEndMs) {
+    // 3 Günlük Süre Doldu -> Otomatik Ücretsiz Plana Düşür
+    await updateDoc(userRef, { durum: 'Ücretsiz' });
+    currentUserData.durum = 'Ücretsiz';
+    window.currentUserTier = 'Ücretsiz';
+    showToast("⏳ 3 Günlük Premium Deneme süreniz sona ermiştir. Hesabınız Ücretsiz plana aktarıldı.", "info");
+  } else {
+    // Deneme Süresi Devam Ediyor -> Kalan Süreyi Ekranda Banner Olarak Göster
+    window.currentUserTier = 'Deneme';
+    const endDateStr = new Date(trialEndMs).toLocaleString('tr-TR', { 
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+    
+    let trialBanner = document.getElementById('premiumTrialInfoBanner');
+    if (!trialBanner) {
+      trialBanner = document.createElement('div');
+      trialBanner.id = 'premiumTrialInfoBanner';
+      trialBanner.style.cssText = "background: linear-gradient(90deg, #f59e0b, #d97706); color: white; padding: 10px 16px; border-radius: 10px; font-weight: bold; font-size: 0.88rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);";
+      const container = document.querySelector('.main-content') || document.body;
+      container.insertBefore(trialBanner, container.firstChild);
+    }
+    trialBanner.innerHTML = `<span>⭐ <strong>3 Günlük Premium Deneme Süreniz Başlamıştır!</strong></span> <span>🏁 Bitiş Tarihi: <u>${endDateStr}</u></span>`;
+  }
+}
  
       window.currentUserTier = isAdmin ? 'VIP' : currentUserData.durum; 
       const formattedName = formatNameSurname(currentUserData.adSoyad); 
@@ -3893,16 +3984,80 @@ window.systemLimits = {
     }
   };
 
-  window.resetAllUsersDailyLimits = function() {
-    const todayStr = new Date().toISOString().split('T')[0];
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('used_q_') || key.startsWith('used_print_')) {
-        localStorage.removeItem(key);
+// Arama Kutusu Göster/Gizle
+window.toggleResetUserSearchInput = function(val) {
+  const wrapper = document.getElementById('resetSpecificUserWrapper');
+  if (wrapper) wrapper.style.display = (val === 'specific') ? 'block' : 'none';
+};
+
+// Kullanıcı Arama Filtresi
+window.filterResetTargetUsers = function(searchTerm) {
+  const dropdown = document.getElementById('resetUserDropdownList');
+  if (!searchTerm || searchTerm.length < 2) {
+    dropdown.style.display = 'none';
+    return;
+  }
+
+  const term = searchTerm.toLowerCase();
+  const allUsers = window.cachedUsersList || [];
+  const matches = allUsers.filter(u => (u.adSoyad && u.adSoyad.toLowerCase().includes(term)) || (u.email && u.email.toLowerCase().includes(term)));
+
+  if (matches.length === 0) {
+    dropdown.innerHTML = `<div style="padding:10px; font-size:0.8rem; color:#94a3b8; text-align:center;">Kullanıcı bulunamadı</div>`;
+  } else {
+    dropdown.innerHTML = matches.map(u => `
+      <div style="padding:8px 12px; font-size:0.82rem; cursor:pointer; border-bottom:1px solid #f1f5f9;" onclick="selectResetTargetUser('${u.uid}', '${u.adSoyad || u.email}')">
+        <strong>${u.adSoyad || 'İsimsiz'}</strong> <span style="color:#64748b;">(${u.email})</span>
+      </div>
+    `).join('');
+  }
+  dropdown.style.display = 'block';
+};
+
+window.selectResetTargetUser = function(uid, name) {
+  document.getElementById('selectedResetUserId').value = uid;
+  document.getElementById('resetUserSearchInput').value = name;
+  document.getElementById('resetUserDropdownList').style.display = 'none';
+};
+
+// Hedefe Yönelik Sıfırlama İşlemi
+window.executeTargetedLimitReset = async function() {
+  const targetType = document.getElementById('resetTargetType').value;
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  try {
+    if (targetType === 'all') {
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('used_q_') || key.startsWith('used_print_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      showToast("Tüm kullanıcıların bugünkü hakları başarıyla sıfırlandı!", "success");
+    } 
+    else if (targetType.startsWith('role_')) {
+      const role = targetType.replace('role_', '');
+      if (window.currentUserTier === role || (role === 'Ucretsiz' && window.currentUserTier === 'Ücretsiz')) {
+        localStorage.removeItem(`used_q_${auth.currentUser?.uid}_${todayStr}`);
+        localStorage.removeItem(`used_print_${auth.currentUser?.uid}_${todayStr}`);
       }
-    });
+      showToast(`"${role}" rolündeki kullanıcıların bugünkü limitleri sıfırlandı!`, "success");
+    } 
+    else if (targetType === 'specific') {
+      const uid = document.getElementById('selectedResetUserId').value;
+      if (!uid) {
+        showToast("Lütfen listeden geçerli bir kullanıcı seçin!", "error");
+        return;
+      }
+      localStorage.removeItem(`used_q_${uid}_${todayStr}`);
+      localStorage.removeItem(`used_print_${uid}_${todayStr}`);
+      showToast("Seçilen kullanıcının hakları başarıyla sıfırlandı!", "success");
+    }
+
     window.updateUserLimitBadgeDisplay();
-    showToast("Tüm kullanıcıların bugünkü hakları başarıyla sıfırlandı ve yenilendi!", "success");
-  };
+  } catch(e) {
+    showToast("Sıfırlama sırasında hata oluştu: " + e.message, "error");
+  }
+};
 
   window.saveMaintenanceSettings = async function() {
     try {
@@ -5708,70 +5863,7 @@ window.changeUserStatus = async function(uid, newStatus) {
  
   window.renderUserRows = renderUserRows;
 
-  window.renderWarnedUserRows = function() { 
-    const tbody = document.getElementById('adminWarnedUserTableBody'); 
-    if (!tbody) return; 
-    tbody.innerHTML = ''; 
- 
-    const queryStr = document.getElementById('adminUserSearchInput')?.value.trim().toLocaleLowerCase('tr-TR') || ''; 
-    let list = allFetchedUsers.filter(u => (u.uyariSayisi || 0) > 0); 
- 
-    if (queryStr !== '') { 
-      list = list.filter(u => (u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(queryStr) || (u.email || '').toLocaleLowerCase('tr-TR').includes(queryStr)); 
-    } 
- 
-    list.sort((a, b) => (b.uyariSayisi || 0) - (a.uyariSayisi || 0)); 
- 
-    const badge = document.getElementById('warnedUserCountBadge'); 
-    if (badge) badge.innerText = `${list.length} Kullanıcı`; 
- 
-    if (list.length === 0) { 
-      tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #64748b;">Uyarı almış kullanıcı bulunmamaktadır.</td></tr>'; 
-      return; 
-    } 
- 
-    list.forEach(u => { 
-      const formattedName = formatNameSurname(u.adSoyad || u.email); 
-      const warnCount = u.uyariSayisi || 0; 
-      const starsHTML = '🚨'.repeat(warnCount); 
-      const statusText = u.durum || 'Ücretsiz'; 
- 
-      const row = document.createElement('tr'); 
-      row.style.borderBottom = '1px solid #e2e8f0'; 
-      row.style.background = warnCount >= 3 ? '#fef2f2' : '#ffffff'; 
- 
-      row.innerHTML = ` 
-        <td style="padding: 10px; font-weight: 600;">${formattedName}</td> 
-        <td style="padding: 10px; color: #64748b;">${u.email}</td> 
-        <td style="padding: 10px; text-align: center;"> 
-          <div style="font-size: 1rem; margin-bottom: 4px;">${starsHTML} <span style="font-size: 0.8rem; font-weight: bold; color: #b45309;">(${warnCount})</span></div> 
-          <div style="display: flex; gap: 4px; justify-content: center;"> 
-            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#dcfce7; color:#15803d; border-color:#86efac;" onclick="increaseUserWarning('${u.id}')" title="Uyarı/Yıldız Artır">➕ Artır</button> 
-            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fef3c7; color:#b45309; border-color:#fde68a;" onclick="reduceUserWarning('${u.id}')" title="Uyarı/Yıldız Eksilt">➖ Sil</button> 
-            <button class="btn-action" style="font-size:0.7rem; padding:2px 6px; background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="clearUserWarnings('${u.id}')" title="Tüm Uyarıları Temizle">🧹 Sıfırla</button> 
-          </div> 
-        </td> 
-        <td style="padding: 10px;"> 
-          <span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: ${u.durum === 'Engellendi' ? '#fee2e2' : '#e2e8f0'}; color: ${u.durum === 'Engellendi' ? '#dc2626' : '#475569'};"> 
-            ${statusText} 
-          </span> 
-        </td> 
-        <td style="padding: 10px; text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center;"> 
-          <select class="modern-input" style="padding: 2px 6px; font-size: 0.75rem; width: auto;" onchange="changeUserStatus('${u.id}', this.value)"> 
-            <option value="" disabled selected>Yetki / Rol Ver...</option> 
-            <option value="VIP">👑 VIP Yap</option> 
-            <option value="Premium">⭐ Premium Yap</option> 
-            <option value="Deneme">⏳ Deneme Yap</option> 
-            <option value="Ücretsiz">🔄 Ücretsiz Yap</option> 
-            <option value="Engellendi">🚫 Engelle</option> 
-          </select> 
-          <button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px;" onclick="viewUserActivities('${u.id}', '${u.email}')">👁️ Aktivite</button> 
-        </td> 
-      `; 
-      tbody.appendChild(row); 
-    }); 
-  }; 
- 
+ // --- UYARI ARTIRMA FONKSİYONU ---
   window.increaseUserWarning = async function(uid) { 
     try { 
       const uRef = doc(db, "kullanicilar", uid); 
@@ -5781,7 +5873,7 @@ window.changeUserStatus = async function(uid, newStatus) {
         const newWarns = (uData.uyariSayisi || 0) + 1; 
         await updateDoc(uRef, { uyariSayisi: newWarns }); 
         showToast("Kullanıcının uyarısı 1 artırıldı.", "success"); 
- 
+
         if (newWarns >= 3) { 
           showCustomAlert( 
             "🚨 CRITICAL: KULLANICI ENGELLEME ÖNERİSİ", 
@@ -5789,7 +5881,7 @@ window.changeUserStatus = async function(uid, newStatus) {
             "🚨" 
           ); 
         } 
- 
+
         await fetchAndRenderUsers(currentCategoryFilter); 
         if (window.currentAdminTab === 'warned') renderWarnedUserRows(); 
       } 
@@ -5797,7 +5889,41 @@ window.changeUserStatus = async function(uid, newStatus) {
       showToast("Hata: " + err.message, "error"); 
     } 
   }; 
- 
+
+  // --- UYARI EKSİLTME FONKSİYONU ---
+  window.reduceUserWarning = async function(uid) {
+    try {
+      const uRef = doc(db, "kullanicilar", uid);
+      const uSnap = await getDoc(uRef);
+      if (uSnap.exists()) {
+        const uData = uSnap.data();
+        const currentWarns = uData.uyariSayisi || 0;
+        const newWarns = Math.max(0, currentWarns - 1);
+        await updateDoc(uRef, { uyariSayisi: newWarns });
+        showToast("Kullanıcının uyarısı 1 azaltıldı.", "success");
+        await fetchAndRenderUsers(currentCategoryFilter);
+        if (window.currentAdminTab === 'warned') renderWarnedUserRows();
+      }
+    } catch(err) {
+      showToast("Hata: " + err.message, "error");
+    }
+  };
+
+  // --- UYARI SIFIRLAMA FONKSİYONU ---
+  window.clearUserWarnings = async function(uid) {
+    showCustomConfirm("Uyarı Sıfırlama Onayı", "Bu kullanıcının tüm uyarılarını sıfırlamak istediğinize emin misiniz?", async () => {
+      try {
+        const uRef = doc(db, "kullanicilar", uid);
+        await updateDoc(uRef, { uyariSayisi: 0 });
+        showToast("Kullanıcının tüm uyarıları sıfırlandı.", "success");
+        await fetchAndRenderUsers(currentCategoryFilter);
+        if (window.currentAdminTab === 'warned') renderWarnedUserRows();
+      } catch(err) {
+        showToast("Hata: " + err.message, "error");
+      }
+    });
+  };
+
   window.closeAdminTestDetailModal = function() {
     const modal = document.getElementById('adminTestDetailModal');
     if (modal) modal.style.display = 'none';
@@ -5813,7 +5939,7 @@ window.changeUserStatus = async function(uid, newStatus) {
       } 
     }); 
   }; 
- 
+
   window.deleteUploadedQuestionFile = function(docId) { 
     showCustomConfirm("Dosya Silme Onayı", "Bu yüklenen soru dosyasını silmek istediğinize emin misiniz?", async () => { 
       try { 
@@ -5825,7 +5951,7 @@ window.changeUserStatus = async function(uid, newStatus) {
       } 
     }); 
   }; 
- 
+
   window.deleteSingleAdminChat = function(userUid) { 
     showCustomConfirm("Sohbet Silme Onayı", "Bu sohbeti tamamen silmek istediğinize emin misiniz?", async () => { 
       await deleteDoc(doc(db, "sohbetler", userUid)); 
@@ -5834,11 +5960,11 @@ window.changeUserStatus = async function(uid, newStatus) {
       document.getElementById('adminChatDetailBox').innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); margin: auto;">👈 Lütfen sol listeden mesajlaşmak istediğiniz kullanıcıyı seçiniz.</div>'; 
     }); 
   }; 
- 
+
   window.deleteSelectedAdminChats = function() { 
     const selected = Array.from(document.querySelectorAll('.chat-row-checkbox:checked')).map(cb => cb.value); 
     if (selected.length === 0) { showToast("Lütfen silmek istediğiniz sohbetleri seçiniz.", "warning"); return; } 
-     
+      
     showCustomConfirm("Toplu Sohbet Silme Onayı", `${selected.length} adet seçili sohbet tamamen silinecektir. Onaylıyor musunuz?`, async () => { 
       for (let uid of selected) { 
         await deleteDoc(doc(db, "sohbetler", uid)); 
@@ -5848,19 +5974,19 @@ window.changeUserStatus = async function(uid, newStatus) {
       document.getElementById('adminChatDetailBox').innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); margin: auto;">👈 Lütfen sol listeden mesajlaşmak istediğiniz kullanıcıyı seçiniz.</div>'; 
     }); 
   }; 
- 
+
   window.executeSendUserWarning = async function() { 
     if (!currentWarnUserUid) return; 
     const reasonText = document.getElementById('adminWarnReasonInput').value.trim(); 
     if (!reasonText) { showToast("Lütfen uyarı nedenini giriniz.", "warning"); return; } 
- 
+
     try { 
       const uRef = doc(db, "kullanicilar", currentWarnUserUid); 
       const uSnap = await getDoc(uRef); 
       const uData = uSnap.exists() ? uSnap.data() : {}; 
-       
+        
       const newWarnCount = (uData.uyariSayisi || 0) + 1; 
- 
+
       await updateDoc(uRef, { 
         uyariSayisi: newWarnCount, 
         engellenmeNedenleri: arrayUnion(reasonText), 
@@ -5870,9 +5996,9 @@ window.changeUserStatus = async function(uid, newStatus) {
           read: false 
         } 
       }); 
- 
+
       showToast(`Kullanıcıya ${newWarnCount}. uyarı gönderildi!`, "success"); 
- 
+
       if (newWarnCount >= 3) { 
         setTimeout(() => { 
           showCustomAlert( 
@@ -5882,16 +6008,16 @@ window.changeUserStatus = async function(uid, newStatus) {
           ); 
         }, 500); 
       } 
- 
+
       closeAdminWarnUserModal(); 
       await fetchAndRenderUsers(currentCategoryFilter); 
       if (window.currentAdminTab === 'warned') renderWarnedUserRows(); 
- 
+
     } catch(err) { 
       showToast("Uyarı gönderilemedi: " + err.message, "error"); 
     } 
   }; 
 </script>
- 
+
 </body> 
 </html>
