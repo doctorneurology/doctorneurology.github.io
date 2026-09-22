@@ -1476,6 +1476,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <button id="tabLicensesBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('licenses')">🔑 Lisans Kodu Üret</button>
             <button id="tabAnnounceBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('announcements')">📢 Duyuru / Bilgi Gönder</button>
             <button id="tabSettingsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('settings')">🔒 Yönetici Şifre Ayarları</button>
+  <button id="tabLimitsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('limits')">⚙️ Soru Sınırlamaları</button>
           </div>
           <div style="width: 280px;" id="adminSearchBoxWrapper">
             <input type="text" id="adminUserSearchInput" class="modern-input" style="padding: 6px 10px; font-size: 0.82rem;" placeholder="🔍 Ad, Soyad veya E-posta İle Ara..." oninput="filterAdminUsersSearch()">
@@ -1498,30 +1499,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               </select>
               <button class="btn-action btn-toggle-on" style="padding: 4px 10px; font-size: 0.8rem;" onclick="applyBulkAction()">Uygula</button>
             </div>
-<!-- YENİ SEKME: UYARI ALAN KULLANICILAR -->
-        <div id="adminTabWarned" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
-          <div style="display: flex; justify-content: space-between; align-items: center; background: #fffbe6; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fde68a; font-size: 0.82rem; color: #78350f;">
-            <span>⚠️ Bu alanda resmi uyarı almış kullanıcılar, <strong>uyarı sayısına göre (en çoktan en aza)</strong> otomatik sıralanır. Yıldız ekleyip silebilir, yetki değiştirebilir veya hesabı engelleyebilirsiniz.</span>
-            <span style="font-weight: bold; background: #fef3c7; padding: 4px 10px; border-radius: 12px; border: 1px solid #fde68a;" id="warnedUserCountBadge">0 Kullanıcı</span>
-          </div>
 
-          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
-              <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
-                <tr>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Ad Soyad</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">E-posta</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: center;">Uyarı Seviyesi</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Rol / Durum</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Yetki ve Yönetim Aksiyonları</th>
-                </tr>
-              </thead>
-              <tbody id="adminWarnedUserTableBody">
-                <tr><td colspan="5" style="padding: 15px; text-align: center;">Uyarı alan kullanıcılar yükleniyor...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
             <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
               <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Sıralama:</span>
 <select id="adminUserSortSelect" class="modern-input" style="padding: 4px 8px; font-size: 0.8rem; width: auto;" onchange="renderUserRows()">
@@ -1561,7 +1539,30 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             </table>
           </div>
         </div>
+<!-- YENİ SEKME: UYARI ALAN KULLANICILAR -->
+        <div id="adminTabWarned" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #fffbe6; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fde68a; font-size: 0.82rem; color: #78350f;">
+            <span>⚠️ Bu alanda resmi uyarı almış kullanıcılar, <strong>uyarı sayısına göre (en çoktan en aza)</strong> otomatik sıralanır. Yıldız ekleyip silebilir, yetki değiştirebilir veya hesabı engelleyebilirsiniz.</span>
+            <span style="font-weight: bold; background: #fef3c7; padding: 4px 10px; border-radius: 12px; border: 1px solid #fde68a;" id="warnedUserCountBadge">0 Kullanıcı</span>
+          </div>
 
+          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+              <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
+                <tr>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Ad Soyad</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">E-posta</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: center;">Uyarı Seviyesi</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Rol / Durum</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Yetki ve Yönetim Aksiyonları</th>
+                </tr>
+              </thead>
+              <tbody id="adminWarnedUserTableBody">
+                <tr><td colspan="5" style="padding: 15px; text-align: center;">Uyarı alan kullanıcılar yükleniyor...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         <!-- SEKME 2: HATALI SORU BİLDİRİMLERİ -->
         <div id="adminTabReports" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
           <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
@@ -1678,7 +1679,61 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
           <button class="btn-action btn-toggle-on" style="padding: 10px;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
         </div>
-        
+        <!-- SEKME: SORU VE BASKI SINIRLAMALARI -->
+<div id="adminTabLimits" style="display: none; flex-direction: column; gap: 15px; max-width: 650px;">
+  <h4 style="color: var(--bg-dark);">⚙️ Günlük Kullanım Limitleri ve Filigran Ayarları</h4>
+  <p style="font-size:0.83rem; color:#64748b;">Üyelik tiplerine göre günlük soru oluşturma, baskı alma limitlerini ve filigran ayarlarını buradan yönetebilirsiniz.</p>
+
+  <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+    <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">📊 Üyelik Tiplerine Göre Günlük Soru Limitleri</h5>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+      <div>
+        <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Soru Limit:</label>
+        <input type="number" id="limitFreeCreate" class="modern-input" value="10" min="0">
+      </div>
+      <div>
+        <label style="font-size:0.8rem; font-weight:bold;">Ücretsiz - Günlük Yazdırma Limit:</label>
+        <input type="number" id="limitFreePrint" class="modern-input" value="5" min="0">
+      </div>
+      <div>
+        <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Soru Limit:</label>
+        <input type="number" id="limitTrialCreate" class="modern-input" value="25" min="0">
+      </div>
+      <div>
+        <label style="font-size:0.8rem; font-weight:bold;">Deneme - Günlük Yazdırma Limit:</label>
+        <input type="number" id="limitTrialPrint" class="modern-input" value="15" min="0">
+      </div>
+      <div>
+        <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Soru Limit:</label>
+        <input type="number" id="limitPremiumCreate" class="modern-input" value="100" min="0">
+      </div>
+      <div>
+        <label style="font-size:0.8rem; font-weight:bold;">Premium - Günlük Yazdırma Limit:</label>
+        <input type="number" id="limitPremiumPrint" class="modern-input" value="50" min="0">
+      </div>
+    </div>
+  </div>
+
+  <div style="background: var(--surface); padding: 16px; border-radius: 10px; border: 1px solid var(--border);">
+    <h5 style="font-size:0.9rem; margin-bottom:10px; color:#1e293b;">🖼️ Filigran Ayarları (Baskı / PDF)</h5>
+    
+    <div class="toggle-tile" style="margin-bottom:10px;">
+      <span>Ücretsiz & Deneme Üyelerde Filigran Göster</span>
+      <label class="switch">
+        <input type="checkbox" id="chkEnableWatermark" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="input-control">
+      <label style="font-size:0.8rem; font-weight:bold;">Filigran Metni (Sabit Yazı):</label>
+      <input type="text" id="watermarkCustomText" class="modern-input" value="Nöroloji Soru Hazırlama Paneli ®">
+    </div>
+  </div>
+
+  <button class="btn-action btn-toggle-on" style="padding:10px;" onclick="saveSystemLimits()">💾 Limit ve Filigran Ayarlarını Kaydet</button>
+</div>
         <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
         <div id="adminTabSettings" style="display: none; max-width: 450px;">
           <h4 style="margin-bottom: 12px; color: var(--bg-dark);">🔐 Yönetici Kullanıcı Adı & Şifre Güncelle</h4>
@@ -1762,6 +1817,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <div class="user-profile-badge">
               <span class="user-name-target">...</span>
               <span id="userTierBadge" style="padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; background: #e2e8f0; color: #475569;">Ücretsiz</span>
+              <span id="userDailyLimitBadge" style="padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;">Kalan Hak: --/--</span>
               <button class="btn-logout-sm btn-logout-action">Çıkış</button>
               <span id="mainUserWarningStars" style="margin-left: 4px; font-size: 0.95rem; color: #f59e0b;"></span>
             </div>
@@ -2059,10 +2115,11 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     let rawKonu = String(q.konu || '').trim();
     let rawZorluk = String(q.zorluk || '').trim();
     let combined = (rawKonu + ' ' + rawZorluk).toLocaleLowerCase('tr-TR');
-    let detectedZorluk = 'orta';
-    if (combined.includes('kolay')) detectedZorluk = 'kolay';
-    else if (combined.includes('zor')) detectedZorluk = 'zor';
-    else if (combined.includes('orta')) detectedZorluk = 'orta';
+let detectedZorluk = 'orta';
+if (combined.includes('cok zor') || combined.includes('çok zor')) detectedZorluk = 'cok_zor';
+else if (combined.includes('kolay')) detectedZorluk = 'kolay';
+else if (combined.includes('zor')) detectedZorluk = 'zor';
+else if (combined.includes('orta')) detectedZorluk = 'orta';
 
     let cleanKonuName = rawKonu.replace(/zorluk\s*[:\s]*.*/i, '').replace(/\b(kolay|orta|zor)\b/gi, '').replace(/[\r\n\t]/g, '').trim() || 'Genel';
     return { displayName: cleanKonuName, konuKey: normStr(cleanKonuName), zorlukKey: detectedZorluk };
@@ -2178,7 +2235,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
     const diffContainer = document.getElementById('diffContainer');
     if (diffContainer) diffContainer.innerHTML = '';
-    const diffsMap = new Map([['kolay', 'Kolay'], ['orta', 'Orta'], ['zor', 'Zor']]);
+    const diffsMap = new Map([['kolay', 'Kolay'], ['orta', 'Orta'], ['zor', 'Zor'], ['cok_zor', 'Çok Zor']]);
 
     masterPool.forEach(q => {
       const meta = parseQuestionMeta(q);
@@ -2798,20 +2855,30 @@ if (window.checkDailyLimitAndIncrement) {
     const screenWatermark = document.getElementById('screenWatermark');
     const printWatermark = document.getElementById('printWatermark');
 
-    if (userTier === 'VIP' || userTier === 'Premium' || window.currentUserIsAdmin === true) {
-      printWatermark.innerText = '';
-      printWatermark.style.display = 'none';
-      screenWatermark.style.display = 'none';
-    } else if (userTier === 'Deneme') {
-      const text = `Nöroloji Soru Hazırlama Paneli ®\n${userEmail}`;
-      printWatermark.innerText = text;
-      screenWatermark.style.display = 'none';
-    } else {
-      const text = `Nöroloji Soru Hazırlama Paneli ®\n${userEmail}`;
-      printWatermark.innerText = text;
-      screenWatermark.innerText = text;
-      screenWatermark.style.display = 'block';
-    }
+// Akıllı ve Dinamik Filigran Kontrolü
+const userTier = window.currentUserTier || 'Ücretsiz';
+const userEmail = window.currentUserEmail || '';
+
+if (window.systemLimits && window.systemLimits.enableWatermark && (userTier === 'Ücretsiz' || userTier === 'Deneme') && !window.currentUserIsAdmin) {
+  const text = `${window.systemLimits.watermarkText}\n${userEmail}`;
+  if (printWatermark) {
+    printWatermark.innerText = text;
+    printWatermark.style.display = 'block';
+  }
+  if (screenWatermark) {
+    screenWatermark.innerText = text;
+    screenWatermark.style.display = userTier === 'Ücretsiz' ? 'block' : 'none';
+  }
+} else {
+  if (printWatermark) {
+    printWatermark.innerText = '';
+    printWatermark.style.display = 'none';
+  }
+  if (screenWatermark) {
+    screenWatermark.innerText = '';
+    screenWatermark.style.display = 'none';
+  }
+}
 
     if (window.logUserActivity) {
       window.logUserActivity("Baskı / PDF Alındı", `${currentQuestionsList.length} Soru Çıktı Alındı.`);
@@ -3568,6 +3635,8 @@ function listenIncomingAdminNotifications(uid) {
   let activeAuthUid = null; 
  
   onAuthStateChanged(auth, async (user) => { 
+    if (typeof window.loadSystemLimits === 'function') await window.loadSystemLimits();
+if (typeof window.updateUserLimitBadgeDisplay === 'function') window.updateUserLimitBadgeDisplay();
     const nextAuthUid = user?.uid || null; 
     if (activeAuthUid !== nextAuthUid) { 
       disposeAllLiveSubscriptions(); 
@@ -3661,37 +3730,121 @@ function listenIncomingAdminNotifications(uid) {
       document.getElementById('mainApp').style.display = 'none'; 
     } 
   }); 
-window.checkDailyLimitAndIncrement = async function(type, count) {
-    if (!auth.currentUser || window.currentUserIsAdmin === true) return true;
+// Varsayılan sistem limitleri (Admin henüz değiştirmediğinde geçerlidir)
+window.systemLimits = {
+  freeCreate: 10, freePrint: 5,
+  trialCreate: 25, trialPrint: 15,
+  premiumCreate: 100, premiumPrint: 50,
+  enableWatermark: true,
+  watermarkText: "Nöroloji Soru Hazırlama Paneli ®"
+};
 
-    const userTier = window.currentUserTier || 'Ücretsiz';
-    if (['VIP', 'Premium', 'Deneme'].includes(userTier)) return true;
+// Admin panelinden limitleri kaydetme fonksiyonu
+window.saveSystemLimits = async function() {
+  try {
+    const limits = {
+      freeCreate: parseInt(document.getElementById('limitFreeCreate').value) || 10,
+      freePrint: parseInt(document.getElementById('limitFreePrint').value) || 5,
+      trialCreate: parseInt(document.getElementById('limitTrialCreate').value) || 25,
+      trialPrint: parseInt(document.getElementById('limitTrialPrint').value) || 15,
+      premiumCreate: parseInt(document.getElementById('limitPremiumCreate').value) || 100,
+      premiumPrint: parseInt(document.getElementById('limitPremiumPrint').value) || 50,
+      enableWatermark: document.getElementById('chkEnableWatermark').checked,
+      watermarkText: document.getElementById('watermarkCustomText').value.trim() || "Nöroloji Soru Hazırlama Paneli ®"
+    };
 
-    try {
-      const result = await checkDailyLimitAndIncrementServer({
-        type: String(type || 'create'),
-        count: Math.max(1, parseInt(count, 10) || 1)
-      });
-      const data = result?.data || {};
-
-      if (data.allowed === false) {
-        const message = data.message || data.error || 'Günlük kullanım limitiniz dolmuştur. Lütfen daha sonra tekrar deneyiniz.';
-        showToast(message, 'warning');
-        return false;
-      }
-
-      if (data.success === false) {
-        showToast(data.message || 'Günlük kullanım limiti nedeniyle işlem yapılamadı.', 'warning');
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      console.error('Günlük limit kontrolü başarısız:', err);
-      showToast('Günlük kullanım limiti doğrulanamadı. Lütfen tekrar deneyiniz.', 'error');
-      return false;
+    if (window.db && window.doc && window.setDoc) {
+      await window.setDoc(window.doc(window.db, "ayarlar", "sistem_limitleri"), limits);
     }
-  };
+    window.systemLimits = limits;
+    showToast("Limit ve filigran ayarları başarıyla kaydedildi!", "success");
+    window.updateUserLimitBadgeDisplay();
+  } catch(err) {
+    showToast("Limitler kaydedilirken hata: " + err.message, "error");
+  }
+};
+
+// Sistem limitlerini veritabanından çekme
+window.loadSystemLimits = async function() {
+  try {
+    if (window.db && window.doc && window.getDoc) {
+      const snap = await window.getDoc(window.doc(window.db, "ayarlar", "sistem_limitleri"));
+      if (snap.exists()) {
+        window.systemLimits = { ...window.systemLimits, ...snap.data() };
+      }
+    }
+    // Form alanlarını doldur
+    if (document.getElementById('limitFreeCreate')) {
+      document.getElementById('limitFreeCreate').value = window.systemLimits.freeCreate;
+      document.getElementById('limitFreePrint').value = window.systemLimits.freePrint;
+      document.getElementById('limitTrialCreate').value = window.systemLimits.trialCreate;
+      document.getElementById('limitTrialPrint').value = window.systemLimits.trialPrint;
+      document.getElementById('limitPremiumCreate').value = window.systemLimits.premiumCreate;
+      document.getElementById('limitPremiumPrint').value = window.systemLimits.premiumPrint;
+      document.getElementById('chkEnableWatermark').checked = window.systemLimits.enableWatermark;
+      document.getElementById('watermarkCustomText').value = window.systemLimits.watermarkText;
+    }
+  } catch(e) {}
+};
+
+// Kalan soru hakkı göstergesini güncelleme
+window.updateUserLimitBadgeDisplay = function() {
+  const badge = document.getElementById('userDailyLimitBadge');
+  if (!badge) return;
+
+  const userTier = window.currentUserTier || 'Ücretsiz';
+  if (window.currentUserIsAdmin === true || userTier === 'VIP') {
+    badge.innerText = "Kalan Hak: Sınırsız ♾️";
+    return;
+  }
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const usedToday = parseInt(localStorage.getItem(`used_q_${auth.currentUser?.uid}_${todayStr}`)) || 0;
+  
+  let maxLimit = window.systemLimits.freeCreate;
+  if (userTier === 'Deneme') maxLimit = window.systemLimits.trialCreate;
+  if (userTier === 'Premium') maxLimit = window.systemLimits.premiumCreate;
+
+  const remaining = Math.max(0, maxLimit - usedToday);
+  badge.innerText = `Günlük Hak: ${remaining}/${maxLimit}`;
+};
+
+// Günlük limit kontrolü ve artırma
+window.checkDailyLimitAndIncrement = async function(type, count) {
+  if (!auth.currentUser || window.currentUserIsAdmin === true) return true;
+
+  const userTier = window.currentUserTier || 'Ücretsiz';
+  if (userTier === 'VIP') return true;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const storageKey = type === 'print' 
+    ? `used_print_${auth.currentUser.uid}_${todayStr}` 
+    : `used_q_${auth.currentUser.uid}_${todayStr}`;
+
+  const currentUsed = parseInt(localStorage.getItem(storageKey)) || 0;
+  
+  let maxLimit = window.systemLimits.freeCreate;
+  if (type === 'print') {
+    maxLimit = window.systemLimits.freePrint;
+    if (userTier === 'Deneme') maxLimit = window.systemLimits.trialPrint;
+    if (userTier === 'Premium') maxLimit = window.systemLimits.premiumPrint;
+  } else {
+    if (userTier === 'Deneme') maxLimit = window.systemLimits.trialCreate;
+    if (userTier === 'Premium') maxLimit = window.systemLimits.premiumCreate;
+  }
+
+  const reqCount = Math.max(1, parseInt(count, 10) || 1);
+
+  if (currentUsed + reqCount > maxLimit) {
+    const remaining = Math.max(0, maxLimit - currentUsed);
+    showToast(`Günlük ${type === 'print' ? 'yazdırma' : 'soru oluşturma'} limitiniz dolmuştur! (Kalan hakkınız: ${remaining}, İstenen: ${reqCount})`, 'warning');
+    return false;
+  }
+
+  localStorage.setItem(storageKey, currentUsed + reqCount);
+  window.updateUserLimitBadgeDisplay();
+  return true;
+};
   window.logUserActivity = async function(islemTipi, detaylar) { 
     if (!auth.currentUser) return; 
     try { 
@@ -5355,11 +5508,11 @@ window.changeUserStatus = async function(uid, newStatus) {
     if (cCb) cCb.checked = false;
     document.querySelectorAll('.chat-row-checkbox').forEach(cb => cb.checked = false);
 
-    const tabs = {
-      users: 'adminTabUsers', warned: 'adminTabWarned', reports: 'adminTabReports',
-      uploadedQuestions: 'adminTabUploadedQuestions', chat: 'adminTabChat',
-      licenses: 'adminTabLicenses', announcements: 'adminTabAnnouncements', settings: 'adminTabSettings'
-    };
+const tabs = {
+  users: 'adminTabUsers', warned: 'adminTabWarned', reports: 'adminTabReports',
+  uploadedQuestions: 'adminTabUploadedQuestions', chat: 'adminTabChat',
+  licenses: 'adminTabLicenses', announcements: 'adminTabAnnouncements', limits: 'adminTabLimits', settings: 'adminTabSettings'
+};
     Object.values(tabs).forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -5367,11 +5520,11 @@ window.changeUserStatus = async function(uid, newStatus) {
       el.style.display = tabName === Object.keys(tabs).find(k => tabs[k] === id) ? (flexTabs.has(id) ? 'flex' : 'block') : 'none';
     });
 
-    const buttons = {
-      users: 'tabUsersBtn', warned: 'tabWarnedBtn', reports: 'tabReportsBtn',
-      uploadedQuestions: 'tabUploadedQuestionsBtn', chat: 'tabChatBtn',
-      licenses: 'tabLicensesBtn', announcements: 'tabAnnounceBtn', settings: 'tabSettingsBtn'
-    };
+const buttons = {
+  users: 'tabUsersBtn', warned: 'tabWarnedBtn', reports: 'tabReportsBtn',
+  uploadedQuestions: 'tabUploadedQuestionsBtn', chat: 'tabChatBtn',
+  licenses: 'tabLicensesBtn', announcements: 'tabAnnounceBtn', limits: 'tabLimitsBtn', settings: 'tabSettingsBtn'
+};
     Object.entries(buttons).forEach(([key, id]) => {
       const el = document.getElementById(id);
       if (el) el.className = tabName === key ? 'btn-action btn-toggle-on' : 'btn-action btn-toggle-off';
