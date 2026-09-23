@@ -2403,13 +2403,13 @@ else if (combined.includes('orta')) detectedZorluk = 'orta';
 
   let activeFetchAbortController = null;
 
-  async function loadDataAndInit() {
+async function loadDataAndInit() {
     showLoadingState();
     const dot = document.getElementById('dataStatusDot');
     if (dot) dot.title = "Bulut veritabanına bağlanılıyor...";
 
     activeFetchAbortController = new AbortController();
-    const timeoutId = setTimeout(() => { if (activeFetchAbortController) activeFetchAbortController.abort(); }, 35000);
+    const timeoutId = setTimeout(() => { if (activeFetchAbortController) activeFetchAbortController.abort(); }, 15000);
 
     try {
       const response = await fetch(AUTOMATIC_JSON_URL, { method: 'GET', redirect: 'follow', signal: activeFetchAbortController.signal });
@@ -2425,9 +2425,18 @@ else if (combined.includes('orta')) detectedZorluk = 'orta';
       } else { throw new Error("Veri boş"); }
     } catch (err) {
       clearTimeout(timeoutId);
-      if (err.name === 'AbortError') return;
-      if (dot) { dot.classList.remove('active'); dot.title = "Yerel Mod"; }
-      showConnectionErrorState();
+      console.warn("Bulut veritabanı bağlantısı kurulamadı:", err);
+      
+      // Bulut verisi alınamazsa kullanıcıyı yükleme ekranında bekletmek yerine yedek soru havuzuna yönlendir
+      if (typeof defaultFallbackPool !== 'undefined' && defaultFallbackPool.length > 0) {
+        masterPool = deduplicateQuestions(defaultFallbackPool);
+        if (dot) { dot.classList.remove('active'); dot.title = "Yerel Mod (Yedek Veri)"; }
+        hideLoading();
+        initFilters();
+        showToast("Bulut sunucusuna ulaşılamadı, yedek soru havuzu yüklendi.", "warning");
+      } else {
+        showConnectionErrorState();
+      }
     }
   }
 
@@ -3822,7 +3831,6 @@ function listenUserWarnings(uid) {
 // --- AUTH DURUMU DEĞİŞİMİ VE ADMİN KONTROLÜ DÜZELTMESİ ---
   onAuthStateChanged(auth, async (user) => { 
     if (typeof window.loadSystemLimits === 'function') await window.loadSystemLimits();
-    if (typeof window.updateUserLimitBadgeDisplay === 'function') window.updateUserLimitBadgeDisplay();
     
     const nextAuthUid = user?.uid || null; 
     if (activeAuthUid !== nextAuthUid) { 
@@ -3913,9 +3921,10 @@ function listenUserWarnings(uid) {
           }
           trialBanner.innerHTML = `<span>⭐ <strong>3 Günlük Premium Deneme Süreniz Başlamıştır!</strong></span> <span>🏁 Bitiş Tarihi: <u>${endDateStr}</u></span>`;
         }
+      } else {
+        window.currentUserTier = isAdmin ? 'VIP' : currentUserData.durum; 
       }
  
-      window.currentUserTier = isAdmin ? 'VIP' : currentUserData.durum; 
       const formattedName = formatNameSurname(currentUserData.adSoyad); 
       document.querySelectorAll('.user-name-target').forEach(el => el.textContent = formattedName); 
  
@@ -3947,6 +3956,11 @@ function listenUserWarnings(uid) {
         else if (st === 'Premium' || currentUserData.durum === 'Deneme') { tierBadge.style.background = '#d1fae5'; tierBadge.style.color = '#047857'; } 
         else { tierBadge.style.background = '#e2e8f0'; tierBadge.style.color = '#475569'; } 
       } 
+
+      // ⚡ KULLANICI ÜYELİK TİPİ KESİNLEŞTİĞİ İÇİN KULLANIM LİMİT ROZETİNİ GÜNCELLİYORUZ
+      if (typeof window.updateUserLimitBadgeDisplay === 'function') {
+        window.updateUserLimitBadgeDisplay();
+      }
  
       document.getElementById('loginScreen').style.display = 'none'; 
       document.getElementById('mainApp').style.display = 'block'; 
@@ -3957,9 +3971,8 @@ function listenUserWarnings(uid) {
         await window.checkSystemAnnouncements(user.uid); 
       } 
  
-      if (isAdmin) {
-        hideLoading();
-      } else if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
+      // ⚡ YÖNETİCİ VE TÜM KULLANICILAR İÇİN SORULARI YÜKLE
+      if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
         await window.loadDataAndInit();
       } else {
         hideLoading();
@@ -3970,7 +3983,7 @@ function listenUserWarnings(uid) {
       document.getElementById('loginScreen').style.display = 'flex'; 
       document.getElementById('mainApp').style.display = 'none'; 
     } 
-  }); 
+  });
 
 window.systemLimits = {
     freeCreate: 10, freePrint: 5,
