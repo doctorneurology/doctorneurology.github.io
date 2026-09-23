@@ -1522,6 +1522,10 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <button id="tabAnnounceBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('announcements')">📢 Duyuru / Bilgi Gönder</button>
             <button id="tabSettingsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('settings')">🔒 Yönetici Şifre Ayarları</button>
   <button id="tabLimitsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('limits')">⚙️ Soru Sınırlamaları</button>
+  <!-- SADECE BAKIM AKTİFKEN GÖRÜNEN DİNAMİK BAKIM DURUM BUTONU -->
+            <button id="adminActiveMaintenanceBannerBtn" type="button" class="btn-action" style="display: none; background: #dc2626 !important; border-color: #b91c1c !important; color: white !important; font-weight: bold; animation: pulse 2s infinite;" onclick="switchAdminTab('announcements')">
+              🛠️ Sistem Bakım Modunda
+            </button>
           </div>
           <div style="width: 280px;" id="adminSearchBoxWrapper">
             <input type="text" id="adminUserSearchInput" class="modern-input" style="padding: 6px 10px; font-size: 0.82rem;" placeholder="🔍 Ad, Soyad veya E-posta İle Ara..." oninput="filterAdminUsersSearch()">
@@ -1729,10 +1733,16 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <button class="btn-action btn-toggle-on" style="padding: 10px; width: 100%; justify-content: center;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
           </div>
 
-          <!-- SAĞ TARAF: BAKIM MODU & BAKIM DUYURUSU -->
+<!-- SAĞ TARAF: BAKIM MODU & BAKIM DUYURUSU -->
           <div style="flex: 1; min-width: 300px; background: #fffbe6; padding: 18px; border-radius: 12px; border: 1px solid #fde68a;">
             <h4 style="color: #b45309; margin-bottom: 12px;">🛠️ Sistem Bakım Modu & Duyuru Paneli</h4>
-            <p style="font-size:0.8rem; color:#78350f; margin-bottom:12px;">Planlanan tarih ve saatler geldiğinde seçtiğiniz kullanıcıların ekranı otomatik olarak kapanacak ve "Sistem Bakıma Alındı" ekranı çıkacaktır.</p>
+            
+            <!-- AKTİF BAKIM DURUM BİLGİ KUTUSU -->
+            <div id="adminMaintenanceStatusBox" style="background: #d1fae5; border: 1px solid #6ee7b7; padding: 12px; border-radius: 10px; color: #065f46; font-weight: bold; font-size: 0.88rem; margin-bottom: 14px;">
+              🟢 Sistem şu an kullanıcılar için müsait.
+            </div>
+
+            <p style="font-size:0.8rem; color:#78350f; margin-bottom:12px;">Bakım yapılacak hedef kitleyi ve (varsa) tarih aralığını belirledikten sonra bakımı başlatabilirsiniz.</p>
 
             <div class="input-control">
               <label style="color:#78350f;">Bakım Hedef Kitlesi:</label>
@@ -1758,37 +1768,24 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
             <div class="input-control">
               <label style="color:#78350f;">Bakım Açıklaması / Kullanıcıya Bildirim Metni:</label>
-              <textarea id="maintMessageInput" class="modern-input" rows="3" placeholder="Örn: Sistem altyapı çalışmaları nedeniyle saat 22:00-23:00 arası bakımdadır."></textarea>
+              <textarea id="maintMessageInput" class="modern-input" rows="3" placeholder="Örn: Sistem altyapı çalışmaları nedeniyle bakımdadır."></textarea>
             </div>
 
-            <div class="toggle-tile" style="margin-bottom: 15px; background: white;">
-              <span style="font-weight:bold; color:#b45309;">Bakım Modunu Aktif Et</span>
-              <label class="switch">
-                <input type="checkbox" id="chkEnableMaintenance">
-                <span class="slider"></span>
-              </label>
-            </div>
-
-<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
               <!-- Yeşil Modern Bakımı Anında Bitir Butonu -->
               <button type="button" class="btn-action" style="background:#10b981 !important; border-color:#059669 !important; color:white; padding:12px; font-weight:bold; font-size:0.95rem; justify-content:center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="stopMaintenanceNow()">
                 ✅ Bakımı Bitir ve Sistemi Kullanıma Aç
               </button>
 
-              <!-- 1. Kaydet ve Yayınla Butonu -->
-              <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center;" onclick="saveMaintenanceSettings()">
-                💾 Bakım Ayarlarını Kaydet ve Yayınla
-              </button>
-
               <div style="display: flex; gap: 10px;">
-                <!-- 2. Bakımı Şimdi Başlat Butonu -->
-                <button type="button" class="btn-action" style="flex: 1; background:#dc2626 !important; border-color:#b91c1c !important; color:white; padding:10px; justify-content:center;" onclick="startMaintenanceNow()">
+                <!-- Bakımı Şimdi Başlat Butonu -->
+                <button type="button" class="btn-action" style="flex: 1; background:#dc2626 !important; border-color:#b91c1c !important; color:white; padding:10px; justify-content:center; font-weight:bold;" onclick="startMaintenanceNow()">
                   🚨 Bakımı Şimdi Başlat
                 </button>
 
-                <!-- 3. Bakımı Zamanlanmış Şekilde Başlat Butonu -->
-                <button type="button" class="btn-action" style="flex: 1; background:#d97706 !important; border-color:#b45309 !important; color:white; padding:10px; justify-content:center;" onclick="startScheduledMaintenance()">
-                  ⏰ Bakımı Zamanlanmış Başlat
+                <!-- Zamanlanmış Bakımı Başlat Butonu -->
+                <button type="button" class="btn-action" style="flex: 1; background:#d97706 !important; border-color:#b45309 !important; color:white; padding:10px; justify-content:center; font-weight:bold;" onclick="startScheduledMaintenance()">
+                  ⏰ Zamanlanmış bakımı Zamanlanmış Başlat
                 </button>
               </div>
             </div>
@@ -3817,33 +3814,63 @@ function listenUserWarnings(uid) {
       } 
     }); 
   } 
- // --- CANLI BAKIM MODU DİNLENMESİ VE EKRAN KİLİTLENMESİ ---
+// --- BAKIM MODU ANLIK DİNLENMESİ VE KİLİT EKRANI KONTROLÜ ---
 function listenMaintenanceRealtime() {
   const maintenanceRef = doc(db, "ayarlar", "bakim");
   
   onSnapshot(maintenanceRef, (snap) => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-    
-    // Yöneticiler bakım kilit ekranına takılmaz
-    if (window.currentUserIsAdmin) return;
-
+    const data = snap.exists() ? snap.data() : { aktif: false };
     const now = new Date();
-    const startDate = data.baslangicTarihi ? new Date(data.baslangicTarihi) : null;
     
-    let isLocked = false;
+    let isLockedForMe = false;
+    let isMaintenanceActive = false;
+
+    // Hedef Kitle İsimlendirme Yardımcısı
+    const getTargetName = (t) => {
+      if (!t || t === 'all') return 'tüm kullanıcılar';
+      if (t === 'Ucretsiz') return 'ücretsiz kullanıcılar';
+      if (t === 'Deneme') return 'deneme kullanıcıları';
+      if (t === 'Premium') return 'premium kullanıcılar';
+      if (t === 'VIP') return 'VIP kullanıcılar';
+      return `${t} kullanıcıları`;
+    };
+
+    // Tarih Biçimlendirme Yardımcısı
+    const formatDateStr = (isoStr) => {
+      if (!isoStr) return '';
+      const d = new Date(isoStr);
+      const datePart = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const timePart = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      return `${datePart} ${timePart}`;
+    };
 
     if (data.aktif) {
+      const startDate = data.baslangicTarihi ? new Date(data.baslangicTarihi) : null;
+      const endDate = data.bitisTarihi ? new Date(data.bitisTarihi) : null;
+
       if (data.mod === "now") {
-        isLocked = true; // Anında kilitle
-      } else if (data.mod === "scheduled" && startDate && now >= startDate) {
-        isLocked = true; // Zamanlanan saat geldi veya geçtiyse kilitle
+        isMaintenanceActive = true;
+      } else if (data.mod === "scheduled") {
+        if (startDate && now >= startDate) {
+          if (!endDate || now <= endDate) {
+            isMaintenanceActive = true;
+          }
+        }
+      }
+
+      // Giriş yapan kullanıcı için kilit kontrolü
+      if (isMaintenanceActive && !window.currentUserIsAdmin) {
+        const userTier = window.currentUserTier || 'Ücretsiz';
+        if (!data.hedefKitle || data.hedefKitle === 'all' || data.hedefKitle === userTier) {
+          isLockedForMe = true;
+        }
       }
     }
 
+    // --- 1. KULLANICI KİLİT EKRANI ---
     let overlay = document.getElementById('globalMaintenanceOverlay');
 
-    if (isLocked) {
+    if (isLockedForMe) {
       if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'globalMaintenanceOverlay';
@@ -3869,429 +3896,50 @@ function listenMaintenanceRealtime() {
     } else {
       if (overlay) overlay.style.display = 'none';
     }
+
+    // --- 2. ADMİN PANELİ BİLGİ VE BUTON GÜNCELLEMESİ ---
+    const adminBannerBtn = document.getElementById('adminActiveMaintenanceBannerBtn');
+    const adminStatusBox = document.getElementById('adminMaintenanceStatusBox');
+
+    if (isMaintenanceActive) {
+      const targetLabel = getTargetName(data.hedefKitle);
+      let timeText = "bakım modunda";
+      
+      if (data.mod === "scheduled" && data.baslangicTarihi) {
+        const startStr = formatDateStr(data.baslangicTarihi);
+        const endStr = data.bitisTarihi ? formatDateStr(data.bitisTarihi) : '';
+        timeText = endStr ? `${startStr} - ${endStr} tarihleri arasında bakım modunda` : `${startStr} tarihinden itibaren bakım modunda`;
+      }
+
+      const fullText = `🛠️ ${targetLabel} için sistem ${timeText}`;
+
+      if (adminBannerBtn) {
+        adminBannerBtn.innerText = fullText;
+        adminBannerBtn.style.display = 'inline-flex';
+      }
+
+      if (adminStatusBox) {
+        adminStatusBox.style.background = '#fee2e2';
+        adminStatusBox.style.borderColor = '#fca5a5';
+        adminStatusBox.style.color = '#991b1b';
+        adminStatusBox.innerHTML = `⚠️ <strong>Dikkat:</strong> Bakım modu aktif! ${targetLabel} için sistem ${timeText}.`;
+      }
+    } else {
+      if (adminBannerBtn) {
+        adminBannerBtn.style.display = 'none';
+      }
+
+      if (adminStatusBox) {
+        adminStatusBox.style.background = '#d1fae5';
+        adminStatusBox.style.borderColor = '#6ee7b7';
+        adminStatusBox.style.color = '#065f46';
+        adminStatusBox.innerHTML = `🟢 Sistem şu an kullanıcılar için müsait.`;
+      }
+    }
   });
 }
-  window.acknowledgeUserWarning = async function() { 
-    if (!auth.currentUser) return; 
-    try { 
-      document.getElementById('userWarningNoticeModal').style.display = 'none'; 
-      await updateDoc(doc(db, "kullanicilar", auth.currentUser.uid), { 
-        "activeWarning.read": true, 
-        "hasWarning": false 
-      }); 
-      if (window.showToast) showToast("Uyarı okundu olarak işaretlendi.", "info"); 
-    } catch (err) { 
-      console.error("Uyarı kapatılırken hata:", err); 
-    } 
-  }; 
- 
-  function listenIncomingAdminNotifications(uid) { 
-    incomingChatNotificationsUnsubscribe = disposeSubscription(incomingChatNotificationsUnsubscribe); 
-    incomingReportNotificationsUnsubscribe = disposeSubscription(incomingReportNotificationsUnsubscribe); 
- 
-    const chatQ = query(collection(db, "sohbetler", uid, "mesajlar")); 
-    incomingChatNotificationsUnsubscribe = onSnapshot(chatQ, (snapshot) => { 
-      snapshot.docChanges().forEach((change) => { 
-        if (change.type === "added") { 
-          const m = change.doc.data(); 
-          if ((m.senderRole === "admin" || m.senderUid === "admin") && m.zaman) { 
-            const msgTime = m.zaman.toDate ? m.zaman.toDate().getTime() : Date.now(); 
-            if (Date.now() - msgTime < 10000) { 
-              showToast("💬 Yöneticiden yeni bir canlı destek mesajınız var!", "info"); 
-            } 
-          } 
-        } 
-      }); 
-    }); 
- 
-    const reportQ = query(collection(db, "hatali_sorular"), where("userId", "==", uid)); 
-    incomingReportNotificationsUnsubscribe = onSnapshot(reportQ, (snapshot) => { 
-      snapshot.docChanges().forEach((change) => { 
-        if (change.type === "modified") { 
-          const d = change.doc.data(); 
-          if (d.status === "yanitlandi") { 
-            showToast("📋 Hatalı soru bildiriminize yöneticiden yanıt geldi!", "success"); 
-          } 
-        } 
-      }); 
-    }); 
-  } 
-   
-  let activeAuthUid = null; 
- 
-// --- AUTH DURUMU DEĞİŞİMİ VE ADMİN KONTROLÜ DÜZELTMESİ ---
-  onAuthStateChanged(auth, async (user) => { 
-    if (typeof window.loadSystemLimits === 'function') await window.loadSystemLimits();
-    
-    const nextAuthUid = user?.uid || null; 
-    if (activeAuthUid !== nextAuthUid) { 
-      disposeAllLiveSubscriptions(); 
-      activeAuthUid = nextAuthUid; 
-    } 
 
-    if (user) { 
-      // 🚀 Giriş yapıldığı an login ekranını gizle
-      if (document.getElementById('loginScreen')) {
-        document.getElementById('loginScreen').style.display = 'none';
-      }
-
-      const tokenResult = await user.getIdTokenResult(); 
-      const userRef = doc(db, "kullanicilar", user.uid); 
-      const userSnap = await getDoc(userRef); 
-      let docData = userSnap.exists() ? userSnap.data() : {};
-
-      const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
-      const isClaimAdmin = tokenResult.claims.admin === true;
-      const isRoleAdmin = docData.rol === 'admin';
-      const isAdmin = isClaimAdmin || isEmailAdmin || isRoleAdmin;
-
-      window.currentUserIsAdmin = isAdmin; 
-      window.isAdminSessionActive = isAdmin; 
-      sessionStartTime = Date.now(); 
-      window.currentUserEmail = user.email; 
-
-      let resolvedName = user.displayName || docData.adSoyad;
-      if (!resolvedName || resolvedName === "Belirtilmedi" || resolvedName === "...") {
-        if (user.email === 'kgulsen1994@gmail.com') resolvedName = "Dr. Kadir GÜLŞEN";
-        else if (user.email) resolvedName = user.email.split('@')[0];
-        else resolvedName = "Kullanıcı";
-      }
- 
-      if (!userSnap.exists()) { 
-        currentUserData = { 
-          email: user.email, 
-          adSoyad: resolvedName, 
-          sonGirisTarihi: serverTimestamp(), 
-          denemeBaslangicTarihi: serverTimestamp(), 
-          durum: isAdmin ? "VIP" : "Deneme", 
-          uyariSayisi: 0, 
-          engellenmeNedenleri: [], 
-          rol: isAdmin ? "admin" : "kullanici" 
-        }; 
-        await setDoc(userRef, currentUserData); 
-      } else { 
-        currentUserData = docData; 
-        currentUserData = { ...currentUserData, adSoyad: resolvedName, rol: isAdmin ? "admin" : (currentUserData.rol || "kullanici") }; 
-        await updateDoc(userRef, {  
-          sonGirisTarihi: serverTimestamp(), 
-          adSoyad: resolvedName 
-        }); 
-      } 
- 
-      window.currentUserData = currentUserData; 
-      if (checkAndHandleBannedUser(currentUserData)) return; 
-
-      // 3 Günlük Premium Deneme Kontrolü
-      if (currentUserData.durum === 'Deneme' && !isAdmin) {
-        let trialStartMs = currentUserData.denemeBaslangicTarihi?.toMillis 
-          ? currentUserData.denemeBaslangicTarihi.toMillis() 
-          : new Date(currentUserData.denemeBaslangicTarihi || Date.now()).getTime();
-
-        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-        const trialEndMs = trialStartMs + THREE_DAYS_MS;
-        const nowMs = Date.now();
-
-        if (nowMs >= trialEndMs) {
-          await updateDoc(userRef, { durum: 'Ücretsiz' });
-          currentUserData.durum = 'Ücretsiz';
-          window.currentUserTier = 'Ücretsiz';
-          showToast("⏳ 3 Günlük Premium Deneme süreniz sona ermiştir. Hesabınız Ücretsiz plana aktarıldı.", "info");
-        } else {
-          window.currentUserTier = 'Deneme';
-          const endDateStr = new Date(trialEndMs).toLocaleString('tr-TR', { 
-            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' 
-          });
-          
-let trialBanner = document.getElementById('premiumTrialInfoBanner');
-          if (!trialBanner) {
-            trialBanner = document.createElement('div');
-            trialBanner.id = 'premiumTrialInfoBanner';
-            trialBanner.className = 'no-print';
-            trialBanner.style.cssText = "background: linear-gradient(90deg, #f59e0b, #d97706); color: white; padding: 10px 16px; border-radius: 10px; font-weight: bold; font-size: 0.88rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);";
-            const container = document.querySelector('.main-content') || document.body;
-            container.insertBefore(trialBanner, container.firstChild);
-          }
-          trialBanner.innerHTML = `<span>⭐ <strong>3 Günlük Premium Deneme Süreniz Başlamıştır!</strong></span> <span>🏁 Bitiş Tarihi: <u>${endDateStr}</u></span>`;
-        }
-      } else {
-        window.currentUserTier = isAdmin ? 'VIP' : currentUserData.durum; 
-      }
- 
-      const formattedName = formatNameSurname(currentUserData.adSoyad); 
-      document.querySelectorAll('.user-name-target').forEach(el => el.textContent = formattedName); 
- 
-      updateMainUserStarsDisplay(currentUserData.uyariSayisi || 0); 
- 
-      const btnRedeem = document.getElementById('btnRedeemLicense'); 
-      const btnAdmin = document.getElementById('btnAdminPanel'); 
-      const btnCheckReports = document.getElementById('btnCheckMyReports');
-      const btnContact = document.getElementById('btnContactAdmin');
-
-      if (isAdmin) { 
-        if (btnRedeem) btnRedeem.style.display = 'none'; 
-        if (btnAdmin) btnAdmin.style.display = 'inline-flex'; 
-        if (btnCheckReports) btnCheckReports.style.display = 'none';
-        if (btnContact) btnContact.style.display = 'none';
-      } else { 
-        if (btnRedeem) btnRedeem.style.display = 'inline-flex'; 
-        if (btnAdmin) btnAdmin.style.display = 'none'; 
-        if (btnCheckReports) btnCheckReports.style.display = 'inline-flex';
-        if (btnContact) btnContact.style.display = 'inline-flex';
-      }
- 
-      const tierBadge = document.getElementById('userTierBadge'); 
-      if (tierBadge) { 
-        const displayStatus = (currentUserData.durum === 'Deneme') ? 'Premium' : currentUserData.durum; 
-        const st = isAdmin ? '👑 Admin' : displayStatus; 
-        tierBadge.textContent = st; 
-        if (isAdmin || st === 'VIP') { tierBadge.style.background = '#f3e8ff'; tierBadge.style.color = '#6b21a8'; } 
-        else if (st === 'Premium' || currentUserData.durum === 'Deneme') { tierBadge.style.background = '#d1fae5'; tierBadge.style.color = '#047857'; } 
-        else { tierBadge.style.background = '#e2e8f0'; tierBadge.style.color = '#475569'; } 
-      } 
-
-      // ⚡ KULLANICI ÜYELİK TİPİ KESİNLEŞTİĞİ İÇİN KULLANIM LİMİT ROZETİNİ GÜNCELLİYORUZ
-      if (typeof window.updateUserLimitBadgeDisplay === 'function') {
-        window.updateUserLimitBadgeDisplay();
-      }
- 
-      document.getElementById('loginScreen').style.display = 'none'; 
-      document.getElementById('mainApp').style.display = 'block'; 
- 
-      listenUserWarnings(user.uid); 
-      listenMaintenanceRealtime();
- 
-      if (typeof window.checkSystemAnnouncements === 'function') { 
-        await window.checkSystemAnnouncements(user.uid); 
-      } 
- 
-// ⚡ ADMİN ŞİFRE İLE GİRERSE SORU YÜKLEME, GOOGLE İLE GİRERSE VEYA NORMAL KULLANICI İSE YÜKLE
-      const isPasswordAuth = user.providerData?.some(p => p.providerId === 'password');
-
-      if (isAdmin && isPasswordAuth) {
-        // Admin e-posta/şifre ile girdiğinde soruları yüklemiyoruz
-        hideLoading();
-      } else if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
-        // Google ile giren admin ve tüm normal kullanıcılar için soruları yüklüyoruz
-        await window.loadDataAndInit();
-      } else {
-        hideLoading();
-      }
- 
-    } else { 
-      currentUserData = null; 
-      document.getElementById('loginScreen').style.display = 'flex'; 
-      document.getElementById('mainApp').style.display = 'none'; 
-    } 
-  });
-
-window.systemLimits = {
-    freeCreate: 10, freePrint: 5,
-    trialCreate: 25, trialPrint: 15,
-    premiumCreate: 100, premiumPrint: 50,
-    watermarkTiers: ['Ücretsiz', 'Deneme'],
-    watermarkText: "Nöroloji Soru Hazırlama Paneli ®"
-  };
-window.switchLimitSubTab = function(tab) {
-    const limitDiv = document.getElementById('subTabContentLimit');
-    const wmDiv = document.getElementById('subTabContentWatermark');
-    const btnLimit = document.getElementById('btnSubLimit');
-    const btnWm = document.getElementById('btnSubWatermark');
-
-    if (tab === 'limit') {
-      if (limitDiv) limitDiv.style.display = 'flex';
-      if (wmDiv) wmDiv.style.display = 'none';
-      if (btnLimit) btnLimit.className = 'btn-action btn-toggle-on';
-      if (btnWm) btnWm.className = 'btn-action btn-toggle-off';
-    } else {
-      if (limitDiv) limitDiv.style.display = 'none';
-      if (wmDiv) wmDiv.style.display = 'flex';
-      if (btnWm) btnWm.className = 'btn-action btn-toggle-on';
-      if (btnLimit) btnLimit.className = 'btn-action btn-toggle-off';
-    }
-  };
-  window.saveSystemLimits = async function() {
-    try {
-      const selectedTiers = [];
-      if (document.getElementById('wmTierFree')?.checked) selectedTiers.push('Ücretsiz');
-      if (document.getElementById('wmTierTrial')?.checked) selectedTiers.push('Deneme');
-      if (document.getElementById('wmTierPremium')?.checked) selectedTiers.push('Premium');
-      if (document.getElementById('wmTierVIP')?.checked) selectedTiers.push('VIP');
-
-      const limits = {
-        freeCreate: parseInt(document.getElementById('limitFreeCreate').value) || 10,
-        freePrint: parseInt(document.getElementById('limitFreePrint').value) || 5,
-        trialCreate: parseInt(document.getElementById('limitTrialCreate').value) || 25,
-        trialPrint: parseInt(document.getElementById('limitTrialPrint').value) || 15,
-        premiumCreate: parseInt(document.getElementById('limitPremiumCreate').value) || 100,
-        premiumPrint: parseInt(document.getElementById('limitPremiumPrint').value) || 50,
-        watermarkTiers: selectedTiers,
-        watermarkText: document.getElementById('watermarkCustomText').value.trim() || "Nöroloji Soru Hazırlama Paneli ®"
-      };
-
-      if (window.db && window.doc && window.setDoc) {
-        await window.setDoc(window.doc(window.db, "ayarlar", "sistem_limitleri"), limits);
-      }
-      window.systemLimits = limits;
-      showToast("Limit ve filigran ayarları başarıyla kaydedildi!", "success");
-      window.updateUserLimitBadgeDisplay();
-    } catch(err) {
-      showToast("Limitler kaydedilirken hata: " + err.message, "error");
-    }
-  };
-
-// Soru Sınırlamaları - Kullanıcı Arama Sistemi (Duyuru Paneli ile Birebir Aynı)
-window.toggleResetUserSearchInput = function(val) {
-  const wrapper = document.getElementById('resetSpecificUserWrapper');
-  const listDiv = document.getElementById('resetUserDropdownList');
-  if (wrapper) wrapper.style.display = (val === 'specific') ? 'block' : 'none';
-
-  if (val === 'specific') {
-    if (!Array.isArray(window.announcementUsersCache) || window.announcementUsersCache.length === 0) {
-      if (typeof window.loadAnnouncementUsersList === 'function') {
-        window.loadAnnouncementUsersList().then(() => window.renderResetUserDropdown(''));
-      }
-    } else {
-      window.renderResetUserDropdown('');
-    }
-  } else {
-    document.getElementById('selectedResetUserId').value = '';
-    if (listDiv) {
-      listDiv.innerHTML = '';
-      listDiv.style.display = 'none';
-    }
-  }
-};
-
-window.filterResetTargetUsers = function(query) {
-  window.renderResetUserDropdown(query || '');
-};
-
-window.renderResetUserDropdown = function(query) {
-  const listDiv = document.getElementById('resetUserDropdownList');
-  if (!listDiv) return;
-
-  const q = String(query || '').toLocaleLowerCase('tr-TR').trim();
-  const filtered = (window.announcementUsersCache || []).filter(u =>
-    String(u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(q) ||
-    String(u.email || '').toLocaleLowerCase('tr-TR').includes(q)
-  );
-
-  const escapeHTML = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-  })[ch]);
-
-  if (filtered.length === 0) {
-    listDiv.style.display = 'block';
-    listDiv.innerHTML = '<div style="padding:10px; font-size:0.82rem; color:#64748b; text-align:center;">Kullanıcı bulunamadı.</div>';
-    return;
-  }
-
-  listDiv.style.display = 'block';
-  listDiv.innerHTML = filtered.slice(0, 100).map(u => {
-    const name = escapeHTML(u.adSoyad || u.email || 'İsimsiz');
-    const email = escapeHTML(u.email || '');
-    const status = escapeHTML(u.durum || 'Ücretsiz');
-    const uid = escapeHTML(u.id);
-    return `
-      <button type="button" data-reset-user-id="${uid}"
-        style="width:100%; border:0; border-bottom:1px solid #f1f5f9; background:#fff; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; text-align:left;"
-        onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
-        <span>
-          <strong style="color:#0f172a;">👤 ${name}</strong>
-          <span style="display:block; font-size:0.75rem; color:#64748b;">${email}</span>
-        </span>
-        <span style="font-size:0.72rem; padding:2px 8px; border-radius:8px; background:#e2e8f0; color:#475569; font-weight:bold;">${status}</span>
-      </button>`;
-  }).join('');
-
-  listDiv.querySelectorAll('[data-reset-user-id]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const uid = btn.getAttribute('data-reset-user-id');
-      const user = (window.announcementUsersCache || []).find(x => String(x.id) === String(uid));
-      if (user) window.selectResetTargetUser(user.id, user.adSoyad || user.email, user.email || '');
-    });
-  });
-};
-
-window.selectResetTargetUser = function(uid, nameText, emailText = '') {
-  document.getElementById('selectedResetUserId').value = uid;
-  const searchInput = document.getElementById('resetUserSearchInput');
-  if (searchInput) searchInput.value = emailText ? `${nameText} (${emailText})` : nameText;
-  const listDiv = document.getElementById('resetUserDropdownList');
-  if (listDiv) listDiv.style.display = 'none';
-  showToast(`Sıfırlama hedefi seçildi: ${nameText}`, 'success');
-};
-
-// Hedefe Yönelik Sıfırlama İşlemi
-window.executeTargetedLimitReset = async function() {
-  const targetType = document.getElementById('resetTargetType').value;
-  const todayStr = new Date().toISOString().split('T')[0];
-
-  try {
-    if (!window.db || !window.collection || !window.getDocs) {
-      showToast("Veritabanı bağlantısı bulunamadı.", "error");
-      return;
-    }
-
-    if (targetType === 'all') {
-      const snap = await getDocs(collection(db, "kullanicilar"));
-      for (let d of snap.docs) {
-        await updateDoc(doc(db, "kullanicilar", d.id), { limitResetTimestamp: serverTimestamp() });
-      }
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('used_q_') || key.startsWith('used_print_')) localStorage.removeItem(key);
-      });
-      showToast("Tüm kullanıcıların bugünkü hakları veritabanında başarıyla sıfırlandı!", "success");
-    } 
-    else if (targetType.startsWith('role_')) {
-      const role = targetType.replace('role_', '');
-      const snap = await getDocs(collection(db, "kullanicilar"));
-      let count = 0;
-      for (let d of snap.docs) {
-        const uData = d.data();
-        if (uData.durum === role || (role === 'Ucretsiz' && uData.durum === 'Ücretsiz')) {
-          await updateDoc(doc(db, "kullanicilar", d.id), { limitResetTimestamp: serverTimestamp() });
-          count++;
-        }
-      }
-      showToast(`"${role}" rolündeki ${count} kullanıcının bugünkü limitleri sıfırlandı!`, "success");
-    } 
-    else if (targetType === 'specific') {
-      const uid = document.getElementById('selectedResetUserId').value;
-      if (!uid) {
-        showToast("Lütfen listeden geçerli bir kullanıcı seçin!", "error");
-        return;
-      }
-      await updateDoc(doc(db, "kullanicilar", uid), { limitResetTimestamp: serverTimestamp() });
-      localStorage.removeItem(`used_q_${uid}_${todayStr}`);
-      localStorage.removeItem(`used_print_${uid}_${todayStr}`);
-      showToast("Seçilen kullanıcının hakları başarıyla sıfırlandı!", "success");
-    }
-
-    window.updateUserLimitBadgeDisplay();
-  } catch(e) {
-    showToast("Sıfırlama sırasında hata oluştu: " + e.message, "error");
-  }
-};
-
-  window.saveMaintenanceSettings = async function() {
-    try {
-      const maint = {
-        targetType: document.getElementById('maintTargetType').value,
-        startTime: document.getElementById('maintStartTime').value,
-        endTime: document.getElementById('maintEndTime').value,
-        message: document.getElementById('maintMessageInput').value.trim(),
-        active: document.getElementById('chkEnableMaintenance').checked,
-        updatedAt: serverTimestamp()
-      };
-
-      await setDoc(doc(db, "ayarlar", "sistem_bakim"), maint);
-      showToast("Bakım modu ayarları başarıyla yayınlandı!", "success");
-    } catch(err) {
-      showToast("Bakım ayarları kaydedilemedi: " + err.message, "error");
-    }
-  };
-  // --- 0. BAKIMI ANINDA BİTİR ---
+// --- BAKIMI ANINDA BİTİR ---
 window.stopMaintenanceNow = async function() {
   if (typeof showCustomConfirm === 'function') {
     showCustomConfirm(
@@ -4305,12 +3953,6 @@ window.stopMaintenanceNow = async function() {
             mod: "off",
             guncellenmeTarihi: serverTimestamp()
           }, { merge: true });
-
-          const maintOldRef = doc(db, "ayarlar", "sistem_bakim");
-          await setDoc(maintOldRef, { active: false }, { merge: true });
-
-          const chk = document.getElementById('chkEnableMaintenance');
-          if (chk) chk.checked = false;
 
           showToast("✅ Bakım modu başarıyla sonlandırıldı! Sistem kullanıma açıldı.", "success");
         } catch (err) {
@@ -4330,17 +3972,23 @@ window.stopMaintenanceNow = async function() {
     }
   }
 };
-// --- 1. BAKIMI ŞİMDİ BAŞLAT ---
+
+// --- BAKIMI ŞİMDİ BAŞLAT ---
 window.startMaintenanceNow = async function() {
-  if (!confirm("🚨 Bakım modu ŞİMDİ başlatılacak. Tüm kullanıcıların ekranı anında kilitlenecektir. Onaylıyor musunuz?")) return;
+  const targetType = document.getElementById('maintTargetType')?.value || 'all';
+  const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.";
+
+  if (!confirm("🚨 Bakım modu ŞİMDİ başlatılacak. Seçilen kullanıcıların ekranı anında kilitlenecektir. Onaylıyor musunuz?")) return;
   
   try {
     const maintenanceRef = doc(db, "ayarlar", "bakim");
     await setDoc(maintenanceRef, {
       aktif: true,
       mod: "now",
+      hedefKitle: targetType,
       baslangicTarihi: new Date().toISOString(),
-      mesaj: document.getElementById('maintMessageInput')?.value || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.",
+      bitisTarihi: null,
+      mesaj: msg,
       guncellenmeTarihi: serverTimestamp()
     }, { merge: true });
 
@@ -4350,23 +3998,29 @@ window.startMaintenanceNow = async function() {
   }
 };
 
-// --- 2. BAKIMI ZAMANLANMIŞ ŞEKİLDE BAŞLAT ---
+// --- ZAMANLANMIŞ BAKIMI BAŞLAT ---
 window.startScheduledMaintenance = async function() {
-  const scheduledTimeInput = document.getElementById('maintStartTime')?.value;
-  if (!scheduledTimeInput) {
-    showToast("⚠️ Lütfen geçerli bir başlangıç tarihi ve saati seçin!", "warning");
+  const targetType = document.getElementById('maintTargetType')?.value || 'all';
+  const startTimeInput = document.getElementById('maintStartTime')?.value;
+  const endTimeInput = document.getElementById('maintEndTime')?.value;
+  const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistem zamanlanmış bakımdadır.";
+
+  if (!startTimeInput) {
+    showToast("⚠️ Lütfen geçerli bir Başlangıç Tarih & Saat seçiniz!", "warning");
     return;
   }
 
-  if (!confirm(`⏰ Bakım modu ${scheduledTimeInput} tarihi için zamanlanacaktır. Onaylıyor musunuz?`)) return;
+  if (!confirm("⏰ Zamanlanmış bakım kurulacaktır. Onaylıyor musunuz?")) return;
 
   try {
     const maintenanceRef = doc(db, "ayarlar", "bakim");
     await setDoc(maintenanceRef, {
       aktif: true,
       mod: "scheduled",
-      baslangicTarihi: new Date(scheduledTimeInput).toISOString(),
-      mesaj: document.getElementById('maintMessageInput')?.value || "Sistem zamanlanmış bakımdadır.",
+      hedefKitle: targetType,
+      baslangicTarihi: new Date(startTimeInput).toISOString(),
+      bitisTarihi: endTimeInput ? new Date(endTimeInput).toISOString() : null,
+      mesaj: msg,
       guncellenmeTarihi: serverTimestamp()
     }, { merge: true });
 
