@@ -1690,7 +1690,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           
           <!-- SOL TARAF: NORMAL DUYURU -->
           <div style="flex: 1; min-width: 300px; background: var(--surface); padding: 18px; border-radius: 12px; border: 1px solid var(--border);">
-            <h4 style="color: var(--bg-dark); margin-bottom: 12px;">📢 Genen Duyuru / Bildirim Gönder</h4>
+            <h4 style="color: var(--bg-dark); margin-bottom: 12px;">📢 Genel Duyuru / Bildirim Gönder</h4>
             
             <div class="input-control" id="announcementTargetControlWrapper">
               <label style="font-weight: 600; font-size: 0.85rem; color: #475569; display: block; margin-bottom: 6px;">Hedef Kitle / Kullanıcı Seçimi:</label>
@@ -2588,52 +2588,67 @@ function cancelQuestionLoading() {
     if (sheet) sheet.classList.remove('interactive-mode', 'analysis-mode');
   }
 
+// Varsayılan sistem limitleri önbelleği (Çökme ve tepkisizliği önler)
+  window.systemLimits = window.systemLimits || {
+    freeCreate: 10, freePrint: 5,
+    trialCreate: 25, trialPrint: 15,
+    premiumCreate: 100, premiumPrint: 50,
+    enableWatermark: true,
+    watermarkText: "Nöroloji Soru Hazırlama Paneli ®",
+    watermarkTiers: ['Ücretsiz', 'Deneme']
+  };
+
   async function proceedToExam() {
-const count = parseInt(document.getElementById('questionCount').value) || 10;
+    try {
+      const count = parseInt(document.getElementById('questionCount').value) || 10;
 
-if (window.checkDailyLimitAndIncrement) {
-  const isAllowed = await window.checkDailyLimitAndIncrement('create', count);
-  if (!isAllowed) return;
-}
+      if (window.checkDailyLimitAndIncrement) {
+        const isAllowed = await window.checkDailyLimitAndIncrement('create', count);
+        if (!isAllowed) return;
+      }
 
-    const selectedTopics = Array.from(document.querySelectorAll('.topic-check:checked')).map(cb => cb.value);
-    const selectedDiffs = Array.from(document.querySelectorAll('.diff-check:checked')).map(cb => cb.value);
+      const selectedTopics = Array.from(document.querySelectorAll('.topic-check:checked')).map(cb => cb.value);
+      const selectedDiffs = Array.from(document.querySelectorAll('.diff-check:checked')).map(cb => cb.value);
 
-    if (selectedTopics.length === 0 || selectedDiffs.length === 0) {
-      showToast("Lütfen konu ve zorluk seviyesi seçiniz.", "warning");
-      return;
+      if (selectedTopics.length === 0 || selectedDiffs.length === 0) {
+        showToast("Lütfen konu ve zorluk seviyesi seçiniz.", "warning");
+        return;
+      }
+
+      let filtered = masterPool.filter(q => {
+        const meta = parseQuestionMeta(q);
+        return selectedTopics.includes(meta.konuKey) && selectedDiffs.includes(meta.zorlukKey);
+      });
+
+      if (filtered.length === 0) {
+        showToast("Seçtiğiniz kriterlere uygun soru bulunamadı.", "error");
+        return;
+      }
+
+      const equalDistribution = document.getElementById('equalTopicToggle').checked;
+      if (equalDistribution) {
+        currentQuestionsList = distributeQuestionsEqually(filtered, count);
+      } else {
+        if (document.getElementById('shuffleToggle').checked) filtered = shuffle(filtered);
+        currentQuestionsList = filtered.slice(0, count);
+      }
+
+      const selectedKeyMode = document.getElementById('keyModeSelect').value;
+      const selectedExpMode = document.getElementById('expModeSelect').value;
+
+      resetTestState();
+      currentKeyMode = selectedKeyMode;
+      currentExpMode = selectedExpMode;
+      updateKeyButtonUI();
+      updateExpButtonUI();
+      buildPaperView(currentQuestionsList);
+
+      document.getElementById('configScreen').style.display = 'none';
+      document.getElementById('previewScreen').style.display = 'block';
+    } catch (err) {
+      console.error("Test oluşturma hatası:", err);
+      showToast("Test oluşturulurken bir hata oluştu: " + err.message, "error");
     }
-
-    let filtered = masterPool.filter(q => {
-      const meta = parseQuestionMeta(q);
-      return selectedTopics.includes(meta.konuKey) && selectedDiffs.includes(meta.zorlukKey);
-    });
-
-    if (filtered.length === 0) {
-      showToast("Seçtiğiniz kriterlere uygun soru bulunamadı.", "error");
-      return;
-    }
-
-    const equalDistribution = document.getElementById('equalTopicToggle').checked;
-    if (equalDistribution) {
-      currentQuestionsList = distributeQuestionsEqually(filtered, count);
-    } else {
-      if (document.getElementById('shuffleToggle').checked) filtered = shuffle(filtered);
-      currentQuestionsList = filtered.slice(0, count);
-    }
-
-    const selectedKeyMode = document.getElementById('keyModeSelect').value;
-    const selectedExpMode = document.getElementById('expModeSelect').value;
-
-    resetTestState();
-    currentKeyMode = selectedKeyMode;
-    currentExpMode = selectedExpMode;
-    updateKeyButtonUI();
-    updateExpButtonUI();
-    buildPaperView(currentQuestionsList);
-
-    document.getElementById('configScreen').style.display = 'none';
-    document.getElementById('previewScreen').style.display = 'block';
   }
   window.proceedToExam = proceedToExam;
 
@@ -3606,6 +3621,122 @@ window.closeAnnouncementModal = function() {
   const storage = getStorage(app); 
   const functions = getFunctions(app, "us-central1"); 
   const provider = new GoogleAuthProvider(); 
+  // === TÜM ADMİN VE SİSTEM AYARLARININ KULLANICILARA ANLIK (REALTIME) YANSITILMASI ===
+  onAuthStateChanged(auth, async (user) => {
+    // Bakım Modunu ve Limitleri Sayfa Açılır Açılmaz Anlık Dinle
+    listenMaintenanceRealtime();
+    listenSystemLimitsRealtime();
+
+    if (user) {
+      const loginScreen = document.getElementById('loginScreen');
+      const loginOptionsModal = document.getElementById('loginOptionsModal');
+      const mainApp = document.getElementById('mainApp');
+
+      if (loginScreen) loginScreen.style.display = 'none';
+      if (loginOptionsModal) loginOptionsModal.style.display = 'none';
+      if (mainApp) mainApp.style.display = 'block';
+
+      window.currentUserEmail = user.email;
+      const nameTargets = document.querySelectorAll('.user-name-target');
+      nameTargets.forEach(el => el.innerText = user.displayName || user.email);
+
+      // Kullanıcının uyarılarını ve duyurularını canlı dinle
+      listenUserWarnings(user.uid);
+      listenSystemAnnouncementsRealtime(user.uid);
+
+      if (typeof window.loadDataAndInit === 'function') {
+        window.loadDataAndInit();
+      }
+    } else {
+      const loginScreen = document.getElementById('loginScreen');
+      const mainApp = document.getElementById('mainApp');
+
+      if (loginScreen) loginScreen.style.display = 'flex';
+      if (mainApp) mainApp.style.display = 'none';
+    }
+  });
+
+  // --- ANLIK DUYURU CANLI DİNLEYİCİSİ ---
+  window.listenSystemAnnouncementsRealtime = function(userUid) {
+    if (!db || !onSnapshot) return;
+    const q = collection(db, "sistem_duyurulari");
+
+    onSnapshot(q, (snap) => {
+      if (snap.empty) return;
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const hiddenTodayKey = `hide_announce_date_${userUid}`;
+      if (localStorage.getItem(hiddenTodayKey) === todayStr) return;
+
+      const userTier = String(window.currentUserTier || 'Ücretsiz');
+      const userTierKey = normStr(userTier);
+      const validAnnouncements = [];
+
+      snap.forEach(docSnap => {
+        const data = docSnap.data() || {};
+        if (data.active === false) return;
+
+        const annId = docSnap.id;
+        const targetType = data.targetType || (data.targetUserUid === 'ALL' ? 'all' : 'specific');
+        let isTarget = false;
+
+        if (targetType === 'all') {
+          isTarget = true;
+        } else if (targetType === 'specific') {
+          isTarget = data.targetUserId === userUid || data.targetUserUid === userUid;
+        } else if (String(targetType).startsWith('role_')) {
+          const targetTierKey = normStr(String(targetType).slice(5));
+          isTarget = userTierKey === targetTierKey;
+        }
+
+        if (!isTarget) return;
+        if (localStorage.getItem(`closed_ann_${annId}`)) return;
+
+        const createdDate = data.createdAt?.toDate ? data.createdAt.toDate() : (data.createdAt ? new Date(data.createdAt) : new Date());
+        const durationDays = Number.isFinite(parseInt(data.durationDays, 10)) ? parseInt(data.durationDays, 10) : 1;
+
+        if (durationDays > 0) {
+          const diffDays = (today - createdDate) / 86400000;
+          if (diffDays > durationDays) return;
+        }
+
+        validAnnouncements.push({ id: annId, ...data });
+      });
+
+      if (validAnnouncements.length === 0) return;
+
+      validAnnouncements.sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
+
+      const activeAnn = validAnnouncements[0];
+      currentAnnouncementId = activeAnn.id;
+      const titleEl = document.getElementById('announcementModalTitle');
+      const contentEl = document.getElementById('announcementModalContent');
+      const checkboxEl = document.getElementById('chkDoNotShowToday');
+      const modalEl = document.getElementById('systemAnnouncementModal');
+      if (titleEl) titleEl.innerText = String(activeAnn.title || 'Sistem Duyurusu').startsWith('📢') ? String(activeAnn.title) : `📢 ${activeAnn.title || 'Sistem Duyurusu'}`;
+      if (contentEl) contentEl.innerText = activeAnn.text || '';
+      if (checkboxEl) checkboxEl.checked = false;
+      if (modalEl) modalEl.style.display = 'flex';
+    });
+  };
+
+  // --- SİSTEM LİMİTLERİNİ CANLI DİNLEYİCİSİ ---
+  window.listenSystemLimitsRealtime = function() {
+    if (!db || !onSnapshot) return;
+    const ref = doc(db, "ayarlar", "sistem_limitleri");
+    onSnapshot(ref, (snap) => {
+      if (snap.exists()) {
+        window.systemLimits = { ...window.systemLimits, ...snap.data() };
+        if (typeof window.updateUserLimitBadgeDisplay === 'function') {
+          window.updateUserLimitBadgeDisplay();
+        }
+      }
+    });
+  };
 // === CANLI OTURUM DİNLEYİCİSİ (DÖNGÜYÜ VE EKRAN KAPANMASINI ÇÖZER) ===
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -3981,10 +4112,9 @@ function listenMaintenanceRealtime() {
 }
 
 // --- BAKIMI ANINDA BİTİR ---
-window.stopMaintenanceNow = async function() {
-  if (typeof showCustomConfirm === 'function') {
+  window.stopMaintenanceNow = async function() {
     showCustomConfirm(
-      "✅ Bakımı Bitir Onayı",
+      "Bakımı Bitir Onayı",
       "Bakım modunu sonlandırıp sistemi tüm kullanıcılara hemen açmak istediğinize emin misiniz?",
       async () => {
         try {
@@ -3995,81 +4125,81 @@ window.stopMaintenanceNow = async function() {
             guncellenmeTarihi: serverTimestamp()
           }, { merge: true });
 
-          showToast("✅ Bakım modu başarıyla sonlandırıldı! Sistem kullanıma açıldı.", "success");
+          showToast("Bakım modu başarıyla sonlandırıldı! Sistem kullanıma açıldı.", "success");
         } catch (err) {
-          showToast("❌ Bakım sonlandırılırken hata oluştu: " + err.message, "error");
+          showToast("Bakım sonlandırılırken hata oluştu: " + err.message, "error");
         }
       },
       "🟢"
     );
-  } else {
-    if (!confirm("Bakımı bitirmek istediğinize emin misiniz?")) return;
-    try {
-      const maintenanceRef = doc(db, "ayarlar", "bakim");
-      await setDoc(maintenanceRef, { aktif: false, mod: "off", guncellenmeTarihi: serverTimestamp() }, { merge: true });
-      showToast("✅ Bakım modu sonlandırıldı!", "success");
-    } catch (err) {
-      showToast("❌ Hata: " + err.message, "error");
+  };
+
+  // --- BAKIMI ŞİMDİ BAŞLAT (MODERN ONAY MODALLI) ---
+  window.startMaintenanceNow = async function() {
+    const targetType = document.getElementById('maintTargetType')?.value || 'all';
+    const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.";
+
+    showCustomConfirm(
+      "Bakım Modunu Başlat",
+      "Bakım modu ŞİMDİ başlatılacaktır. Seçilen kullanıcıların ekranı anında kilitlenecektir. Onaylıyor musunuz?",
+      async () => {
+        try {
+          const maintenanceRef = doc(db, "ayarlar", "bakim");
+          await setDoc(maintenanceRef, {
+            aktif: true,
+            mod: "now",
+            hedefKitle: targetType,
+            baslangicTarihi: new Date().toISOString(),
+            bitisTarihi: null,
+            mesaj: msg,
+            guncellenmeTarihi: serverTimestamp()
+          }, { merge: true });
+
+          showToast("Bakım modu ŞİMDİ başarıyla başlatıldı!", "success");
+        } catch (err) {
+          showToast("Bakım başlatılamadı: " + err.message, "error");
+        }
+      },
+      "🚨"
+    );
+  };
+
+  // --- ZAMANLANMIŞ BAKIMI BAŞLAT (MODERN ONAY MODALLI) ---
+  window.startScheduledMaintenance = async function() {
+    const targetType = document.getElementById('maintTargetType')?.value || 'all';
+    const startTimeInput = document.getElementById('maintStartTime')?.value;
+    const endTimeInput = document.getElementById('maintEndTime')?.value;
+    const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistem zamanlanmış bakımdadır.";
+
+    if (!startTimeInput) {
+      showToast("Lütfen geçerli bir Başlangıç Tarih & Saat seçiniz!", "warning");
+      return;
     }
-  }
-};
 
-// --- BAKIMI ŞİMDİ BAŞLAT ---
-window.startMaintenanceNow = async function() {
-  const targetType = document.getElementById('maintTargetType')?.value || 'all';
-  const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.";
+    showCustomConfirm(
+      "Zamanlanmış Bakım Kur",
+      "Belirtilen tarih ve saatte bakım modu otomatik devreye girecektir. Onaylıyor musunuz?",
+      async () => {
+        try {
+          const maintenanceRef = doc(db, "ayarlar", "bakim");
+          await setDoc(maintenanceRef, {
+            aktif: true,
+            mod: "scheduled",
+            hedefKitle: targetType,
+            baslangicTarihi: new Date(startTimeInput).toISOString(),
+            bitisTarihi: endTimeInput ? new Date(endTimeInput).toISOString() : null,
+            mesaj: msg,
+            guncellenmeTarihi: serverTimestamp()
+          }, { merge: true });
 
-  if (!confirm("🚨 Bakım modu ŞİMDİ başlatılacak. Seçilen kullanıcıların ekranı anında kilitlenecektir. Onaylıyor musunuz?")) return;
-  
-  try {
-    const maintenanceRef = doc(db, "ayarlar", "bakim");
-    await setDoc(maintenanceRef, {
-      aktif: true,
-      mod: "now",
-      hedefKitle: targetType,
-      baslangicTarihi: new Date().toISOString(),
-      bitisTarihi: null,
-      mesaj: msg,
-      guncellenmeTarihi: serverTimestamp()
-    }, { merge: true });
-
-    showToast("✅ Bakım modu ŞİMDİ başarıyla başlatıldı!", "success");
-  } catch (err) {
-    showToast("❌ Bakım başlatılamadı: " + err.message, "error");
-  }
-};
-
-// --- ZAMANLANMIŞ BAKIMI BAŞLAT ---
-window.startScheduledMaintenance = async function() {
-  const targetType = document.getElementById('maintTargetType')?.value || 'all';
-  const startTimeInput = document.getElementById('maintStartTime')?.value;
-  const endTimeInput = document.getElementById('maintEndTime')?.value;
-  const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistem zamanlanmış bakımdadır.";
-
-  if (!startTimeInput) {
-    showToast("⚠️ Lütfen geçerli bir Başlangıç Tarih & Saat seçiniz!", "warning");
-    return;
-  }
-
-  if (!confirm("⏰ Zamanlanmış bakım kurulacaktır. Onaylıyor musunuz?")) return;
-
-  try {
-    const maintenanceRef = doc(db, "ayarlar", "bakim");
-    await setDoc(maintenanceRef, {
-      aktif: true,
-      mod: "scheduled",
-      hedefKitle: targetType,
-      baslangicTarihi: new Date(startTimeInput).toISOString(),
-      bitisTarihi: endTimeInput ? new Date(endTimeInput).toISOString() : null,
-      mesaj: msg,
-      guncellenmeTarihi: serverTimestamp()
-    }, { merge: true });
-
-    showToast("✅ Zamanlanmış bakım başarıyla kuruldu!", "success");
-  } catch (err) {
-    showToast("❌ Zamanlanmış bakım kurulamadı: " + err.message, "error");
-  }
-};
+          showToast("Zamanlanmış bakım başarıyla kuruldu!", "success");
+        } catch (err) {
+          showToast("Zamanlanmış bakım kurulamadı: " + err.message, "error");
+        }
+      },
+      "⏰"
+    );
+  };
   window.checkSystemMaintenanceStatus = async function() {
     if (window.currentUserIsAdmin) return;
     try {
@@ -6012,6 +6142,22 @@ window.changeUserStatus = async function(uid, newStatus) {
       showToast("Uyarı gönderilemedi: " + err.message, "error"); 
     } 
   }; 
+  // === KULLANICI UYARISINI ANLADIM VE KAPAT BUTONU ===
+  window.acknowledgeUserWarning = async function() {
+    if (!auth.currentUser) {
+      document.getElementById('userWarningNoticeModal').style.display = 'none';
+      return;
+    }
+    try {
+      await updateDoc(doc(db, "kullanicilar", auth.currentUser.uid), {
+        "activeWarning.read": true
+      });
+      document.getElementById('userWarningNoticeModal').style.display = 'none';
+      showToast("Uyarıyı okuduğunuz kaydedildi.", "success");
+    } catch (err) {
+      document.getElementById('userWarningNoticeModal').style.display = 'none';
+    }
+  };
 </script>
 
 </body> 
