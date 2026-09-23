@@ -3819,7 +3819,7 @@ function listenUserWarnings(uid) {
    
   let activeAuthUid = null; 
  
-  // --- AUTH DURUMU DEĞİŞİMİ VE ADMİN KONTROLÜ DÜZELTMESİ ---
+// --- AUTH DURUMU DEĞİŞİMİ VE ADMİN KONTROLÜ DÜZELTMESİ ---
   onAuthStateChanged(auth, async (user) => { 
     if (typeof window.loadSystemLimits === 'function') await window.loadSystemLimits();
     if (typeof window.updateUserLimitBadgeDisplay === 'function') window.updateUserLimitBadgeDisplay();
@@ -3829,23 +3829,19 @@ function listenUserWarnings(uid) {
       disposeAllLiveSubscriptions(); 
       activeAuthUid = nextAuthUid; 
     } 
- 
-    if (user) { 
-      onAuthStateChanged(auth, async (user) => { 
-  if (user) {
-    // 🚀 GİRİŞ YAPILDIĞI AN GİRİŞ EKRANINI ANINDA GİZLE (FLAŞLAMAYI ÖNLER)
-    if (document.getElementById('loginScreen')) {
-      document.getElementById('loginScreen').style.display = 'none';
-    }
 
-    if (typeof window.loadSystemLimits === 'function') await window.loadSystemLimits();
+    if (user) { 
+      // 🚀 Giriş yapıldığı an login ekranını gizle
+      if (document.getElementById('loginScreen')) {
+        document.getElementById('loginScreen').style.display = 'none';
+      }
+
       const tokenResult = await user.getIdTokenResult(); 
       const userRef = doc(db, "kullanicilar", user.uid); 
       const userSnap = await getDoc(userRef); 
       let docData = userSnap.exists() ? userSnap.data() : {};
 
-      // Esnek Yönetici Doğrulaması (Custom Claim VEYA E-posta Listesi VEYA Firestore 'admin' rolü)
-const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
+      const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
       const isClaimAdmin = tokenResult.claims.admin === true;
       const isRoleAdmin = docData.rol === 'admin';
       const isAdmin = isClaimAdmin || isEmailAdmin || isRoleAdmin;
@@ -3855,7 +3851,6 @@ const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
       sessionStartTime = Date.now(); 
       window.currentUserEmail = user.email; 
 
-      // Admin ve Kullanıcı İsmi Düzeltmesi
       let resolvedName = user.displayName || docData.adSoyad;
       if (!resolvedName || resolvedName === "Belirtilmedi" || resolvedName === "...") {
         if (user.email === 'kgulsen1994@gmail.com') resolvedName = "Dr. Kadir GÜLŞEN";
@@ -3886,42 +3881,39 @@ const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
  
       window.currentUserData = currentUserData; 
       if (checkAndHandleBannedUser(currentUserData)) return; 
-      // ============================================================
-// 3 GÜNLÜK PREMIUM DENEME KONTROLÜ VE OTOMATİK DÜŞÜRME MANTIĞI
-// ============================================================
-if (currentUserData.durum === 'Deneme' && !isAdmin) {
-  let trialStartMs = currentUserData.denemeBaslangicTarihi?.toMillis 
-    ? currentUserData.denemeBaslangicTarihi.toMillis() 
-    : new Date(currentUserData.denemeBaslangicTarihi || Date.now()).getTime();
 
-  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000; // 3 Gün = 72 Saat
-  const trialEndMs = trialStartMs + THREE_DAYS_MS;
-  const nowMs = Date.now();
+      // 3 Günlük Premium Deneme Kontrolü
+      if (currentUserData.durum === 'Deneme' && !isAdmin) {
+        let trialStartMs = currentUserData.denemeBaslangicTarihi?.toMillis 
+          ? currentUserData.denemeBaslangicTarihi.toMillis() 
+          : new Date(currentUserData.denemeBaslangicTarihi || Date.now()).getTime();
 
-  if (nowMs >= trialEndMs) {
-    // 3 Günlük Süre Doldu -> Otomatik Ücretsiz Plana Düşür
-    await updateDoc(userRef, { durum: 'Ücretsiz' });
-    currentUserData.durum = 'Ücretsiz';
-    window.currentUserTier = 'Ücretsiz';
-    showToast("⏳ 3 Günlük Premium Deneme süreniz sona ermiştir. Hesabınız Ücretsiz plana aktarıldı.", "info");
-  } else {
-    // Deneme Süresi Devam Ediyor -> Kalan Süreyi Ekranda Banner Olarak Göster
-    window.currentUserTier = 'Deneme';
-    const endDateStr = new Date(trialEndMs).toLocaleString('tr-TR', { 
-      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' 
-    });
-    
-    let trialBanner = document.getElementById('premiumTrialInfoBanner');
-    if (!trialBanner) {
-      trialBanner = document.createElement('div');
-      trialBanner.id = 'premiumTrialInfoBanner';
-      trialBanner.style.cssText = "background: linear-gradient(90deg, #f59e0b, #d97706); color: white; padding: 10px 16px; border-radius: 10px; font-weight: bold; font-size: 0.88rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);";
-      const container = document.querySelector('.main-content') || document.body;
-      container.insertBefore(trialBanner, container.firstChild);
-    }
-    trialBanner.innerHTML = `<span>⭐ <strong>3 Günlük Premium Deneme Süreniz Başlamıştır!</strong></span> <span>🏁 Bitiş Tarihi: <u>${endDateStr}</u></span>`;
-  }
-}
+        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+        const trialEndMs = trialStartMs + THREE_DAYS_MS;
+        const nowMs = Date.now();
+
+        if (nowMs >= trialEndMs) {
+          await updateDoc(userRef, { durum: 'Ücretsiz' });
+          currentUserData.durum = 'Ücretsiz';
+          window.currentUserTier = 'Ücretsiz';
+          showToast("⏳ 3 Günlük Premium Deneme süreniz sona ermiştir. Hesabınız Ücretsiz plana aktarıldı.", "info");
+        } else {
+          window.currentUserTier = 'Deneme';
+          const endDateStr = new Date(trialEndMs).toLocaleString('tr-TR', { 
+            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+          });
+          
+          let trialBanner = document.getElementById('premiumTrialInfoBanner');
+          if (!trialBanner) {
+            trialBanner = document.createElement('div');
+            trialBanner.id = 'premiumTrialInfoBanner';
+            trialBanner.style.cssText = "background: linear-gradient(90deg, #f59e0b, #d97706); color: white; padding: 10px 16px; border-radius: 10px; font-weight: bold; font-size: 0.88rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);";
+            const container = document.querySelector('.main-content') || document.body;
+            container.insertBefore(trialBanner, container.firstChild);
+          }
+          trialBanner.innerHTML = `<span>⭐ <strong>3 Günlük Premium Deneme Süreniz Başlamıştır!</strong></span> <span>🏁 Bitiş Tarihi: <u>${endDateStr}</u></span>`;
+        }
+      }
  
       window.currentUserTier = isAdmin ? 'VIP' : currentUserData.durum; 
       const formattedName = formatNameSurname(currentUserData.adSoyad); 
@@ -3965,8 +3957,8 @@ if (currentUserData.durum === 'Deneme' && !isAdmin) {
         await window.checkSystemAnnouncements(user.uid); 
       } 
  
-if (isAdmin) {
-        hideLoading(); // Admin girişi yapıldığında soruları arka planda yüklemeyi engeller
+      if (isAdmin) {
+        hideLoading();
       } else if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
         await window.loadDataAndInit();
       } else {
