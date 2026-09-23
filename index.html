@@ -1567,14 +1567,15 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
 
           <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
-              <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
+<thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
                 <tr>
                   <th style="padding: 10px; border-bottom: 1px solid var(--border); width: 40px; text-align: center;">
                     <input type="checkbox" id="selectAllUsersCheckbox" onchange="toggleSelectAllUsers(this)">
                   </th>
                   <th style="padding: 10px; border-bottom: 1px solid var(--border);">Ad Soyad</th>
-<th style="padding: 10px; border-bottom: 1px solid var(--border);">E-posta</th>
-<th style="padding: 10px; border-bottom: 1px solid var(--border);">Rol / Durum</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">E-posta</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: center;">Uyarı Seviyesi</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Rol / Durum</th>
                   <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Aksiyonlar</th>
                 </tr>
               </thead>
@@ -1833,7 +1834,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
                   <option value="role_Premium">⭐ Tüm Premium Kullanıcılar</option>
                   <option value="role_Deneme">⏳ Tüm Deneme Kullanıcıları</option>
                   <option value="role_Ucretsiz">🔄 Tüm Ücretsiz Kullanıcılar</option>
-                  <option value="specific">👤 Belirli Bir Kullanıcı (Arayarak Seç)</option>
+                  <option value="specific">👤 Belirli Bir Kullanıcı (İsim / E-posta ile Ara)</option>
                 </select>
 
                 <div id="resetSpecificUserWrapper" style="display: none; margin-top: 8px; position: relative;">
@@ -3740,7 +3741,21 @@ function listenUserWarnings(uid) {
       const data = snap.data(); 
  
       if (checkAndHandleBannedUser(data)) return; 
-
+// Admin tarafından yapılan hak sıfırlamasını canlı kontrol et
+      if (data.limitResetTimestamp) {
+        const resetTime = data.limitResetTimestamp?.toMillis ? data.limitResetTimestamp.toMillis() : new Date(data.limitResetTimestamp).getTime();
+        const lastProcessed = parseInt(localStorage.getItem(`last_reset_proc_${uid}`)) || 0;
+        
+        if (resetTime > lastProcessed) {
+          const todayStr = new Date().toISOString().split('T')[0];
+          localStorage.removeItem(`used_q_${uid}_${todayStr}`);
+          localStorage.removeItem(`used_print_${uid}_${todayStr}`);
+          localStorage.setItem(`last_reset_proc_${uid}`, resetTime);
+          if (typeof window.updateUserLimitBadgeDisplay === 'function') {
+            window.updateUserLimitBadgeDisplay();
+          }
+        }
+      }
       // ⚡ YETKİ VEYA DURUM DEĞİŞİKLİĞİNİ ANLIK (CANLI) YANSIT
       if (data.durum && window.currentUserTier !== data.durum && !window.currentUserIsAdmin) {
         const oldTier = window.currentUserTier;
@@ -3971,12 +3986,14 @@ function listenUserWarnings(uid) {
         await window.checkSystemAnnouncements(user.uid); 
       } 
  
-      // ⚡ YÖNETİCİ VE TÜM KULLANICILAR İÇİN SORULARI YÜKLE
-      if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
+// ⚡ SADECE NORMAL KULLANICILAR İÇİN SORULARI YÜKLE (ADMİN İÇİN YÜKLEME YAPMA)
+      if (isAdmin) {
+        hideLoading();
+      } else if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
         await window.loadDataAndInit();
       } else {
         hideLoading();
-      } 
+      }
  
     } else { 
       currentUserData = null; 
@@ -4040,40 +4057,87 @@ window.switchLimitSubTab = function(tab) {
     }
   };
 
-// Arama Kutusu Göster/Gizle
+// Soru Sınırlamaları - Kullanıcı Arama Sistemi (Duyuru Paneli ile Birebir Aynı)
 window.toggleResetUserSearchInput = function(val) {
   const wrapper = document.getElementById('resetSpecificUserWrapper');
+  const listDiv = document.getElementById('resetUserDropdownList');
   if (wrapper) wrapper.style.display = (val === 'specific') ? 'block' : 'none';
+
+  if (val === 'specific') {
+    if (!Array.isArray(window.announcementUsersCache) || window.announcementUsersCache.length === 0) {
+      if (typeof window.loadAnnouncementUsersList === 'function') {
+        window.loadAnnouncementUsersList().then(() => window.renderResetUserDropdown(''));
+      }
+    } else {
+      window.renderResetUserDropdown('');
+    }
+  } else {
+    document.getElementById('selectedResetUserId').value = '';
+    if (listDiv) {
+      listDiv.innerHTML = '';
+      listDiv.style.display = 'none';
+    }
+  }
 };
 
-// Kullanıcı Arama Filtresi
-window.filterResetTargetUsers = function(searchTerm) {
-  const dropdown = document.getElementById('resetUserDropdownList');
-  if (!searchTerm || searchTerm.length < 2) {
-    dropdown.style.display = 'none';
+window.filterResetTargetUsers = function(query) {
+  window.renderResetUserDropdown(query || '');
+};
+
+window.renderResetUserDropdown = function(query) {
+  const listDiv = document.getElementById('resetUserDropdownList');
+  if (!listDiv) return;
+
+  const q = String(query || '').toLocaleLowerCase('tr-TR').trim();
+  const filtered = (window.announcementUsersCache || []).filter(u =>
+    String(u.adSoyad || '').toLocaleLowerCase('tr-TR').includes(q) ||
+    String(u.email || '').toLocaleLowerCase('tr-TR').includes(q)
+  );
+
+  const escapeHTML = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  })[ch]);
+
+  if (filtered.length === 0) {
+    listDiv.style.display = 'block';
+    listDiv.innerHTML = '<div style="padding:10px; font-size:0.82rem; color:#64748b; text-align:center;">Kullanıcı bulunamadı.</div>';
     return;
   }
 
-  const term = searchTerm.toLowerCase();
-  const allUsers = window.cachedUsersList || [];
-  const matches = allUsers.filter(u => (u.adSoyad && u.adSoyad.toLowerCase().includes(term)) || (u.email && u.email.toLowerCase().includes(term)));
+  listDiv.style.display = 'block';
+  listDiv.innerHTML = filtered.slice(0, 100).map(u => {
+    const name = escapeHTML(u.adSoyad || u.email || 'İsimsiz');
+    const email = escapeHTML(u.email || '');
+    const status = escapeHTML(u.durum || 'Ücretsiz');
+    const uid = escapeHTML(u.id);
+    return `
+      <button type="button" data-reset-user-id="${uid}"
+        style="width:100%; border:0; border-bottom:1px solid #f1f5f9; background:#fff; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; text-align:left;"
+        onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+        <span>
+          <strong style="color:#0f172a;">👤 ${name}</strong>
+          <span style="display:block; font-size:0.75rem; color:#64748b;">${email}</span>
+        </span>
+        <span style="font-size:0.72rem; padding:2px 8px; border-radius:8px; background:#e2e8f0; color:#475569; font-weight:bold;">${status}</span>
+      </button>`;
+  }).join('');
 
-  if (matches.length === 0) {
-    dropdown.innerHTML = `<div style="padding:10px; font-size:0.8rem; color:#94a3b8; text-align:center;">Kullanıcı bulunamadı</div>`;
-  } else {
-    dropdown.innerHTML = matches.map(u => `
-      <div style="padding:8px 12px; font-size:0.82rem; cursor:pointer; border-bottom:1px solid #f1f5f9;" onclick="selectResetTargetUser('${u.uid}', '${u.adSoyad || u.email}')">
-        <strong>${u.adSoyad || 'İsimsiz'}</strong> <span style="color:#64748b;">(${u.email})</span>
-      </div>
-    `).join('');
-  }
-  dropdown.style.display = 'block';
+  listDiv.querySelectorAll('[data-reset-user-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const uid = btn.getAttribute('data-reset-user-id');
+      const user = (window.announcementUsersCache || []).find(x => String(x.id) === String(uid));
+      if (user) window.selectResetTargetUser(user.id, user.adSoyad || user.email, user.email || '');
+    });
+  });
 };
 
-window.selectResetTargetUser = function(uid, name) {
+window.selectResetTargetUser = function(uid, nameText, emailText = '') {
   document.getElementById('selectedResetUserId').value = uid;
-  document.getElementById('resetUserSearchInput').value = name;
-  document.getElementById('resetUserDropdownList').style.display = 'none';
+  const searchInput = document.getElementById('resetUserSearchInput');
+  if (searchInput) searchInput.value = emailText ? `${nameText} (${emailText})` : nameText;
+  const listDiv = document.getElementById('resetUserDropdownList');
+  if (listDiv) listDiv.style.display = 'none';
+  showToast(`Sıfırlama hedefi seçildi: ${nameText}`, 'success');
 };
 
 // Hedefe Yönelik Sıfırlama İşlemi
@@ -4082,21 +4146,33 @@ window.executeTargetedLimitReset = async function() {
   const todayStr = new Date().toISOString().split('T')[0];
 
   try {
+    if (!window.db || !window.collection || !window.getDocs) {
+      showToast("Veritabanı bağlantısı bulunamadı.", "error");
+      return;
+    }
+
     if (targetType === 'all') {
+      const snap = await getDocs(collection(db, "kullanicilar"));
+      for (let d of snap.docs) {
+        await updateDoc(doc(db, "kullanicilar", d.id), { limitResetTimestamp: serverTimestamp() });
+      }
       Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('used_q_') || key.startsWith('used_print_')) {
-          localStorage.removeItem(key);
-        }
+        if (key.startsWith('used_q_') || key.startsWith('used_print_')) localStorage.removeItem(key);
       });
-      showToast("Tüm kullanıcıların bugünkü hakları başarıyla sıfırlandı!", "success");
+      showToast("Tüm kullanıcıların bugünkü hakları veritabanında başarıyla sıfırlandı!", "success");
     } 
     else if (targetType.startsWith('role_')) {
       const role = targetType.replace('role_', '');
-      if (window.currentUserTier === role || (role === 'Ucretsiz' && window.currentUserTier === 'Ücretsiz')) {
-        localStorage.removeItem(`used_q_${auth.currentUser?.uid}_${todayStr}`);
-        localStorage.removeItem(`used_print_${auth.currentUser?.uid}_${todayStr}`);
+      const snap = await getDocs(collection(db, "kullanicilar"));
+      let count = 0;
+      for (let d of snap.docs) {
+        const uData = d.data();
+        if (uData.durum === role || (role === 'Ucretsiz' && uData.durum === 'Ücretsiz')) {
+          await updateDoc(doc(db, "kullanicilar", d.id), { limitResetTimestamp: serverTimestamp() });
+          count++;
+        }
       }
-      showToast(`"${role}" rolündeki kullanıcıların bugünkü limitleri sıfırlandı!`, "success");
+      showToast(`"${role}" rolündeki ${count} kullanıcının bugünkü limitleri sıfırlandı!`, "success");
     } 
     else if (targetType === 'specific') {
       const uid = document.getElementById('selectedResetUserId').value;
@@ -4104,6 +4180,7 @@ window.executeTargetedLimitReset = async function() {
         showToast("Lütfen listeden geçerli bir kullanıcı seçin!", "error");
         return;
       }
+      await updateDoc(doc(db, "kullanicilar", uid), { limitResetTimestamp: serverTimestamp() });
       localStorage.removeItem(`used_q_${uid}_${todayStr}`);
       localStorage.removeItem(`used_print_${uid}_${todayStr}`);
       showToast("Seçilen kullanıcının hakları başarıyla sıfırlandı!", "success");
