@@ -3819,7 +3819,6 @@ function listenUserWarnings(uid) {
   } 
  // --- CANLI BAKIM MODU DİNLENMESİ VE EKRAN KİLİTLENMESİ ---
 function listenMaintenanceRealtime() {
-function listenMaintenanceRealtime() {
   const maintenanceRef = doc(db, "ayarlar", "bakim");
   
   onSnapshot(maintenanceRef, (snap) => {
@@ -4341,7 +4340,7 @@ window.startMaintenanceNow = async function() {
       aktif: true,
       mod: "now",
       baslangicTarihi: new Date().toISOString(),
-      mesaj: document.getElementById('maintenanceMessage')?.value || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.",
+      mesaj: document.getElementById('maintMessageInput')?.value || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.",
       guncellenmeTarihi: serverTimestamp()
     }, { merge: true });
 
@@ -4353,9 +4352,9 @@ window.startMaintenanceNow = async function() {
 
 // --- 2. BAKIMI ZAMANLANMIŞ ŞEKİLDE BAŞLAT ---
 window.startScheduledMaintenance = async function() {
-  const scheduledTimeInput = document.getElementById('maintenanceScheduledTime')?.value;
+  const scheduledTimeInput = document.getElementById('maintStartTime')?.value;
   if (!scheduledTimeInput) {
-    showToast("⚠️ Lütfen geçerli bir zamanlanmış tarih ve saat seçin!", "warning");
+    showToast("⚠️ Lütfen geçerli bir başlangıç tarihi ve saati seçin!", "warning");
     return;
   }
 
@@ -4367,7 +4366,7 @@ window.startScheduledMaintenance = async function() {
       aktif: true,
       mod: "scheduled",
       baslangicTarihi: new Date(scheduledTimeInput).toISOString(),
-      mesaj: document.getElementById('maintenanceMessage')?.value || "Sistem zamanlanmış bakımdadır.",
+      mesaj: document.getElementById('maintMessageInput')?.value || "Sistem zamanlanmış bakımdadır.",
       guncellenmeTarihi: serverTimestamp()
     }, { merge: true });
 
