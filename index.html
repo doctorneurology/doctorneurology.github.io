@@ -3987,10 +3987,14 @@ function listenUserWarnings(uid) {
         await window.checkSystemAnnouncements(user.uid); 
       } 
  
-// ⚡ SADECE NORMAL KULLANICILAR İÇİN SORULARI YÜKLE (ADMİN İÇİN YÜKLEME YAPMA)
-      if (isAdmin) {
+// ⚡ ADMİN ŞİFRE İLE GİRERSE SORU YÜKLEME, GOOGLE İLE GİRERSE VEYA NORMAL KULLANICI İSE YÜKLE
+      const isPasswordAuth = user.providerData?.some(p => p.providerId === 'password');
+
+      if (isAdmin && isPasswordAuth) {
+        // Admin e-posta/şifre ile girdiğinde soruları yüklemiyoruz
         hideLoading();
       } else if (typeof masterPool !== 'undefined' && masterPool.length === 0) {
+        // Google ile giren admin ve tüm normal kullanıcılar için soruları yüklüyoruz
         await window.loadDataAndInit();
       } else {
         hideLoading();
