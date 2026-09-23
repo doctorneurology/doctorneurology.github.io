@@ -1770,29 +1770,31 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             </div>
 
 <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-  <!-- 1. Kaydet ve Yayınla Butonu -->
-  <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center;" onclick="saveMaintenanceSettings()">
-    💾 Bakım Ayarlarını Kaydet ve Yayınla
-  </button>
+              <!-- Yeşil Modern Bakımı Anında Bitir Butonu -->
+              <button type="button" class="btn-action" style="background:#10b981 !important; border-color:#059669 !important; color:white; padding:12px; font-weight:bold; font-size:0.95rem; justify-content:center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="stopMaintenanceNow()">
+                ✅ Bakımı Bitir ve Sistemi Kullanıma Aç
+              </button>
 
-  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-    <!-- 2. Bakımı Şimdi Başlat Butonu -->
-    <button type="button" class="btn-action" style="flex: 1; min-width: 130px; background:#dc2626 !important; border-color:#b91c1c !important; color:white; padding:10px; justify-content:center;" onclick="startMaintenanceNow()">
-      🚨 Bakımı Şimdi Başlat
-    </button>
+              <!-- 1. Kaydet ve Yayınla Butonu -->
+              <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center;" onclick="saveMaintenanceSettings()">
+                💾 Bakım Ayarlarını Kaydet ve Yayınla
+              </button>
 
-    <!-- 3. Bakımı Zamanlanmış Şekilde Başlat Butonu -->
-    <button type="button" class="btn-action" style="flex: 1; min-width: 130px; background:#d97706 !important; border-color:#b45309 !important; color:white; padding:10px; justify-content:center;" onclick="startScheduledMaintenance()">
-      ⏰ Bakımı Zamanlanmış Başlat
-    </button>
+              <div style="display: flex; gap: 10px;">
+                <!-- 2. Bakımı Şimdi Başlat Butonu -->
+                <button type="button" class="btn-action" style="flex: 1; background:#dc2626 !important; border-color:#b91c1c !important; color:white; padding:10px; justify-content:center;" onclick="startMaintenanceNow()">
+                  🚨 Bakımı Şimdi Başlat
+                </button>
 
-    <!-- 4. Bakımı ŞİMDİ Bitir Butonu -->
-    <button type="button" class="btn-action" style="flex: 1; min-width: 130px; background:#16a34a !important; border-color:#15803d !important; color:white; padding:10px; justify-content:center;" onclick="endMaintenanceNow()">
-      ✅ Bakımı ŞİMDİ Bitir
-    </button>
-  </div>
-</div>
-            
+                <!-- 3. Bakımı Zamanlanmış Şekilde Başlat Butonu -->
+                <button type="button" class="btn-action" style="flex: 1; background:#d97706 !important; border-color:#b45309 !important; color:white; padding:10px; justify-content:center;" onclick="startScheduledMaintenance()">
+                  ⏰ Bakımı Zamanlanmış Başlat
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
 <!-- SEKME: SORU VE BASKI SINIRLAMALARI -->
         <div id="adminTabLimits" style="display: none; flex-direction: column; gap: 15px; width: 100%;">
           
@@ -3815,22 +3817,8 @@ function listenUserWarnings(uid) {
       } 
     }); 
   } 
-// Bakım Ekranından Güvenli Çıkış Yapma Fonksiyonu
-window.logoutFromMaintenance = async function() {
-  try {
-    if (typeof signOut === 'function' && typeof auth !== 'undefined') {
-      await signOut(auth);
-    } else if (window.auth && typeof window.auth.signOut === 'function') {
-      await window.auth.signOut();
-    }
-    window.location.reload();
-  } catch (e) {
-    console.error("Çıkış yapılırken hata:", e);
-    window.location.reload();
-  }
-};
-
-  // --- CANLI BAKIM MODU DİNLENMESİ VE MODERN EKRAN KİLİTLENMESİ ---
+ // --- CANLI BAKIM MODU DİNLENMESİ VE EKRAN KİLİTLENMESİ ---
+function listenMaintenanceRealtime() {
 function listenMaintenanceRealtime() {
   const maintenanceRef = doc(db, "ayarlar", "bakim");
   
@@ -3848,9 +3836,9 @@ function listenMaintenanceRealtime() {
 
     if (data.aktif) {
       if (data.mod === "now") {
-        isLocked = true;
+        isLocked = true; // Anında kilitle
       } else if (data.mod === "scheduled" && startDate && now >= startDate) {
-        isLocked = true;
+        isLocked = true; // Zamanlanan saat geldi veya geçtiyse kilitle
       }
     }
 
@@ -3860,28 +3848,22 @@ function listenMaintenanceRealtime() {
       if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'globalMaintenanceOverlay';
-        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: system-ui, -apple-system, sans-serif;";
+        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); backdrop-filter: blur(8px); z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 20px;";
         document.body.appendChild(overlay);
       }
-
-      const msg = data.mesaj || 'Sistemimizde planlı bakım çalışması yapılmaktadır. En kısa sürede hizmetinizde olacağız.';
-
       overlay.innerHTML = `
-        <div style="background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 40px 32px; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
-          <div style="width: 72px; height: 72px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 2rem;">
-            🛠️
+        <div style="background: #ffffff; color: #1e293b; border-radius: 20px; padding: 40px 32px; max-width: 500px; width: 92%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-top: 6px solid #f59e0b; text-align: center;">
+          <div style="font-size: 3.8rem; margin-bottom: 12px;">🛠️</div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: #b45309; margin-bottom: 12px;">SİSTEM BAKIMA ALINDI</h2>
+          <p style="font-size: 0.92rem; color: #475569; margin-bottom: 20px; line-height: 1.6;">${data.mesaj || 'Sistemimizi sizler için güncelliyor ve optimize ediyoruz. Lütfen daha sonra tekrar deneyiniz.'}</p>
+          
+          <div style="background: #fffbe6; border: 1px solid #fde68a; padding: 12px 16px; border-radius: 12px; font-size: 0.85rem; color: #78350f; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>⏳</span> <span>Bakım çalışması devam etmektedir.</span>
           </div>
-          <h2 style="color: #ffffff; font-size: 1.5rem; font-weight: 700; margin: 0 0 12px 0; letter-spacing: -0.02em;">
-            Sistem Bakımda
-          </h2>
-          <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin: 0 0 28px 0;">
-            ${msg}
-          </p>
-          <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 24px;">
-            <button type="button" onclick="window.logoutFromMaintenance()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'">
-              🚪 Çıkış Yap
-            </button>
-          </div>
+
+          <button class="btn-proceed" style="background: #334155; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; box-shadow: 0 4px 12px rgba(51, 65, 85, 0.2);" onclick="signOutAndReload()">
+            🚪 Oturumu Kapat / Çıkış Yap
+          </button>
         </div>
       `;
       overlay.style.display = 'flex';
@@ -4310,6 +4292,45 @@ window.executeTargetedLimitReset = async function() {
       showToast("Bakım ayarları kaydedilemedi: " + err.message, "error");
     }
   };
+  // --- 0. BAKIMI ANINDA BİTİR ---
+window.stopMaintenanceNow = async function() {
+  if (typeof showCustomConfirm === 'function') {
+    showCustomConfirm(
+      "✅ Bakımı Bitir Onayı",
+      "Bakım modunu sonlandırıp sistemi tüm kullanıcılara hemen açmak istediğinize emin misiniz?",
+      async () => {
+        try {
+          const maintenanceRef = doc(db, "ayarlar", "bakim");
+          await setDoc(maintenanceRef, {
+            aktif: false,
+            mod: "off",
+            guncellenmeTarihi: serverTimestamp()
+          }, { merge: true });
+
+          const maintOldRef = doc(db, "ayarlar", "sistem_bakim");
+          await setDoc(maintOldRef, { active: false }, { merge: true });
+
+          const chk = document.getElementById('chkEnableMaintenance');
+          if (chk) chk.checked = false;
+
+          showToast("✅ Bakım modu başarıyla sonlandırıldı! Sistem kullanıma açıldı.", "success");
+        } catch (err) {
+          showToast("❌ Bakım sonlandırılırken hata oluştu: " + err.message, "error");
+        }
+      },
+      "🟢"
+    );
+  } else {
+    if (!confirm("Bakımı bitirmek istediğinize emin misiniz?")) return;
+    try {
+      const maintenanceRef = doc(db, "ayarlar", "bakim");
+      await setDoc(maintenanceRef, { aktif: false, mod: "off", guncellenmeTarihi: serverTimestamp() }, { merge: true });
+      showToast("✅ Bakım modu sonlandırıldı!", "success");
+    } catch (err) {
+      showToast("❌ Hata: " + err.message, "error");
+    }
+  }
+};
 // --- 1. BAKIMI ŞİMDİ BAŞLAT ---
 window.startMaintenanceNow = async function() {
   if (!confirm("🚨 Bakım modu ŞİMDİ başlatılacak. Tüm kullanıcıların ekranı anında kilitlenecektir. Onaylıyor musunuz?")) return;
@@ -4353,23 +4374,6 @@ window.startScheduledMaintenance = async function() {
     showToast("✅ Zamanlanmış bakım başarıyla kuruldu!", "success");
   } catch (err) {
     showToast("❌ Zamanlanmış bakım kurulamadı: " + err.message, "error");
-  }
-};
-  // --- 3. BAKIMI ŞİMDİ BİTİR ---
-window.endMaintenanceNow = async function() {
-  if (!confirm("✅ Bakım modunu kapatıp sistemi tüm kullanıcılar için anında normal erişime açmak istiyor musunuz?")) return;
-
-  try {
-    const maintenanceRef = doc(db, "ayarlar", "bakim");
-    await setDoc(maintenanceRef, {
-      aktif: false,
-      mod: "off",
-      guncellenmeTarihi: serverTimestamp()
-    }, { merge: true });
-
-    showToast("✅ Bakım modu sonlandırıldı. Sistem erişime açıldı!", "success");
-  } catch (err) {
-    showToast("❌ Bakım kapatılamadı: " + err.message, "error");
   }
 };
   window.checkSystemMaintenanceStatus = async function() {
