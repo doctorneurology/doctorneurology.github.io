@@ -962,7 +962,7 @@
 
 @media print {
       body { background: white !important; color: black !important; }
-      .no-print, .screen-watermark, .action-bar, #loginScreen, .loading-overlay, .modal-overlay, #sideAnalysisPanel, .toast-container, .btn-admin-subtle {
+      .no-print, #premiumTrialInfoBanner, .screen-watermark, .action-bar, #loginScreen, .loading-overlay, .modal-overlay, #sideAnalysisPanel, .toast-container, .btn-admin-subtle {
         display: none !important; visibility: hidden !important;
       }
       .paper-viewport { padding: 0 !important; margin: 0 !important; width: 100% !important; }
@@ -1769,7 +1769,24 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               </label>
             </div>
 
-            <button class="btn-action btn-toggle-on" style="background:#d97706 !important; border-color:#b45309 !important; padding:10px; width:100%; justify-content:center;" onclick="saveMaintenanceSettings()">💾 Bakım Ayarlarını Kaydet ve Yayınla</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+  <!-- 1. Kaydet ve Yayınla Butonu -->
+  <button class="btn-action btn-toggle-on" style="background:#2563eb !important; border-color:#1d4ed8 !important; padding:10px; width:100%; justify-content:center;" onclick="saveMaintenanceSettings()">
+    💾 Bakım Ayarlarını Kaydet ve Yayınla
+  </button>
+
+  <div style="display: flex; gap: 10px;">
+    <!-- 2. Bakımı Şimdi Başlat Butonu -->
+    <button type="button" class="btn-action" style="flex: 1; background:#dc2626 !important; border-color:#b91c1c !important; color:white; padding:10px; justify-content:center;" onclick="startMaintenanceNow()">
+      🚨 Bakımı Şimdi Başlat
+    </button>
+
+    <!-- 3. Bakımı Zamanlanmış Şekilde Başlat Butonu -->
+    <button type="button" class="btn-action" style="flex: 1; background:#d97706 !important; border-color:#b45309 !important; color:white; padding:10px; justify-content:center;" onclick="startScheduledMaintenance()">
+      ⏰ Bakımı Zamanlanmış Başlat
+    </button>
+  </div>
+</div>
           </div>
 
         </div>
@@ -3795,7 +3812,50 @@ function listenUserWarnings(uid) {
       } 
     }); 
   } 
- 
+ // --- CANLI BAKIM MODU DİNLENMESİ VE EKRAN KİLİTLENMESİ ---
+function listenMaintenanceRealtime() {
+  const maintenanceRef = doc(db, "ayarlar", "bakim");
+  
+  onSnapshot(maintenanceRef, (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    
+    // Yöneticiler bakım kilit ekranına takılmaz
+    if (window.currentUserIsAdmin) return;
+
+    const now = new Date();
+    const startDate = data.baslangicTarihi ? new Date(data.baslangicTarihi) : null;
+    
+    let isLocked = false;
+
+    if (data.aktif) {
+      if (data.mod === "now") {
+        isLocked = true; // Anında kilitle
+      } else if (data.mod === "scheduled" && startDate && now >= startDate) {
+        isLocked = true; // Zamanlanan saat geldi veya geçtiyse kilitle
+      }
+    }
+
+    let overlay = document.getElementById('globalMaintenanceOverlay');
+
+    if (isLocked) {
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'globalMaintenanceOverlay';
+        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.97); color: white; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;";
+        document.body.appendChild(overlay);
+      }
+      overlay.innerHTML = `
+        <div style="font-size: 4rem; margin-bottom: 10px;">🛠️</div>
+        <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #f59e0b;">Sistem Bakımdadır</h1>
+        <p style="font-size: 1.1rem; max-width: 500px; line-height: 1.6; color: #cbd5e1;">${data.mesaj || 'Sistemimizde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.'}</p>
+      `;
+      overlay.style.display = 'flex';
+    } else {
+      if (overlay) overlay.style.display = 'none';
+    }
+  });
+}
   window.acknowledgeUserWarning = async function() { 
     if (!auth.currentUser) return; 
     try { 
@@ -3927,10 +3987,11 @@ function listenUserWarnings(uid) {
             day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' 
           });
           
-          let trialBanner = document.getElementById('premiumTrialInfoBanner');
+let trialBanner = document.getElementById('premiumTrialInfoBanner');
           if (!trialBanner) {
             trialBanner = document.createElement('div');
             trialBanner.id = 'premiumTrialInfoBanner';
+            trialBanner.className = 'no-print';
             trialBanner.style.cssText = "background: linear-gradient(90deg, #f59e0b, #d97706); color: white; padding: 10px 16px; border-radius: 10px; font-weight: bold; font-size: 0.88rem; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);";
             const container = document.querySelector('.main-content') || document.body;
             container.insertBefore(trialBanner, container.firstChild);
@@ -3982,6 +4043,7 @@ function listenUserWarnings(uid) {
       document.getElementById('mainApp').style.display = 'block'; 
  
       listenUserWarnings(user.uid); 
+      listenMaintenanceRealtime();
  
       if (typeof window.checkSystemAnnouncements === 'function') { 
         await window.checkSystemAnnouncements(user.uid); 
@@ -4214,7 +4276,51 @@ window.executeTargetedLimitReset = async function() {
       showToast("Bakım ayarları kaydedilemedi: " + err.message, "error");
     }
   };
+// --- 1. BAKIMI ŞİMDİ BAŞLAT ---
+window.startMaintenanceNow = async function() {
+  if (!confirm("🚨 Bakım modu ŞİMDİ başlatılacak. Tüm kullanıcıların ekranı anında kilitlenecektir. Onaylıyor musunuz?")) return;
+  
+  try {
+    const maintenanceRef = doc(db, "ayarlar", "bakim");
+    await setDoc(maintenanceRef, {
+      aktif: true,
+      mod: "now",
+      baslangicTarihi: new Date().toISOString(),
+      mesaj: document.getElementById('maintenanceMessage')?.value || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.",
+      guncellenmeTarihi: serverTimestamp()
+    }, { merge: true });
 
+    showToast("✅ Bakım modu ŞİMDİ başarıyla başlatıldı!", "success");
+  } catch (err) {
+    showToast("❌ Bakım başlatılamadı: " + err.message, "error");
+  }
+};
+
+// --- 2. BAKIMI ZAMANLANMIŞ ŞEKİLDE BAŞLAT ---
+window.startScheduledMaintenance = async function() {
+  const scheduledTimeInput = document.getElementById('maintenanceScheduledTime')?.value;
+  if (!scheduledTimeInput) {
+    showToast("⚠️ Lütfen geçerli bir zamanlanmış tarih ve saat seçin!", "warning");
+    return;
+  }
+
+  if (!confirm(`⏰ Bakım modu ${scheduledTimeInput} tarihi için zamanlanacaktır. Onaylıyor musunuz?`)) return;
+
+  try {
+    const maintenanceRef = doc(db, "ayarlar", "bakim");
+    await setDoc(maintenanceRef, {
+      aktif: true,
+      mod: "scheduled",
+      baslangicTarihi: new Date(scheduledTimeInput).toISOString(),
+      mesaj: document.getElementById('maintenanceMessage')?.value || "Sistem zamanlanmış bakımdadır.",
+      guncellenmeTarihi: serverTimestamp()
+    }, { merge: true });
+
+    showToast("✅ Zamanlanmış bakım başarıyla kuruldu!", "success");
+  } catch (err) {
+    showToast("❌ Zamanlanmış bakım kurulamadı: " + err.message, "error");
+  }
+};
   window.checkSystemMaintenanceStatus = async function() {
     if (window.currentUserIsAdmin) return;
     try {
