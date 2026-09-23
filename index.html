@@ -3018,14 +3018,15 @@ async function triggerPrint() {
 
 if (shouldShowWM) {
     const baseText = window.systemLimits?.watermarkText || "Nöroloji Soru Hazırlama Paneli ®";
-    const text = baseText; // 🚀 Otomatik Gmail adresi kaldırıldı, sadece panelden girdiğiniz metin basılacak
+    // 🚀 Hem Gmail hem de panelden ayarlanan yazı eklendi
+    const text = `${userEmail}\n${baseText}`; 
     if (printWatermark) {
       printWatermark.innerText = text;
       printWatermark.style.display = 'block';
     }
     if (screenWatermark) {
-      screenWatermark.innerText = '';
-      screenWatermark.style.display = 'none'; // 🚀 Çift katman çakışmasını engeller
+      screenWatermark.innerText = text;
+      screenWatermark.style.display = 'block';
     }
   } else {
     if (printWatermark) {
