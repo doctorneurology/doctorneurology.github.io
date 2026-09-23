@@ -960,9 +960,9 @@
       white-space: pre-line;
     }
 
-    @media print {
+@media print {
       body { background: white !important; color: black !important; }
-      .no-print, .action-bar, #loginScreen, .loading-overlay, .modal-overlay, #sideAnalysisPanel, .toast-container, .btn-admin-subtle {
+      .no-print, .screen-watermark, .action-bar, #loginScreen, .loading-overlay, .modal-overlay, #sideAnalysisPanel, .toast-container, .btn-admin-subtle {
         display: none !important; visibility: hidden !important;
       }
       .paper-viewport { padding: 0 !important; margin: 0 !important; width: 100% !important; }
@@ -3016,16 +3016,16 @@ async function triggerPrint() {
   const enabledTiers = window.systemLimits?.watermarkTiers || ['Ücretsiz', 'Deneme'];
   const shouldShowWM = !window.currentUserIsAdmin && enabledTiers.includes(userTier);
 
-  if (shouldShowWM) {
+if (shouldShowWM) {
     const baseText = window.systemLimits?.watermarkText || "Nöroloji Soru Hazırlama Paneli ®";
-    const text = `${userEmail}\n${baseText}`;
+    const text = baseText; // 🚀 Otomatik Gmail adresi kaldırıldı, sadece panelden girdiğiniz metin basılacak
     if (printWatermark) {
       printWatermark.innerText = text;
       printWatermark.style.display = 'block';
     }
     if (screenWatermark) {
-      screenWatermark.innerText = text;
-      screenWatermark.style.display = 'block';
+      screenWatermark.innerText = '';
+      screenWatermark.style.display = 'none'; // 🚀 Çift katman çakışmasını engeller
     }
   } else {
     if (printWatermark) {
