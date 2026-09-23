@@ -1944,11 +1944,20 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
         
         <div class="panel-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px;">
           
-          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div class="panel-title">
               <span>🧠</span> Nöroloji Soru Hazırlama Paneli
             </div>
-            <span id="dataStatusDot" class="status-dot" title="Sistem Durumu Kontrol Edildiği"></span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <!-- 🔄 ÇIKIŞ YAPMADAN SAYFAYI YENİLE BUTONU -->
+              <button id="btnQuickReload" type="button" onclick="location.reload()" title="Oturumu kapatmadan sayfayı yenile" style="background: #10b981; color: white; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3); transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                Yenile
+              </button>
+              <span id="dataStatusDot" class="status-dot" title="Sistem Durumu Kontrol Edildiği"></span>
+            </div>
           </div>
           
           <div>
@@ -3714,7 +3723,7 @@ window.closeAnnouncementModal = function() {
     } 
   } 
  
-  function listenUserWarnings(uid) { 
+function listenUserWarnings(uid) { 
     warningUnsubscribe = disposeSubscription(warningUnsubscribe); 
     const userRef = doc(db, "kullanicilar", uid); 
     warningUnsubscribe = onSnapshot(userRef, (snap) => { 
@@ -3722,6 +3731,35 @@ window.closeAnnouncementModal = function() {
       const data = snap.data(); 
  
       if (checkAndHandleBannedUser(data)) return; 
+
+      // ⚡ YETKİ VEYA DURUM DEĞİŞİKLİĞİNİ ANLIK (CANLI) YANSIT
+      if (data.durum && window.currentUserTier !== data.durum && !window.currentUserIsAdmin) {
+        const oldTier = window.currentUserTier;
+        window.currentUserTier = data.durum;
+
+        // Rozet Görünümünü Anında Güncelle
+        const tierBadge = document.getElementById('userTierBadge'); 
+        if (tierBadge) { 
+          const st = data.durum === 'Deneme' ? 'Premium' : data.durum; 
+          tierBadge.textContent = st; 
+          if (st === 'VIP') { tierBadge.style.background = '#f3e8ff'; tierBadge.style.color = '#6b21a8'; } 
+          else if (st === 'Premium' || data.durum === 'Deneme') { tierBadge.style.background = '#d1fae5'; tierBadge.style.color = '#047857'; } 
+          else { tierBadge.style.background = '#e2e8f0'; tierBadge.style.color = '#475569'; } 
+        }
+
+        // Yeni yetkiye göre harcanan limit önbelleğini temizle, yeni haklar anında işlesin
+        const todayStr = new Date().toISOString().split('T')[0];
+        localStorage.removeItem(`used_q_${uid}_${todayStr}`);
+        localStorage.removeItem(`used_print_${uid}_${todayStr}`);
+
+        if (typeof window.updateUserLimitBadgeDisplay === 'function') {
+          window.updateUserLimitBadgeDisplay();
+        }
+
+        if (window.showToast && oldTier) {
+          showToast(`⚡ Üyelik durumunuz yöneticiniz tarafından "${data.durum}" olarak güncellendi! Soru haklarınız yenilendi.`, "success");
+        }
+      }
  
       const warnCount = data.uyariSayisi || 0; 
       updateMainUserStarsDisplay(warnCount); 
@@ -3793,6 +3831,14 @@ window.closeAnnouncementModal = function() {
     } 
  
     if (user) { 
+      onAuthStateChanged(auth, async (user) => { 
+  if (user) {
+    // 🚀 GİRİŞ YAPILDIĞI AN GİRİŞ EKRANINI ANINDA GİZLE (FLAŞLAMAYI ÖNLER)
+    if (document.getElementById('loginScreen')) {
+      document.getElementById('loginScreen').style.display = 'none';
+    }
+
+    if (typeof window.loadSystemLimits === 'function') await window.loadSystemLimits();
       const tokenResult = await user.getIdTokenResult(); 
       const userRef = doc(db, "kullanicilar", user.uid); 
       const userSnap = await getDoc(userRef); 
@@ -4243,7 +4289,9 @@ window.executeTargetedLimitReset = async function() {
       document.getElementById('adminUsernameInput').value = ''; 
       document.getElementById('adminPasswordInput').value = ''; 
       window.closeAdminAuthModal(); 
- 
+ if (document.getElementById('loginScreen')) {
+      document.getElementById('loginScreen').style.display = 'none';
+    }
       if (typeof hideLoading === 'function') hideLoading(); 
  
       setTimeout(() => { 
