@@ -1520,9 +1520,9 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <button id="tabChatBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('chat')">💬 Kullanıcı Mesajları <span id="adminChatUnreadBadge" style="display:none;" class="unread-badge-dot"></span></button>
             <button id="tabLicensesBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('licenses')">🔑 Lisans Kodu Üret</button>
             <button id="tabAnnounceBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('announcements')">📢 Duyuru / Bilgi Gönder</button>
+            <button id="tabProfanityBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('profanity')">🤬 Yasak Kelime Tespiti</button>
             <button id="tabSettingsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('settings')">🔒 Yönetici Şifre Ayarları</button>
-  <button id="tabProfanityBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('profanity')">🤬 Yasak Kelime Tespiti <span id="adminProfanityBadge" style="display:none;" class="unread-badge-dot"></span></button>
-  <button id="tabLimitsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('limits')">⚙️ Soru Sınırlamaları</button>
+            <button id="tabLimitsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('limits')">⚙️ Soru Sınırlamaları</button>
   <!-- SADECE BAKIM AKTİFKEN GÖRÜNEN DİNAMİK BAKIM DURUM BUTONU -->
             <button id="adminActiveMaintenanceBannerBtn" type="button" class="btn-action" style="display: none; background: #dc2626 !important; border-color: #b91c1c !important; color: white !important; font-weight: bold; animation: pulse 2s infinite;" onclick="switchAdminTab('announcements')">
               🛠️ Sistem Bakım Modunda
@@ -1891,31 +1891,31 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           <button class="btn-action btn-toggle-on" style="padding:12px; width:100%; justify-content:center; font-weight:bold; margin-top:5px;" onclick="saveSystemLimits()">
             💾 Limit ve Filigran Ayarlarını Kaydet
           </button>
-
-        </div>
-        <!-- YENİ SEKME: YASAK KELİME VE KÜFÜR TESPİTİ -->
+<!-- SEKME: YASAK KELİME TESPİTİ -->
         <div id="adminTabProfanity" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
-          <div style="display: flex; justify-content: space-between; align-items: center; background: #fee2e2; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fca5a5; font-size: 0.82rem; color: #991b1b;">
-            <span>🤬 Otomatik küfür/argo taraması mesajlarda, hatalı soru bildirimlerinde ve yüklenen soru dosyalarında anlık çalışır. Otomatik engelleme yapılmaz, karar yetkisi yöneticidedir.</span>
-            <button class="btn-action btn-toggle-on" style="background: #dc2626 !important; border-color: #b91c1c !important;" onclick="scanAllContentForProfanity()">🔄 Yeniden Tara</button>
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fecdd3; font-size: 0.82rem; color: #9f1239;">
+            <span>🤬 Otomatik tarama tarafından mesajlarında, soru bildirimlerinde veya dosya adlarında yasaklı kelime tespit edilen kullanıcılar burada listelenir.</span>
+            <button class="btn-action btn-finish-test" style="font-size: 0.75rem; padding: 4px 8px;" onclick="clearAllProfanityLogs()">🗑️ Tüm Kayıtları Temizle</button>
           </div>
 
           <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
               <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
                 <tr>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Kullanıcı</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Kaynak</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Kullanıcı Bilgisi</th>
                   <th style="padding: 10px; border-bottom: 1px solid var(--border);">Tespit Edilen Kelime</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">İçerik / Metin</th>
-                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Aksiyonlar</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Kaynak</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Metin İçeriği</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Tarih</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Aksiyon</th>
                 </tr>
               </thead>
               <tbody id="adminProfanityTableBody">
-                <tr><td colspan="5" style="padding: 15px; text-align: center;">Tarama yapılıyor...</td></tr>
+                <tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları yükleniyor...</td></tr>
               </tbody>
             </table>
           </div>
+        </div>
         </div>
         <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
         <div id="adminTabSettings" style="display: none; max-width: 450px;">
@@ -3467,19 +3467,7 @@ window.closeAnnouncementModal = function() {
 <!-- FIREBASE & GELİŞTİRİLMİŞ MODÜL KODLARI -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signInWithRedirect, 
-  signInWithEmailAndPassword, 
-  onAuthStateChanged, 
-  signOut, 
-  EmailAuthProvider, 
-  reauthenticateWithCredential, 
-  updatePassword, 
-  updateEmail 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, addDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
   import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js"; 
@@ -3659,39 +3647,41 @@ import {
   const functions = getFunctions(app, "us-central1"); 
   const provider = new GoogleAuthProvider(); 
   // === TÜM ADMİN VE SİSTEM AYARLARININ KULLANICILARA ANLIK (REALTIME) YANSITILMASI ===
-onAuthStateChanged(auth, async (user) => {
-  listenMaintenanceRealtime();
-  listenSystemLimitsRealtime();
+  onAuthStateChanged(auth, async (user) => {
+    // Bakım Modunu ve Limitleri Sayfa Açılır Açılmaz Anlık Dinle
+    listenMaintenanceRealtime();
+    listenSystemLimitsRealtime();
 
-  if (user) {
-    const loginScreen = document.getElementById('loginScreen');
-    const loginOptionsModal = document.getElementById('loginOptionsModal');
-    const mainApp = document.getElementById('mainApp');
+    if (user) {
+      const loginScreen = document.getElementById('loginScreen');
+      const loginOptionsModal = document.getElementById('loginOptionsModal');
+      const mainApp = document.getElementById('mainApp');
 
-    if (loginScreen) loginScreen.style.display = 'none';
-    if (loginOptionsModal) loginOptionsModal.style.display = 'none';
-    if (mainApp) mainApp.style.display = 'block';
+      if (loginScreen) loginScreen.style.display = 'none';
+      if (loginOptionsModal) loginOptionsModal.style.display = 'none';
+      if (mainApp) mainApp.style.display = 'block';
 
-    window.currentUserEmail = user.email;
-    const nameTargets = document.querySelectorAll('.user-name-target');
-    nameTargets.forEach(el => el.innerText = formatNameSurname(user.displayName || user.email));
+      window.currentUserEmail = user.email;
+      const nameTargets = document.querySelectorAll('.user-name-target');
+      nameTargets.forEach(el => el.innerText = formatNameSurname(user.displayName || user.email));
 
-    listenUserWarnings(user.uid);
-    listenSystemAnnouncementsRealtime(user.uid);
+// Kullanıcının uyarılarını ve duyurularını canlı dinle
+      listenUserWarnings(user.uid);
+      listenSystemAnnouncementsRealtime(user.uid);
 
-    const isGoogleUser = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+      // Sorular sadece Google ile giriş yapan kullanıcılara (Google ile giren Admin dahil) yüklensin
+      const isGoogleUser = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+      if (isGoogleUser && typeof window.loadDataAndInit === 'function') {
+        window.loadDataAndInit();
+      }
+    } else {
+      const loginScreen = document.getElementById('loginScreen');
+      const mainApp = document.getElementById('mainApp');
 
-    if (isGoogleUser && typeof window.loadDataAndInit === 'function') {
-      window.loadDataAndInit();
+      if (loginScreen) loginScreen.style.display = 'flex';
+      if (mainApp) mainApp.style.display = 'none';
     }
-  } else {
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-
-    if (loginScreen) loginScreen.style.display = 'flex';
-    if (mainApp) mainApp.style.display = 'none';
-  }
-});
+  });
 
   // --- ANLIK DUYURU CANLI DİNLEYİCİSİ ---
   window.listenSystemAnnouncementsRealtime = function(userUid) {
@@ -3774,6 +3764,40 @@ onAuthStateChanged(auth, async (user) => {
       }
     });
   };
+// === CANLI OTURUM DİNLEYİCİSİ (DÖNGÜYÜ VE EKRAN KAPANMASINI ÇÖZER) ===
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // Oturum açıldı: Giriş ekranlarını kapat, ana paneli aç
+      const loginScreen = document.getElementById('loginScreen');
+      const loginOptionsModal = document.getElementById('loginOptionsModal');
+      const mainApp = document.getElementById('mainApp');
+
+      if (loginScreen) loginScreen.style.display = 'none';
+      if (loginOptionsModal) loginOptionsModal.style.display = 'none';
+      if (mainApp) mainApp.style.display = 'block';
+
+      // Kullanıcı adını ve e-postasını ekrana yaz
+      window.currentUserEmail = user.email;
+      const nameTargets = document.querySelectorAll('.user-name-target');
+      nameTargets.forEach(el => el.innerText = user.displayName || user.email);
+
+      // Kullanıcı kısıtlamalarını ve duyurularını yükle
+      listenUserWarnings(user.uid);
+      if (typeof window.checkSystemAnnouncements === 'function') {
+        window.checkSystemAnnouncements(user.uid);
+      }
+      if (typeof window.loadDataAndInit === 'function') {
+        window.loadDataAndInit();
+      }
+    } else {
+      // Oturum kapalı/çıkış yapıldı: Giriş ekranına yönlendir
+      const loginScreen = document.getElementById('loginScreen');
+      const mainApp = document.getElementById('mainApp');
+
+      if (loginScreen) loginScreen.style.display = 'flex';
+      if (mainApp) mainApp.style.display = 'none';
+    }
+  });
   registerAppEvent('click', '#btnOpenAdminAuth', () => window.openAdminAuthModal?.()); 
   registerAppEvent('click', '#dragDropArea', (e, el) => { 
     if (e.target.closest('#selectedFileInfo button')) return; 
@@ -3829,7 +3853,72 @@ onAuthStateChanged(auth, async (user) => {
   let currentWarnUserUid = null; 
   let currentWarnUserName = null; 
   let reportsToDeleteTarget = []; 
- 
+ // Mükerrer kelimelerden arındırılmış tam küfür / argo kelime havuzu
+  const PROFANITY_WORD_LIST = Array.from(new Set([
+    "amk", "aq", "amq", "amka", "amık", "amguard", "amcuk", "amcık", "amcik", "amkım", "amına korum", "amına kodumun", "amına ko",
+    "sik", "sikim", "sikiriz", "sikerim", "sikeyim", "sikiş", "sikis", "siktiğim", "siktigim", "siktiğimin", "siktir git", "sikimi ye", "sikimi yala",
+    "orospu", "oroşpu", "orospuçocuğu", "orospucocugu", "orocpu", "orosbu", "orochu", "orul orul oç", "orul orul orospu",
+    "piç", "pic", "pıc", "piçlik", "piç kurusu", "yavşak", "yavsak", "yavsaklık", "göt", "got", "götveren", "gotveren", "götoş", "gotos", "götlek", "gotlek", "götten", "göt deliği",
+    "ibne", "ipne", "ibnelik", "ibine", "kahpe", "kahbe", "yarak", "yarrak", "yarragı", "yarragım", "dalyarak", "dalyarrak",
+    "taşağı", "taşak", "tasak", "taşşak", "tassak", "daşşak", "daşak", "dasak", "fahişe", "fahise", "şerefsiz", "serefsiz", "serefsız", "pezevenk",
+    "haysiyetsiz", "haysıyetsız", "namussuz", "namussuzluk", "kancık", "kancik", "puşt", "pust", "sürtük", "surtuk", "yarram", "yarragim", "yarramı",
+    "gerizekalı", "gerizekali", "gerzek", "salak", "aptal", "mal", "dangalak", "hıyar", "hiyar", "öküz", "okuz",
+    "manyak", "kodumun", "koyduğumun", "koydugumun", "skrm", "amkı", "sikik", "sikko",
+    "خراء", "شرطوطة", "كس", "عير", "كلب", "ابن الكلب", "ابن الشرطوطة",
+    "khara", "kuss", "kess", "sharmouta", "sharmuta", "air", "kosomk", "kosomak", "ibn el kalb", "kol khara",
+    "scheiße", "scheisse", "arschloch", "fick", "ficken", "hurensohn", "wichser", "fotze", "schlampe", "miststück", "kacke",
+    "merde", "putain", "salope", "connard", "enculé", "encule", "chier", "fils de pute", "bordel", "pétasse", "conne",
+    "mierda", "puta", "coño", "cono", "joder", "hijo de puta", "cabrón", "cabron", "pendejo", "gilipollas", "maricón", "maricon", "verga",
+    "сука", "блять", "хуй", "пизда", "пидор", "ебать", "нахуй",
+    "suka", "blyat", "cyka", "blyad", "pizdec", "pizda", "khuy", "ebat", "nahuy", "pidor",
+    "quz", "quzê", "ker", "kera", "kurê segê", "kure sege", "jinik", "jinê", "gaf", "qoz", "jinikê", "siktir",
+    "porra", "caralho", "merda", "puta", "filho da puta", "arrombado", "buceta", "piranha", "cacete", "viado", "puta que pariu",
+    "肏", "草", "傻逼", "王八蛋", "肏你妈", "干",
+    "cao", "caonima", "shabi", "sha bi", "sb", "wangbadan", "gan",
+    "fuck", "fucking", "fucker", "fuckin", "fucked", "fuckup", "f.u.c.k",
+    "shit", "shitting", "shitty", "bullshit", "sh1t",
+    "bitch", "bitches", "bitchy", "b*tch",
+    "asshole", "ass", "arse", "arsehole", "a**hole",
+    "bastard", "dick", "dickhead", "cock", "cocksucker",
+    "cunt", "crap", "motherfucker", "motherfucking", "prick", "whore", "slut", "pussy", "twat", "wanker", "nigger", "faggot",
+    "a.m.k", "a.q", "s.i.k", "o.ç", "o.c", "o.ç.", "o.c.", "o_c", "o_ç",
+    "a*k", "a**", "s*k", "s**", "f*ck", "f**k", "sh*t", "a_m_k", "s_i_k",
+    "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "y.a.r.r.a.", "y.a.r.r.a.ğ.ı.m.ı. y.a.l.a"
+  ]));
+
+  // Metin icinde yasakli kelime tarama fonksiyonu
+  function checkTextForProfanity(text) {
+    if (!text) return null;
+    const cleanText = String(text).toLocaleLowerCase('tr-TR');
+    
+    for (let word of PROFANITY_WORD_LIST) {
+      if (word.length <= 3) {
+        const regex = new RegExp(`(?:^|\\s|[^a-z0-9ğüşıöç])${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(?:$|\\s|[^a-z0-9ğüşıöç])`, 'i');
+        if (regex.test(cleanText)) return word;
+      } else {
+        if (cleanText.includes(word.toLocaleLowerCase('tr-TR'))) return word;
+      }
+    }
+    return null;
+  }
+
+  // Yasakli kelime tespit edildiginde Firestore'a log kaydi atma
+  async function logProfanityDetection(userId, userName, userEmail, detectedWord, originalText, source) {
+    try {
+      if (!db || !collection || !addDoc) return;
+      await addDoc(collection(db, "yasakli_kelime_tespitleri"), {
+        userId: userId || "anonim",
+        userName: userName || "İsimsiz",
+        userEmail: userEmail || "E-posta yok",
+        detectedWord: detectedWord,
+        originalText: originalText,
+        source: source,
+        createdAt: serverTimestamp()
+      });
+    } catch(err) {
+      console.error("Yasaklı kelime kaydı atılamadı:", err);
+    }
+  }
   window.isAdminSessionActive = false; 
   window.currentUserIsAdmin = false; 
  
@@ -4093,6 +4182,7 @@ function listenMaintenanceRealtime() {
         adminBannerBtn.style.display = 'inline-flex';
       }
 
+window.isSystemCurrentlyInMaintenance = true;
       if (adminStatusBox) {
         adminStatusBox.style.background = '#fee2e2';
         adminStatusBox.style.borderColor = '#fca5a5';
@@ -4100,6 +4190,7 @@ function listenMaintenanceRealtime() {
         adminStatusBox.innerHTML = `⚠️ <strong>Dikkat:</strong> Bakım modu aktif! ${targetLabel} için sistem ${timeText}.`;
       }
     } else {
+      window.isSystemCurrentlyInMaintenance = false;
       if (adminBannerBtn) {
         adminBannerBtn.style.display = 'none';
       }
@@ -4137,11 +4228,10 @@ function listenMaintenanceRealtime() {
     );
   };
 
-  // --- BAKIMI ŞİMDİ BAŞLAT (MODERN ONAY MODALLI) ---
-window.startMaintenanceNow = async function() {
-    const activeBanner = document.getElementById('adminActiveMaintenanceBannerBtn');
-    if (activeBanner && activeBanner.style.display !== 'none') {
-      showCustomAlert("⚠️ İşlem Engellendi", "Sistem şu an zaten aktif olarak bakım modundadır. Yeniden bakım başlatılamaz.", "⚠️");
+// --- BAKIMI ŞİMDİ BAŞLAT (MODERN ONAY MODALLI) ---
+  window.startMaintenanceNow = async function() {
+    if (window.isSystemCurrentlyInMaintenance) {
+      showCustomAlert("Sistem Zaten Bakımda", "Sistem şu anda aktif olarak bakım modundadır.", "🛠️");
       return;
     }
 
@@ -4174,10 +4264,9 @@ window.startMaintenanceNow = async function() {
   };
 
   // --- ZAMANLANMIŞ BAKIMI BAŞLAT (MODERN ONAY MODALLI) ---
-window.startScheduledMaintenance = async function() {
-    const activeBanner = document.getElementById('adminActiveMaintenanceBannerBtn');
-    if (activeBanner && activeBanner.style.display !== 'none') {
-      showCustomAlert("⚠️ İşlem Engellendi", "Sistem şu an zaten aktif olarak bakım modundadır. Yeniden bakım kurulamaz.", "⚠️");
+  window.startScheduledMaintenance = async function() {
+    if (window.isSystemCurrentlyInMaintenance) {
+      showCustomAlert("Sistem Zaten Bakımda", "Sistem şu anda aktif olarak bakım modundadır.", "🛠️");
       return;
     }
 
@@ -4448,10 +4537,23 @@ window.startScheduledMaintenance = async function() {
       return; 
     } 
  
-    showToast("Dosya yükleniyor...", "info"); 
- 
+showToast("Dosya yükleniyor...", "info"); 
+
+    // Otomatik küfür/argo taraması (Dosya adında)
+    const detectedWord = checkTextForProfanity(fileName);
+    if (detectedWord && auth.currentUser) {
+      logProfanityDetection(
+        auth.currentUser.uid,
+        auth.currentUser.displayName || auth.currentUser.email,
+        auth.currentUser.email,
+        detectedWord,
+        fileName,
+        "Yüklenen Soru Dosyası Adı"
+      );
+    }
+
     try { 
-      const fileRef = ref(storage, `soru_dosyalari/${auth.currentUser.uid}/${Date.now()}_${fileName}`); 
+      const fileRef = ref(storage, `soru_dosyalari/${auth.currentUser.uid}/${Date.now()}_${fileName}`);
       await uploadBytes(fileRef, file); 
       const downloadURL = await getDownloadURL(fileRef); 
  
@@ -4997,10 +5099,23 @@ window.startScheduledMaintenance = async function() {
     userReportsUnsubscribe = disposeSubscription(userReportsUnsubscribe); 
   }; 
  
-  window.sendUserReportChatMessage = async function(docId) { 
+window.sendUserReportChatMessage = async function(docId) { 
     const input = document.getElementById(`userReportFollowupInput_${docId}`); 
     const text = input.value.trim(); 
     if (!text) { showToast("Lütfen cevabınızı yazınız.", "warning"); return; } 
+
+    // Otomatik küfür/argo taraması
+    const detectedWord = checkTextForProfanity(text);
+    if (detectedWord && auth.currentUser) {
+      logProfanityDetection(
+        auth.currentUser.uid,
+        auth.currentUser.displayName || auth.currentUser.email,
+        auth.currentUser.email,
+        detectedWord,
+        text,
+        "Hatalı Soru Sohbet Yanıtı"
+      );
+    }
  
     const newMsg = { 
       id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4), 
@@ -5455,13 +5570,26 @@ window.startScheduledMaintenance = async function() {
     }); 
   } 
  
-  window.sendUserChatMessage = async function() { 
+window.sendUserChatMessage = async function() { 
     const input = document.getElementById('userChatMessageInput'); 
     const text = input.value.trim(); 
     if (!text || !auth.currentUser) return; 
- 
+
+    // Otomatik küfür/argo taraması
+    const detectedWord = checkTextForProfanity(text);
+    if (detectedWord) {
+      logProfanityDetection(
+        auth.currentUser.uid,
+        auth.currentUser.displayName || auth.currentUser.email,
+        auth.currentUser.email,
+        detectedWord,
+        text,
+        "Canlı Destek Mesajı"
+      );
+    }
+
     input.value = ''; 
-    const userUid = auth.currentUser.uid; 
+    const userUid = auth.currentUser.uid;
  
     await addDoc(collection(db, "sohbetler", userUid, "mesajlar"), { 
       senderUid: userUid, 
@@ -5740,13 +5868,26 @@ window.startScheduledMaintenance = async function() {
     document.getElementById('reportQuestionModal').style.display = 'none'; 
   }; 
  
-  window.submitQuestionReport = async function() { 
+window.submitQuestionReport = async function() { 
     if (currentReportingQuestionIndex === null) return; 
     const q = currentQuestionsList[currentReportingQuestionIndex]; 
     const suggestedOpt = document.getElementById('reportUserSuggestedOption').value; 
     const comment = document.getElementById('reportUserComment').value.trim(); 
     const meta = parseQuestionMeta(q); 
     const cleanOptions = extractAndCleanOptions(q); 
+
+    // Otomatik küfür/argo taraması
+    const detectedWord = checkTextForProfanity(comment);
+    if (detectedWord && auth.currentUser) {
+      logProfanityDetection(
+        auth.currentUser.uid,
+        auth.currentUser.displayName || auth.currentUser.email,
+        auth.currentUser.email,
+        detectedWord,
+        comment,
+        "Hatalı Soru İtiraz Açıklaması"
+      );
+    } 
  
     const initialMsg = { 
       id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4), 
@@ -5948,22 +6089,22 @@ window.changeUserStatus = async function(uid, newStatus) {
     if (cCb) cCb.checked = false;
     document.querySelectorAll('.chat-row-checkbox').forEach(cb => cb.checked = false);
 
-    const tabs = {
+const tabs = {
       users: 'adminTabUsers', warned: 'adminTabWarned', reports: 'adminTabReports',
       uploadedQuestions: 'adminTabUploadedQuestions', chat: 'adminTabChat',
-      licenses: 'adminTabLicenses', announcements: 'adminTabAnnouncements', limits: 'adminTabLimits', settings: 'adminTabSettings'
+      licenses: 'adminTabLicenses', announcements: 'adminTabAnnouncements', profanity: 'adminTabProfanity', limits: 'adminTabLimits', settings: 'adminTabSettings'
     };
     Object.values(tabs).forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
-      const flexTabs = new Set(['adminTabUsers','adminTabWarned','adminTabReports','adminTabUploadedQuestions','adminTabChat','adminTabAnnouncements']);
+      const flexTabs = new Set(['adminTabUsers','adminTabWarned','adminTabReports','adminTabUploadedQuestions','adminTabChat','adminTabAnnouncements','adminTabProfanity']);
       el.style.display = tabName === Object.keys(tabs).find(k => tabs[k] === id) ? (flexTabs.has(id) ? 'flex' : 'block') : 'none';
     });
 
     const buttons = {
       users: 'tabUsersBtn', warned: 'tabWarnedBtn', reports: 'tabReportsBtn',
       uploadedQuestions: 'tabUploadedQuestionsBtn', chat: 'tabChatBtn',
-      licenses: 'tabLicensesBtn', announcements: 'tabAnnounceBtn', limits: 'tabLimitsBtn', settings: 'tabSettingsBtn'
+      licenses: 'tabLicensesBtn', announcements: 'tabAnnounceBtn', profanity: 'tabProfanityBtn', limits: 'tabLimitsBtn', settings: 'tabSettingsBtn'
     };
     Object.entries(buttons).forEach(([key, id]) => {
       const el = document.getElementById(id);
@@ -5983,12 +6124,86 @@ window.changeUserStatus = async function(uid, newStatus) {
       else searchInput.placeholder = '🔍 Ad, Soyad veya E-posta İle Ara...';
     }
 
-    if (tabName === 'users') renderUserRows();
+if (tabName === 'users') renderUserRows();
     if (tabName === 'warned') renderWarnedUserRows();
     if (tabName === 'reports') loadAdminQuestionReports();
     if (tabName === 'uploadedQuestions') loadAdminUploadedQuestions();
     if (tabName === 'chat') loadAdminChatList();
     if (tabName === 'announcements') window.loadAnnouncementUsersList?.();
+    if (tabName === 'profanity') loadAdminProfanityLogs();
+  }; 
+
+  async function loadAdminProfanityLogs() {
+    const tbody = document.getElementById('adminProfanityTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları çekiliyor...</td></tr>';
+
+    try {
+      const snap = await getDocs(collection(db, "yasakli_kelime_tespitleri"));
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color:#64748b;">Henüz tespit edilen bir yasaklı kelime bulunmamaktadır.</td></tr>';
+        return;
+      }
+
+      let logs = [];
+      snap.forEach(docSnap => logs.push({ id: docSnap.id, ...docSnap.data() }));
+
+      logs.sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+      });
+
+      tbody.innerHTML = '';
+      logs.forEach(l => {
+        const dateStr = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('tr-TR') : 'Tarih Belirtilmedi';
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid #e2e8f0';
+
+        const safeName = (l.userName || l.userEmail || '').replace(/'/g, "\\'");
+        const safeText = (l.originalText || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        row.innerHTML = `
+          <td style="padding: 10px; font-weight: 600;">👤 ${l.userName}<br><span style="font-size:0.75rem; color:#64748b; font-weight:normal;">${l.userEmail}</span></td>
+          <td style="padding: 10px;"><span style="padding: 2px 8px; border-radius: 6px; font-weight: bold; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">${l.detectedWord}</span></td>
+          <td style="padding: 10px; font-weight: 600; color: #2563eb;">${l.source}</td>
+          <td style="padding: 10px; max-width: 250px; word-break: break-word; color: #334155;">${l.originalText}</td>
+          <td style="padding: 10px; font-size: 0.78rem; color: #64748b;">${dateStr}</td>
+          <td style="padding: 10px; text-align: right;">
+            <button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px; background: #fffbe6; color: #d97706; border-color: #fde68a;" onclick="openAdminWarnUserModal('${l.userId}', '${safeName}', '${safeText}')">⚠️ Uyar</button>
+            <button class="msg-delete-btn" onclick="deleteProfanityLog('${l.id}')" title="Kaydı Sil">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch(err) {
+      tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:15px;">Hata: ${err.message}</td></tr>`;
+    }
+  }
+
+  window.deleteProfanityLog = async function(docId) {
+    try {
+      await deleteDoc(doc(db, "yasakli_kelime_tespitleri", docId));
+      showToast("Kayıt silindi.", "success");
+      loadAdminProfanityLogs();
+    } catch(err) {
+      showToast("Silme hatası: " + err.message, "error");
+    }
+  };
+
+  window.clearAllProfanityLogs = function() {
+    showCustomConfirm("Temizleme Onayı", "Tüm yasaklı kelime tespit kayıtlarını silmek istediğinize emin misiniz?", async () => {
+      try {
+        const snap = await getDocs(collection(db, "yasakli_kelime_tespitleri"));
+        for (let docSnap of snap.docs) {
+          await deleteDoc(docSnap.ref);
+        }
+        showToast("Tüm tespit kayıtları temizlendi.", "success");
+        loadAdminProfanityLogs();
+      } catch(err) {
+        showToast("Hata: " + err.message, "error");
+      }
+    });
   }; 
 
   window.filterAdminUsers = function(cat, btnElem) {
@@ -6173,177 +6388,6 @@ window.changeUserStatus = async function(uid, newStatus) {
       document.getElementById('userWarningNoticeModal').style.display = 'none';
     }
   };
-  // === ÇOK DİLLİ YASAK KELİME KÜTÜPHANESİ VE TARAMA SİSTEMİ ===
-  const PROFANITY_DICTIONARY = [
-    "amk", "aq", "amq", "amka", "amık", "amguard", "amcuk", "amcık", "amcik", "amkım", "amına korum", "amına kodumun", "amına ko",
-    "sik", "sikim", "sikiriz", "sikerim", "sikeyim", "sikiş", "sikis", "siktiğim", "siktigim", "siktiğimin", "siktir git", "sikimi ye", "sikimi yala",
-    "orospu", "oroşpu", "orospuçocuğu", "orospucocugu", "orocpu", "orosbu", "orochu", "orul orul oç", "orul orul orospu",
-    "piç", "pic", "pıc", "piçlik", "piç kurusu", "yavşak", "yavsak", "yavsaklık", "göt", "got", "götveren", "gotveren", "götoş", "gotos", "götlek", "gotlek", "götten", "göt deliği",
-    "ibne", "ipne", "ibnelik", "ibine", "kahpe", "kahbe", "yarak", "yarrak", "yarragı", "yarragım", "dalyarak", "dalyarrak",
-    "taşağı", "taşak", "tasak", "taşşak", "tassak", "fahişe", "fahise", "şerefsiz", "serefsiz", "serefsız", "pezevenk",
-    "haysiyetsiz", "haysıyetsız", "namussuz", "namussuzluk", "kancık", "kancik", "puşt", "pust", "sürtük", "surtuk", "yarram", "yarragim", "yarramı",
-    "gerizekalı", "gerizekali", "gerzek", "salak", "aptal", "mal", "dangalak", "hıyar", "hiyar", "öküz", "okuz",
-    "manyak", "kodumun", "koyduğumun", "koydugumun", "skrm", "amkı", "sikik", "sikko",
-    "fuck", "fucking", "fucker", "fuckin", "fucked", "fuckup", "shit", "shitting", "shitty", "bullshit", "bitch", "bitches", "bitchy",
-    "asshole", "ass", "arse", "arsehole", "bastard", "dick", "dickhead", "cock", "cocksucker",
-    "cunt", "crap", "motherfucker", "motherfucking", "prick", "whore", "slut", "pussy", "twat", "wanker", "nigger", "faggot",
-    "a.m.k", "a.q", "s.i.k", "o.ç", "o.c", "o.ç.", "o.c.", "a*k", "a**", "s*k", "s**", "f*ck", "f**k", "sh*t", "b*tch", "a**hole",
-    "a_m_k", "s_i_k", "o_c", "o_ç", "f.u.c.k", "y.a.r.r.a.", "y.a.r.r.a.ğ.ı.m.ı. y.a.l.a", "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "sh1t"
-    "amk", "aq", "amq", "amka", "amık", "amguard", "amcuk", "amcık", "amcik", "amkım", "sik", "sikim", "sikiriz", "sikerim", "sikeyim", "sikiş", "sikis", "siktiğim", "siktigim", "siktiğimin",
-    "orospu", "oroşpu", "orospuçocuğu", "orospucocugu", "orocpu", "orosbu", "orochu", "piç", "pic", "pıc", "piçlik", "piç kurusu", "yavşak", "yavsak", "göt", "got", "götveren", "gotveren",
-    "ibne", "ipne", "kahpe", "kahbe", "yarak", "yarrak", "dalyarak", "taşağı", "taşak", "tasak", "fahişe", "taşşak", "daşşak", "daşak", "dasak",
-    "şerefsiz", "serefsiz", "puşt", "pust", "sürtük", "surtuk", "yarram", "salak", "aptal", "mal", "manyak",
-    "خراء", "شرطوطة", "كس", "عير", "كلب", "ابن الكلب", "ابن الشرطوطة", "khara", "kuss", "kess", "sharmouta", "sharmuta", "air", "kosomk", "kosomak", "ibn el kalb", "kol khara",
-    "scheiße", "scheisse", "arschloch", "fick", "ficken", "hurensohn", "wichser", "fotze", "schlampe", "miststück", "kacke",
-    "merde", "putain", "salope", "connard", "enculé", "encule", "chier", "fils de pute", "bordel", "pétasse", "conne",
-    "mierda", "puta", "coño", "cono", "joder", "hijo de puta", "cabrón", "cabron", "pendejo", "gilipollas", "maricón", "maricon", "verga",
-    "сука", "блять", "хуй", "пизда", "пидор", "ебать", "нахуй", "suka", "blyat", "cyka", "blyad", "pizdec", "pizda", "khuy", "ebat", "nahuy", "pidor",
-    "quz", "quzê", "ker", "kera", "kurê segê", "kure sege", "jinik", "jinê", "gaf", "qoz", "jinikê", "siktir",
-    "porra", "caralho", "merda", "puta", "filho da puta", "arrombado", "buceta", "piranha", "cacete", "viado", "puta que pariu",
-    "肏", "草", "傻逼", "王八蛋", "肏你妈", "干", "cao", "caonima", "shabi", "sha bi", "sb", "wangbadan", "gan",
-    "a.m.k", "a.q", "s.i.k", "o.ç", "o.c", "o.ç.", "o.c.", "a*k", "a**", "s*k", "s**", "f*ck", "f**k", "sh*t", "b*tch", "a**hole",
-    "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "sh1t"
-  ];
-
-  function detectProfanityInText(text) {
-    if (!text || typeof text !== 'string') return null;
-    const cleanText = text.toLowerCase().replace(/[\r\n\t]/g, ' ');
-    const detected = [];
-
-    PROFANITY_DICTIONARY.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
-      if (regex.test(cleanText)) {
-        if (!detected.includes(word)) detected.push(word);
-      }
-    });
-
-    return detected.length > 0 ? detected : null;
-  }
-
-  window.scanAllContentForProfanity = async function() {
-    const tbody = document.getElementById('adminProfanityTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center;">Tüm platform taranıyor...</td></tr>';
-
-    const flaggedItems = [];
-
-    try {
-      // 1. Canlı Destek Mesajları
-      const sohbetSnap = await getDocs(collection(db, "sohbetler"));
-      for (const chatDoc of sohbetSnap.docs) {
-        const userData = chatDoc.data();
-        const msgSnap = await getDocs(collection(db, "sohbetler", chatDoc.id, "mesajlar"));
-        msgSnap.forEach(mDoc => {
-          const m = mDoc.data();
-          if (m.senderRole !== 'admin') {
-            const badWords = detectProfanityInText(m.text);
-            if (badWords) {
-              flaggedItems.push({
-                userUid: m.senderUid || chatDoc.id,
-                userName: userData.userName || m.senderName || 'İsimsiz',
-                userEmail: userData.userEmail || m.senderEmail || 'E-posta Yok',
-                source: '💬 Canlı Destek Mesajı',
-                words: badWords,
-                snippet: m.text
-              });
-            }
-          }
-        });
-      }
-
-      // 2. Hatalı Soru İtirazları
-      const reportSnap = await getDocs(collection(db, "hatali_sorular"));
-      reportSnap.forEach(rDoc => {
-        const r = rDoc.data();
-        const badInComment = detectProfanityInText(r.userComment);
-        if (badInComment) {
-          flaggedItems.push({
-            userUid: r.userId,
-            userName: r.userName || 'İsimsiz',
-            userEmail: r.userEmail || 'E-posta Yok',
-            source: '🚨 Soru İtiraz Açıklaması',
-            words: badInComment,
-            snippet: r.userComment
-          });
-        }
-        if (Array.isArray(r.mesajlar)) {
-          r.mesajlar.forEach(m => {
-            if (m.senderRole === 'user') {
-              const badInMsg = detectProfanityInText(m.text);
-              if (badInMsg) {
-                flaggedItems.push({
-                  userUid: r.userId,
-                  userName: r.userName || 'İsimsiz',
-                  userEmail: r.userEmail || 'E-posta Yok',
-                  source: '🚨 İtiraz İçi Mesaj',
-                  words: badInMsg,
-                  snippet: m.text
-                });
-              }
-            }
-          });
-        }
-      });
-
-      // 3. Yüklenen Soru Dosya Adları
-      const fileSnap = await getDocs(collection(db, "kullanici_yuklenen_sorular"));
-      fileSnap.forEach(fDoc => {
-        const f = fDoc.data();
-        const badInFile = detectProfanityInText(f.fileName);
-        if (badInFile) {
-          flaggedItems.push({
-            userUid: f.userUid,
-            userName: f.userName || 'İsimsiz',
-            userEmail: f.userEmail || 'E-posta Yok',
-            source: '📥 Yüklenen Dosya Adı',
-            words: badInFile,
-            snippet: f.fileName
-          });
-        }
-      });
-
-      renderProfanityResults(flaggedItems);
-
-    } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="5" style="color:red; padding:15px; text-align:center;">Tarama hatası: ${err.message}</td></tr>`;
-    }
-  };
-
-  function renderProfanityResults(items) {
-    const tbody = document.getElementById('adminProfanityTableBody');
-    const badge = document.getElementById('adminProfanityBadge');
-    if (!tbody) return;
-
-    if (badge) badge.style.display = items.length > 0 ? 'inline-block' : 'none';
-
-    if (items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center; color:#10b981; font-weight:bold;">🟢 Harika! Sistemde hiçbir küfür veya argo kelimeye rastlanmadı.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = '';
-    items.forEach(item => {
-      const safeName = (item.userName || '').replace(/'/g, "\\'");
-      const safeSnippet = (item.snippet || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-      const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid #e2e8f0';
-      tr.innerHTML = `
-        <td style="padding:10px; font-weight:600;">
-          ${item.userName}<br>
-          <span style="font-size:0.75rem; color:#64748b;">${item.userEmail}</span>
-        </td>
-        <td style="padding:10px;"><span style="padding:3px 8px; border-radius:10px; font-size:0.75rem; background:#eff6ff; color:#1e40af; font-weight:bold;">${item.source}</span></td>
-        <td style="padding:10px;"><span style="padding:3px 8px; border-radius:10px; font-size:0.78rem; background:#fee2e2; color:#dc2626; font-weight:bold;">⚠️ ${item.words.join(', ')}</span></td>
-        <td style="padding:10px; max-width:260px; word-break:break-word; font-size:0.8rem; color:#334155;">"${item.snippet}"</td>
-        <td style="padding:10px; text-align:right;">
-          <button class="btn-action" style="font-size:0.75rem; padding:4px 8px; background:#fffbe6; color:#d97706; border-color:#fde68a;" onclick="openAdminWarnUserModal('${item.userUid}', '${safeName}', 'Tarafınızca gönderilen [${safeSnippet}] metninde uygunsuz ifadeler tespit edilmiştir.')">⚠️ Uyarı Gönder</button>
-          <button class="btn-action btn-finish-test" style="font-size:0.75rem; padding:4px 8px;" onclick="changeUserStatus('${item.userUid}', 'Engellendi')">🚫 Engelle</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
 </script>
 
 </body> 
