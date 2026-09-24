@@ -1771,12 +1771,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
               <textarea id="maintMessageInput" class="modern-input" rows="3" placeholder="Örn: Sistem altyapı çalışmaları nedeniyle bakımdadır."></textarea>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-              <!-- Yeşil Modern Bakımı Anında Bitir Butonu -->
-              <button type="button" class="btn-action" style="background:#10b981 !important; border-color:#059669 !important; color:white; padding:12px; font-weight:bold; font-size:0.95rem; justify-content:center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="stopMaintenanceNow()">
-                ✅ Bakımı Bitir ve Sistemi Kullanıma Aç
-              </button>
-
+<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
               <div style="display: flex; gap: 10px;">
                 <!-- Bakımı Şimdi Başlat Butonu -->
                 <button type="button" class="btn-action" style="flex: 1; background:#dc2626 !important; border-color:#b91c1c !important; color:white; padding:10px; justify-content:center; font-weight:bold;" onclick="startMaintenanceNow()">
@@ -1788,6 +1783,11 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
                   ⏰ Zamanlanmış bakımı Zamanlanmış Başlat
                 </button>
               </div>
+
+              <!-- Yeşil Modern Bakımı Anında Bitir Butonu (Artık En Altta) -->
+              <button type="button" class="btn-action" style="background:#10b981 !important; border-color:#059669 !important; color:white; padding:12px; font-weight:bold; font-size:0.95rem; justify-content:center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="stopMaintenanceNow()">
+                ✅ Bakımı Bitir ve Sistemi Kullanıma Aç
+              </button>
             </div>
           </div>
 
@@ -3375,8 +3375,8 @@ window.checkSystemAnnouncements = async function(userUid) {
       const targetType = data.targetType || (data.targetUserUid === 'ALL' ? 'all' : 'specific');
       let isTarget = false;
 
-      if (targetType === 'all') {
-        isTarget = true;
+if (targetType === 'all') {
+        isTarget = !window.currentUserIsAdmin; // Genel duyurularda adminler hariç tutulur
       } else if (targetType === 'specific') {
         isTarget = data.targetUserId === userUid || data.targetUserUid === userUid;
       } else if (String(targetType).startsWith('role_')) {
@@ -3638,7 +3638,7 @@ window.closeAnnouncementModal = function() {
 
       window.currentUserEmail = user.email;
       const nameTargets = document.querySelectorAll('.user-name-target');
-      nameTargets.forEach(el => el.innerText = user.displayName || user.email);
+      nameTargets.forEach(el => el.innerText = formatNameSurname(user.displayName || user.email));
 
       // Kullanıcının uyarılarını ve duyurularını canlı dinle
       listenUserWarnings(user.uid);
@@ -3997,12 +3997,12 @@ function listenMaintenanceRealtime() {
     let isLockedForMe = false;
     let isMaintenanceActive = false;
 
-    // Hedef Kitle İsimlendirme Yardımcısı
+// Hedef Kitle İsimlendirme Yardımcısı (Büyük Harf & "Şu An" Düzeltmeli)
     const getTargetName = (t) => {
-      if (!t || t === 'all') return 'tüm kullanıcılar';
-      if (t === 'Ucretsiz') return 'ücretsiz kullanıcılar';
-      if (t === 'Deneme') return 'deneme kullanıcıları';
-      if (t === 'Premium') return 'premium kullanıcılar';
+      if (!t || t === 'all') return 'Tüm kullanıcılar';
+      if (t === 'Ucretsiz') return 'Ücretsiz kullanıcılar';
+      if (t === 'Deneme') return 'Deneme kullanıcıları';
+      if (t === 'Premium') return 'Premium kullanıcılar';
       if (t === 'VIP') return 'VIP kullanıcılar';
       return `${t} kullanıcıları`;
     };
