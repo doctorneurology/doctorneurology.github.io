@@ -1137,12 +1137,15 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     </div>
   </div>
 
-  <!-- AKTİF YAYINLANAN DUYURULAR MODALİ (ADMIN) -->
+<!-- AKTİF YAYINLANAN DUYURULAR MODALİ (ADMIN) -->
   <div id="activeAnnouncementsModal" class="modal-overlay no-print" style="display: none; z-index: 29600;" onclick="if(event.target===this) closeActiveAnnouncementsModal()">
     <div class="modal-card" style="max-width: 650px; width: 92%; max-height: 85vh; display: flex; flex-direction: column;">
       <div class="modal-title" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
         <span style="color: #0284c7;">📋 Aktif Yayınlanan Duyurular</span>
-        <button class="btn-action" onclick="closeActiveAnnouncementsModal()">✕ Kapat</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-action btn-finish-test" style="font-size: 0.75rem; padding: 4px 10px;" onclick="deleteAllAnnouncements()">🗑️ Tüm Duyuruları Sil</button>
+          <button class="btn-action" onclick="closeActiveAnnouncementsModal()">✕ Kapat</button>
+        </div>
       </div>
       <div id="activeAnnouncementsList" style="flex: 1; overflow-y: auto; margin-top: 15px; padding-right: 5px;">
         Yükleniyor...
@@ -3561,34 +3564,41 @@ window.loadActiveAnnouncements = async function() {
   }
 };
 
-window.deleteAnnouncement = async function(annId) {
-  if (typeof window.showCustomConfirm === 'function') {
-    window.showCustomConfirm(
-      "Duyuruyu Sil Onayı",
-      "Bu duyuruyu sistemden kalıcı olarak silmek istediğinize emin misiniz? Silindikten sonra kullanıcılara bir daha gösterilmeyecektir.",
-      async () => {
-        try {
-          if (!window.db || !window.deleteDoc || !window.doc) return;
-          await window.deleteDoc(window.doc(window.db, "sistem_duyurulari", annId));
-          if (typeof window.showToast === 'function') window.showToast("Duyuru başarıyla silindi ve sistemden kaldırıldı.", "success");
-          window.loadActiveAnnouncements();
-        } catch (err) {
-          if (typeof window.showToast === 'function') window.showToast("Duyuru silinirken hata: " + err.message, "error");
-        }
-      },
-      "🗑️"
-    );
-  } else {
-    if (confirm("Bu duyuruyu silmek istediğinize emin misiniz?")) {
+window.deleteAnnouncement = function(annId) {
+  showCustomConfirm(
+    "Duyuruyu Sil Onayı",
+    "Bu duyuruyu sistemden kalıcı olarak silmek istediğinize emin misiniz? Silindikten sonra kullanıcılara bir daha gösterilmeyecektir.",
+    async () => {
       try {
-        await window.deleteDoc(window.doc(window.db, "sistem_duyurulari", annId));
-        if (typeof window.showToast === 'function') window.showToast("Duyuru başarıyla silindi.", "success");
+        await deleteDoc(doc(db, "sistem_duyurulari", annId));
+        showToast("Duyuru başarıyla silindi ve sistemden kaldırıldı.", "success");
         window.loadActiveAnnouncements();
       } catch (err) {
-        if (typeof window.showToast === 'function') window.showToast("Hata: " + err.message, "error");
+        showToast("Duyuru silinirken hata: " + err.message, "error");
       }
-    }
-  }
+    },
+    "🗑️"
+  );
+};
+
+window.deleteAllAnnouncements = function() {
+  showCustomConfirm(
+    "Tüm Duyuruları Sil Onayı",
+    "Sistemde yayınlanmış TÜM duyuruları silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    async () => {
+      try {
+        const snap = await getDocs(collection(db, "sistem_duyurulari"));
+        for (let docSnap of snap.docs) {
+          await deleteDoc(docSnap.ref);
+        }
+        showToast("Tüm aktif duyurular başarıyla silindi.", "success");
+        window.loadActiveAnnouncements();
+      } catch (err) {
+        showToast("Duyurular silinirken hata: " + err.message, "error");
+      }
+    },
+    "🚨"
+  );
 };
 
 // Dinamik HTML'deki onclick çağrılarında kullanılabilmesi için mevcut fonksiyonlar global bırakılır.
@@ -4062,20 +4072,22 @@ if (role === 'user') {
     return null;
   }
 
-  // Yasaklı kelime tespit edildiğinde Firestore'a anında log kaydı atma
+// Yasaklı kelime tespit edildiğinde Firestore'a anında log kaydı atma
   async function logProfanityDetection(userId, userName, userEmail, detectedWord, originalText, source) {
     try {
-      if (!db || !collection || !addDoc) return;
-      const ts = (typeof serverTimestamp === 'function') ? serverTimestamp() : (window.serverTimestamp ? window.serverTimestamp() : new Date());
-      await addDoc(collection(db, "yasakli_kelime_tespitleri"), {
+      const targetDb = db || window.db;
+      if (!targetDb) return;
+      
+      await addDoc(collection(targetDb, "yasakli_kelime_tespitleri"), {
         userId: userId || "anonim",
         userName: userName || "İsimsiz",
         userEmail: userEmail || "E-posta yok",
         detectedWord: String(detectedWord),
         originalText: String(originalText),
         source: String(source),
-        createdAt: ts
+        createdAt: serverTimestamp()
       });
+      console.log("Yasaklı kelime tespiti veritabanına kaydedildi:", detectedWord);
     } catch(err) {
       console.error("Yasaklı kelime kaydı atılamadı:", err);
     }
@@ -6295,13 +6307,17 @@ if (tabName === 'users') renderUserRows();
     if (tabName === 'profanity') loadAdminProfanityLogs();
   }; 
 
-  async function loadAdminProfanityLogs() {
+let profanityLogsUnsubscribe = null;
+
+  function loadAdminProfanityLogs() {
     const tbody = document.getElementById('adminProfanityTableBody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları çekiliyor...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları anlık dinleniyor...</td></tr>';
 
-    try {
-      const snap = await getDocs(collection(db, "yasakli_kelime_tespitleri"));
+    profanityLogsUnsubscribe = disposeSubscription(profanityLogsUnsubscribe);
+
+    const q = collection(db, "yasakli_kelime_tespitleri");
+    profanityLogsUnsubscribe = onSnapshot(q, (snap) => {
       if (snap.empty) {
         tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color:#64748b;">Henüz tespit edilen bir yasaklı kelime bulunmamaktadır.</td></tr>';
         return;
@@ -6338,9 +6354,9 @@ if (tabName === 'users') renderUserRows();
         `;
         tbody.appendChild(row);
       });
-    } catch(err) {
+    }, (err) => {
       tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:15px;">Hata: ${err.message}</td></tr>`;
-    }
+    });
   }
 
   window.deleteProfanityLog = async function(docId) {
