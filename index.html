@@ -3701,8 +3701,22 @@ window.deleteAnnouncement = async function(annId) {
         fileType: file.type || 'application/octet-stream' 
       }; 
  
-      if (role === 'user') { 
+if (role === 'user') { 
         const userUid = auth.currentUser.uid; 
+
+        // Sohbet dosyasının adında argo / küfür taraması
+        const detectedWord = checkTextForProfanity(file.name);
+        if (detectedWord && auth.currentUser) {
+          await logProfanityDetection(
+            auth.currentUser.uid,
+            auth.currentUser.displayName || auth.currentUser.email,
+            auth.currentUser.email,
+            detectedWord,
+            file.name,
+            "Canlı Destek Sohbet Dosyası Adı"
+          );
+        }
+
         await addDoc(collection(db, "sohbetler", userUid, "mesajlar"), { 
           senderUid: userUid, 
           senderName: auth.currentUser.displayName || auth.currentUser.email, 
@@ -3711,7 +3725,7 @@ window.deleteAnnouncement = async function(annId) {
           zaman: serverTimestamp(), 
           readByAdmin: false, 
           deletedByUser: false 
-        }); 
+        });
         await setDoc(doc(db, "sohbetler", userUid), { 
           lastMessageTime: serverTimestamp(), 
           lastMessageText: `📎 [Dosya Ekledi]: ${file.name}`, 
@@ -4017,34 +4031,50 @@ window.deleteAnnouncement = async function(annId) {
     "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "y.a.r.r.a.", "y.a.r.r.a.ğ.ı.m.ı. y.a.l.a"
   ]));
 
-  // Metin icinde yasakli kelime tarama fonksiyonu
+// Metni noktalama, bosluk ve ozel karakterlerden arındırıp normalize eden yardımcı fonksiyon
+  function normalizeForProfanity(str) {
+    if (!str) return '';
+    return String(str)
+      .toLocaleLowerCase('tr-TR')
+      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+      .replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e')
+      .replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't')
+      .replace(/[^a-z]/g, '');
+  }
+
+  // Gelişmiş ve anlık küfür / argo tarama fonksiyonu
   function checkTextForProfanity(text) {
     if (!text) return null;
-    const cleanText = String(text).toLocaleLowerCase('tr-TR');
-    
+    const rawLower = String(text).toLocaleLowerCase('tr-TR');
+    const normText = normalizeForProfanity(text);
+
     for (let word of PROFANITY_WORD_LIST) {
-      if (word.length <= 3) {
-        const regex = new RegExp(`(?:^|\\s|[^a-z0-9ğüşıöç])${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(?:$|\\s|[^a-z0-9ğüşıöç])`, 'i');
-        if (regex.test(cleanText)) return word;
-      } else {
-        if (cleanText.includes(word.toLocaleLowerCase('tr-TR'))) return word;
-      }
+      const cleanWord = String(word).toLocaleLowerCase('tr-TR');
+      const normWord = normalizeForProfanity(word);
+
+      // 1. Doğrudan metin içinde arama
+      if (cleanWord.length > 0 && rawLower.includes(cleanWord)) return word;
+
+      // 2. Noktalama/boşluk/rakam değiştirme hilelerini yakalamak için normalize arama (ör. a.m.k, s1k, o.ç)
+      if (normWord.length >= 2 && normText.includes(normWord)) return word;
     }
     return null;
   }
 
-  // Yasakli kelime tespit edildiginde Firestore'a log kaydi atma
+  // Yasaklı kelime tespit edildiğinde Firestore'a anında log kaydı atma
   async function logProfanityDetection(userId, userName, userEmail, detectedWord, originalText, source) {
     try {
       if (!db || !collection || !addDoc) return;
+      const ts = (typeof serverTimestamp === 'function') ? serverTimestamp() : (window.serverTimestamp ? window.serverTimestamp() : new Date());
       await addDoc(collection(db, "yasakli_kelime_tespitleri"), {
         userId: userId || "anonim",
         userName: userName || "İsimsiz",
         userEmail: userEmail || "E-posta yok",
-        detectedWord: detectedWord,
-        originalText: originalText,
-        source: source,
-        createdAt: serverTimestamp()
+        detectedWord: String(detectedWord),
+        originalText: String(originalText),
+        source: String(source),
+        createdAt: ts
       });
     } catch(err) {
       console.error("Yasaklı kelime kaydı atılamadı:", err);
@@ -4652,7 +4682,7 @@ window.isSystemCurrentlyInMaintenance = true;
     document.getElementById('userQuestionFilePickerModal').style.display = 'none'; 
   }; 
  
-  window.uploadQuestionFile = async function() { 
+window.uploadQuestionFile = async function() { 
     const file = currentSelectedUploadFile || (document.getElementById('userQuestionFileInput').files ? document.getElementById('userQuestionFileInput').files[0] : null); 
      
     if (!file) { 
@@ -4667,13 +4697,11 @@ window.isSystemCurrentlyInMaintenance = true;
       showToast("Yalnızca .doc ve .docx uzantılı dosyalar kabul edilir.", "error"); 
       return; 
     } 
- 
-showToast("Dosya yükleniyor...", "info"); 
 
     // Otomatik küfür/argo taraması (Dosya adında)
     const detectedWord = checkTextForProfanity(fileName);
     if (detectedWord && auth.currentUser) {
-      logProfanityDetection(
+      await logProfanityDetection(
         auth.currentUser.uid,
         auth.currentUser.displayName || auth.currentUser.email,
         auth.currentUser.email,
@@ -4682,6 +4710,8 @@ showToast("Dosya yükleniyor...", "info");
         "Yüklenen Soru Dosyası Adı"
       );
     }
+
+    showToast("Dosya yükleniyor...", "info");
 
     try { 
       const fileRef = ref(storage, `soru_dosyalari/${auth.currentUser.uid}/${Date.now()}_${fileName}`);
@@ -5238,7 +5268,7 @@ window.sendUserReportChatMessage = async function(docId) {
     // Otomatik küfür/argo taraması
     const detectedWord = checkTextForProfanity(text);
     if (detectedWord && auth.currentUser) {
-      logProfanityDetection(
+      await logProfanityDetection(
         auth.currentUser.uid,
         auth.currentUser.displayName || auth.currentUser.email,
         auth.currentUser.email,
@@ -5706,10 +5736,10 @@ window.sendUserChatMessage = async function() {
     const text = input.value.trim(); 
     if (!text || !auth.currentUser) return; 
 
-    // Otomatik küfür/argo taraması
+    // Otomatik küfür/argo taraması (Anlık olarak kaydeder)
     const detectedWord = checkTextForProfanity(text);
     if (detectedWord) {
-      logProfanityDetection(
+      await logProfanityDetection(
         auth.currentUser.uid,
         auth.currentUser.displayName || auth.currentUser.email,
         auth.currentUser.email,
@@ -6007,18 +6037,19 @@ window.submitQuestionReport = async function() {
     const meta = parseQuestionMeta(q); 
     const cleanOptions = extractAndCleanOptions(q); 
 
-    // Otomatik küfür/argo taraması
-    const detectedWord = checkTextForProfanity(comment);
+    // Otomatik küfür/argo taraması (Açıklama ve önerilen şık taranır)
+    const fullReportText = `Önerilen Şık: ${suggestedOpt || 'Yok'} - Açıklama: ${comment}`;
+    const detectedWord = checkTextForProfanity(fullReportText);
     if (detectedWord && auth.currentUser) {
-      logProfanityDetection(
+      await logProfanityDetection(
         auth.currentUser.uid,
         auth.currentUser.displayName || auth.currentUser.email,
         auth.currentUser.email,
         detectedWord,
-        comment,
+        fullReportText,
         "Hatalı Soru İtiraz Açıklaması"
       );
-    } 
+    }
  
     const initialMsg = { 
       id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4), 
