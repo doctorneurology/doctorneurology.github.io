@@ -1910,13 +1910,13 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             💾 Limit ve Filigran Ayarlarını Kaydet
           </button>
 <!-- SEKME: YASAK KELİME TESPİTİ -->
-        <div id="adminTabProfanity" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+        <div id="adminTabProfanity" style="display: none; flex: 1; flex-direction: column; height: 100%; min-height: 400px; overflow: hidden; background: #ffffff; padding: 10px; border-radius: 8px;">
           <div style="display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fecdd3; font-size: 0.82rem; color: #9f1239;">
             <span>🤬 Otomatik tarama tarafından mesajlarında, soru bildirimlerinde veya dosya adlarında yasaklı kelime tespit edilen kullanıcılar burada listelenir.</span>
             <button class="btn-action btn-finish-test" style="font-size: 0.75rem; padding: 4px 8px;" onclick="clearAllProfanityLogs()">🗑️ Tüm Kayıtları Temizle</button>
           </div>
 
-          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: white;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
               <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
                 <tr>
@@ -4027,17 +4027,40 @@ const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
     "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "y.a.r.r.a.", "y.a.r.r.a.ğ.ı.m.ı. y.a.l.a"
   ]));
 
-  // Metni noktalama, bosluk ve ozel karakterlerden arındırıp normalize eden yardımcı fonksiyon
-  function normalizeForProfanity(str) {
+window.normalizeForProfanity = function(str) {
     if (!str) return '';
     return String(str)
       .toLocaleLowerCase('tr-TR')
       .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
       .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
       .replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e')
-      .replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't')
-      .replace(/[^a-z]/g, '');
-  }
+      .replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't');
+  };
+
+  window.checkTextForProfanity = function(text) {
+    if (!text) return null;
+    const rawLower = " " + String(text).toLocaleLowerCase('tr-TR') + " ";
+    const normText = " " + window.normalizeForProfanity(text) + " ";
+
+    for (let word of window.PROFANITY_WORD_LIST) {
+      if (!word) continue;
+      const cleanWord = String(word).toLocaleLowerCase('tr-TR').trim();
+      const normWord = window.normalizeForProfanity(cleanWord).trim();
+
+      if (!cleanWord) continue;
+
+      // 1. Cümle içinde tam kelime veya parça olarak kontrol
+      if (cleanWord.length <= 3) {
+        // Kısa kelimeler için kelime sınırı kontrolü (örneğin "sik", "am", "göt", "döl")
+        const regex = new RegExp(`(?:^|\\s|[^a-z0-9ğüşıöç])${cleanWord.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(?:$|\\s|[^a-z0-9ğüşıöç])`, 'i');
+        if (regex.test(rawLower) || regex.test(normText)) return word;
+      } else {
+        // Uzun kelimeler için doğrudan metin içinde var mı kontrolü
+        if (rawLower.includes(cleanWord) || normText.includes(normWord)) return word;
+      }
+    }
+    return null;
+  };
 
   // Gelişmiş ve anlık küfür / argo tarama fonksiyonu
   function checkTextForProfanity(text) {
@@ -5741,11 +5764,11 @@ window.sendUserChatMessage = async function() {
     input.value = ''; 
     const userUid = currentUser.uid; 
 
-    // Arka planda sessiz küfür/argo taraması (Kullanıcı engellenmez/uyarılmaz, sadece admine gizlice loglanır)
+    // Arka planda sessiz küfür/argo taraması (Anında taranır ve kaydı tamamlanır)
     try {
       const detectedWord = window.checkTextForProfanity ? window.checkTextForProfanity(text) : null;
       if (detectedWord && window.logProfanityDetection) {
-        window.logProfanityDetection(
+        await window.logProfanityDetection(
           currentUser.uid,
           currentUser.displayName || currentUser.email,
           currentUser.email,
@@ -6315,15 +6338,26 @@ if (tabName === 'users') renderUserRows();
 
 let profanityLogsUnsubscribe = null;
 
-  function loadAdminProfanityLogs() {
+window.loadAdminProfanityLogs = function() {
     const tbody = document.getElementById('adminProfanityTableBody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları anlık dinleniyor...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları yükleniyor...</td></tr>';
 
-    profanityLogsUnsubscribe = disposeSubscription(profanityLogsUnsubscribe);
+    const targetDb = window.db || db;
+    const targetCollection = window.collection || collection;
+    const targetOnSnapshot = window.onSnapshot || onSnapshot;
 
-    const q = collection(db, "yasakli_kelime_tespitleri");
-    profanityLogsUnsubscribe = onSnapshot(q, (snap) => {
+    if (!targetDb || !targetCollection || !targetOnSnapshot) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:red; padding:15px; text-align:center;">Veritabanı bağlantısı henüz hazır değil.</td></tr>';
+      return;
+    }
+
+    if (typeof disposeSubscription === 'function') {
+      profanityLogsUnsubscribe = disposeSubscription(profanityLogsUnsubscribe);
+    }
+
+    const q = targetCollection(targetDb, "yasakli_kelime_tespitleri");
+    profanityLogsUnsubscribe = targetOnSnapshot(q, (snap) => {
       if (snap.empty) {
         tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color:#64748b;">Henüz tespit edilen bir yasaklı kelime bulunmamaktadır.</td></tr>';
         return;
@@ -6347,7 +6381,7 @@ let profanityLogsUnsubscribe = null;
         const safeName = (l.userName || l.userEmail || '').replace(/'/g, "\\'");
         const safeText = (l.originalText || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-row.innerHTML = `
+        row.innerHTML = `
           <td style="padding: 10px; font-weight: 600;">👤 ${l.userName}<br><span style="font-size:0.75rem; color:#64748b; font-weight:normal;">${l.userEmail}</span></td>
           <td style="padding: 10px;"><span style="padding: 2px 8px; border-radius: 6px; font-weight: bold; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">${l.detectedWord}</span></td>
           <td style="padding: 10px; font-weight: 600; color: #2563eb;">${l.source}</td>
@@ -6362,9 +6396,9 @@ row.innerHTML = `
         tbody.appendChild(row);
       });
     }, (err) => {
-      tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:15px;">Hata: ${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:15px; text-align:center;">Hata: ${err.message}</td></tr>`;
     });
-  }
+  };
 
   window.deleteProfanityLog = async function(docId) {
     try {
