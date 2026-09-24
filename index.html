@@ -1521,6 +1521,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             <button id="tabLicensesBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('licenses')">🔑 Lisans Kodu Üret</button>
             <button id="tabAnnounceBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('announcements')">📢 Duyuru / Bilgi Gönder</button>
             <button id="tabSettingsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('settings')">🔒 Yönetici Şifre Ayarları</button>
+  <button id="tabProfanityBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('profanity')">🤬 Yasak Kelime Tespiti <span id="adminProfanityBadge" style="display:none;" class="unread-badge-dot"></span></button>
   <button id="tabLimitsBtn" class="btn-action btn-toggle-off" onclick="switchAdminTab('limits')">⚙️ Soru Sınırlamaları</button>
   <!-- SADECE BAKIM AKTİFKEN GÖRÜNEN DİNAMİK BAKIM DURUM BUTONU -->
             <button id="adminActiveMaintenanceBannerBtn" type="button" class="btn-action" style="display: none; background: #dc2626 !important; border-color: #b91c1c !important; color: white !important; font-weight: bold; animation: pulse 2s infinite;" onclick="switchAdminTab('announcements')">
@@ -1891,6 +1892,30 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             💾 Limit ve Filigran Ayarlarını Kaydet
           </button>
 
+        </div>
+        <!-- YENİ SEKME: YASAK KELİME VE KÜFÜR TESPİTİ -->
+        <div id="adminTabProfanity" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #fee2e2; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #fca5a5; font-size: 0.82rem; color: #991b1b;">
+            <span>🤬 Otomatik küfür/argo taraması mesajlarda, hatalı soru bildirimlerinde ve yüklenen soru dosyalarında anlık çalışır. Otomatik engelleme yapılmaz, karar yetkisi yöneticidedir.</span>
+            <button class="btn-action btn-toggle-on" style="background: #dc2626 !important; border-color: #b91c1c !important;" onclick="scanAllContentForProfanity()">🔄 Yeniden Tara</button>
+          </div>
+
+          <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+              <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
+                <tr>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Kullanıcı</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Kaynak</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">Tespit Edilen Kelime</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border);">İçerik / Metin</th>
+                  <th style="padding: 10px; border-bottom: 1px solid var(--border); text-align: right;">Aksiyonlar</th>
+                </tr>
+              </thead>
+              <tbody id="adminProfanityTableBody">
+                <tr><td colspan="5" style="padding: 15px; text-align: center;">Tarama yapılıyor...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <!-- SEKME 5: ADMIN ŞİFRE VE KULLANICI ADI AYARLARI -->
         <div id="adminTabSettings" style="display: none; max-width: 450px;">
@@ -3644,7 +3669,10 @@ window.closeAnnouncementModal = function() {
       listenUserWarnings(user.uid);
       listenSystemAnnouncementsRealtime(user.uid);
 
-      if (typeof window.loadDataAndInit === 'function') {
+// YALNIZCA Google Auth ile giriş yapılmışsa soruları indir (Şifreli admin girişinde yüklenmez)
+      const isGoogleUser = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+
+      if (isGoogleUser && typeof window.loadDataAndInit === 'function') {
         window.loadDataAndInit();
       }
     } else {
@@ -4135,7 +4163,13 @@ function listenMaintenanceRealtime() {
   };
 
   // --- BAKIMI ŞİMDİ BAŞLAT (MODERN ONAY MODALLI) ---
-  window.startMaintenanceNow = async function() {
+window.startMaintenanceNow = async function() {
+    const activeBanner = document.getElementById('adminActiveMaintenanceBannerBtn');
+    if (activeBanner && activeBanner.style.display !== 'none') {
+      showCustomAlert("⚠️ İşlem Engellendi", "Sistem şu an zaten aktif olarak bakım modundadır. Yeniden bakım başlatılamaz.", "⚠️");
+      return;
+    }
+
     const targetType = document.getElementById('maintTargetType')?.value || 'all';
     const msg = document.getElementById('maintMessageInput')?.value.trim() || "Sistemde bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.";
 
@@ -4165,7 +4199,13 @@ function listenMaintenanceRealtime() {
   };
 
   // --- ZAMANLANMIŞ BAKIMI BAŞLAT (MODERN ONAY MODALLI) ---
-  window.startScheduledMaintenance = async function() {
+window.startScheduledMaintenance = async function() {
+    const activeBanner = document.getElementById('adminActiveMaintenanceBannerBtn');
+    if (activeBanner && activeBanner.style.display !== 'none') {
+      showCustomAlert("⚠️ İşlem Engellendi", "Sistem şu an zaten aktif olarak bakım modundadır. Yeniden bakım kurulamaz.", "⚠️");
+      return;
+    }
+
     const targetType = document.getElementById('maintTargetType')?.value || 'all';
     const startTimeInput = document.getElementById('maintStartTime')?.value;
     const endTimeInput = document.getElementById('maintEndTime')?.value;
@@ -6158,6 +6198,177 @@ window.changeUserStatus = async function(uid, newStatus) {
       document.getElementById('userWarningNoticeModal').style.display = 'none';
     }
   };
+  // === ÇOK DİLLİ YASAK KELİME KÜTÜPHANESİ VE TARAMA SİSTEMİ ===
+  const PROFANITY_DICTIONARY = [
+    "amk", "aq", "amq", "amka", "amık", "amguard", "amcuk", "amcık", "amcik", "amkım", "amına korum", "amına kodumun", "amına ko",
+    "sik", "sikim", "sikiriz", "sikerim", "sikeyim", "sikiş", "sikis", "siktiğim", "siktigim", "siktiğimin", "siktir git", "sikimi ye", "sikimi yala",
+    "orospu", "oroşpu", "orospuçocuğu", "orospucocugu", "orocpu", "orosbu", "orochu", "orul orul oç", "orul orul orospu",
+    "piç", "pic", "pıc", "piçlik", "piç kurusu", "yavşak", "yavsak", "yavsaklık", "göt", "got", "götveren", "gotveren", "götoş", "gotos", "götlek", "gotlek", "götten", "göt deliği",
+    "ibne", "ipne", "ibnelik", "ibine", "kahpe", "kahbe", "yarak", "yarrak", "yarragı", "yarragım", "dalyarak", "dalyarrak",
+    "taşağı", "taşak", "tasak", "taşşak", "tassak", "fahişe", "fahise", "şerefsiz", "serefsiz", "serefsız", "pezevenk",
+    "haysiyetsiz", "haysıyetsız", "namussuz", "namussuzluk", "kancık", "kancik", "puşt", "pust", "sürtük", "surtuk", "yarram", "yarragim", "yarramı",
+    "gerizekalı", "gerizekali", "gerzek", "salak", "aptal", "mal", "dangalak", "hıyar", "hiyar", "öküz", "okuz",
+    "manyak", "kodumun", "koyduğumun", "koydugumun", "skrm", "amkı", "sikik", "sikko",
+    "fuck", "fucking", "fucker", "fuckin", "fucked", "fuckup", "shit", "shitting", "shitty", "bullshit", "bitch", "bitches", "bitchy",
+    "asshole", "ass", "arse", "arsehole", "bastard", "dick", "dickhead", "cock", "cocksucker",
+    "cunt", "crap", "motherfucker", "motherfucking", "prick", "whore", "slut", "pussy", "twat", "wanker", "nigger", "faggot",
+    "a.m.k", "a.q", "s.i.k", "o.ç", "o.c", "o.ç.", "o.c.", "a*k", "a**", "s*k", "s**", "f*ck", "f**k", "sh*t", "b*tch", "a**hole",
+    "a_m_k", "s_i_k", "o_c", "o_ç", "f.u.c.k", "y.a.r.r.a.", "y.a.r.r.a.ğ.ı.m.ı. y.a.l.a", "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "sh1t"
+    "amk", "aq", "amq", "amka", "amık", "amguard", "amcuk", "amcık", "amcik", "amkım", "sik", "sikim", "sikiriz", "sikerim", "sikeyim", "sikiş", "sikis", "siktiğim", "siktigim", "siktiğimin",
+    "orospu", "oroşpu", "orospuçocuğu", "orospucocugu", "orocpu", "orosbu", "orochu", "piç", "pic", "pıc", "piçlik", "piç kurusu", "yavşak", "yavsak", "göt", "got", "götveren", "gotveren",
+    "ibne", "ipne", "kahpe", "kahbe", "yarak", "yarrak", "dalyarak", "taşağı", "taşak", "tasak", "fahişe", "taşşak", "daşşak", "daşak", "dasak",
+    "şerefsiz", "serefsiz", "puşt", "pust", "sürtük", "surtuk", "yarram", "salak", "aptal", "mal", "manyak",
+    "خراء", "شرطوطة", "كس", "عير", "كلب", "ابن الكلب", "ابن الشرطوطة", "khara", "kuss", "kess", "sharmouta", "sharmuta", "air", "kosomk", "kosomak", "ibn el kalb", "kol khara",
+    "scheiße", "scheisse", "arschloch", "fick", "ficken", "hurensohn", "wichser", "fotze", "schlampe", "miststück", "kacke",
+    "merde", "putain", "salope", "connard", "enculé", "encule", "chier", "fils de pute", "bordel", "pétasse", "conne",
+    "mierda", "puta", "coño", "cono", "joder", "hijo de puta", "cabrón", "cabron", "pendejo", "gilipollas", "maricón", "maricon", "verga",
+    "сука", "блять", "хуй", "пизда", "пидор", "ебать", "нахуй", "suka", "blyat", "cyka", "blyad", "pizdec", "pizda", "khuy", "ebat", "nahuy", "pidor",
+    "quz", "quzê", "ker", "kera", "kurê segê", "kure sege", "jinik", "jinê", "gaf", "qoz", "jinikê", "siktir",
+    "porra", "caralho", "merda", "puta", "filho da puta", "arrombado", "buceta", "piranha", "cacete", "viado", "puta que pariu",
+    "肏", "草", "傻逼", "王八蛋", "肏你妈", "干", "cao", "caonima", "shabi", "sha bi", "sb", "wangbadan", "gan",
+    "a.m.k", "a.q", "s.i.k", "o.ç", "o.c", "o.ç.", "o.c.", "a*k", "a**", "s*k", "s**", "f*ck", "f**k", "sh*t", "b*tch", "a**hole",
+    "4mk", "4q", "s1k", "s1kerim", "0rospu", "p1c", "g0t", "y4rrak", "fuc*", "sh1t"
+  ];
+
+  function detectProfanityInText(text) {
+    if (!text || typeof text !== 'string') return null;
+    const cleanText = text.toLowerCase().replace(/[\r\n\t]/g, ' ');
+    const detected = [];
+
+    PROFANITY_DICTIONARY.forEach(word => {
+      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
+      if (regex.test(cleanText)) {
+        if (!detected.includes(word)) detected.push(word);
+      }
+    });
+
+    return detected.length > 0 ? detected : null;
+  }
+
+  window.scanAllContentForProfanity = async function() {
+    const tbody = document.getElementById('adminProfanityTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center;">Tüm platform taranıyor...</td></tr>';
+
+    const flaggedItems = [];
+
+    try {
+      // 1. Canlı Destek Mesajları
+      const sohbetSnap = await getDocs(collection(db, "sohbetler"));
+      for (const chatDoc of sohbetSnap.docs) {
+        const userData = chatDoc.data();
+        const msgSnap = await getDocs(collection(db, "sohbetler", chatDoc.id, "mesajlar"));
+        msgSnap.forEach(mDoc => {
+          const m = mDoc.data();
+          if (m.senderRole !== 'admin') {
+            const badWords = detectProfanityInText(m.text);
+            if (badWords) {
+              flaggedItems.push({
+                userUid: m.senderUid || chatDoc.id,
+                userName: userData.userName || m.senderName || 'İsimsiz',
+                userEmail: userData.userEmail || m.senderEmail || 'E-posta Yok',
+                source: '💬 Canlı Destek Mesajı',
+                words: badWords,
+                snippet: m.text
+              });
+            }
+          }
+        });
+      }
+
+      // 2. Hatalı Soru İtirazları
+      const reportSnap = await getDocs(collection(db, "hatali_sorular"));
+      reportSnap.forEach(rDoc => {
+        const r = rDoc.data();
+        const badInComment = detectProfanityInText(r.userComment);
+        if (badInComment) {
+          flaggedItems.push({
+            userUid: r.userId,
+            userName: r.userName || 'İsimsiz',
+            userEmail: r.userEmail || 'E-posta Yok',
+            source: '🚨 Soru İtiraz Açıklaması',
+            words: badInComment,
+            snippet: r.userComment
+          });
+        }
+        if (Array.isArray(r.mesajlar)) {
+          r.mesajlar.forEach(m => {
+            if (m.senderRole === 'user') {
+              const badInMsg = detectProfanityInText(m.text);
+              if (badInMsg) {
+                flaggedItems.push({
+                  userUid: r.userId,
+                  userName: r.userName || 'İsimsiz',
+                  userEmail: r.userEmail || 'E-posta Yok',
+                  source: '🚨 İtiraz İçi Mesaj',
+                  words: badInMsg,
+                  snippet: m.text
+                });
+              }
+            }
+          });
+        }
+      });
+
+      // 3. Yüklenen Soru Dosya Adları
+      const fileSnap = await getDocs(collection(db, "kullanici_yuklenen_sorular"));
+      fileSnap.forEach(fDoc => {
+        const f = fDoc.data();
+        const badInFile = detectProfanityInText(f.fileName);
+        if (badInFile) {
+          flaggedItems.push({
+            userUid: f.userUid,
+            userName: f.userName || 'İsimsiz',
+            userEmail: f.userEmail || 'E-posta Yok',
+            source: '📥 Yüklenen Dosya Adı',
+            words: badInFile,
+            snippet: f.fileName
+          });
+        }
+      });
+
+      renderProfanityResults(flaggedItems);
+
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" style="color:red; padding:15px; text-align:center;">Tarama hatası: ${err.message}</td></tr>`;
+    }
+  };
+
+  function renderProfanityResults(items) {
+    const tbody = document.getElementById('adminProfanityTableBody');
+    const badge = document.getElementById('adminProfanityBadge');
+    if (!tbody) return;
+
+    if (badge) badge.style.display = items.length > 0 ? 'inline-block' : 'none';
+
+    if (items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="padding: 15px; text-align: center; color:#10b981; font-weight:bold;">🟢 Harika! Sistemde hiçbir küfür veya argo kelimeye rastlanmadı.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = '';
+    items.forEach(item => {
+      const safeName = (item.userName || '').replace(/'/g, "\\'");
+      const safeSnippet = (item.snippet || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid #e2e8f0';
+      tr.innerHTML = `
+        <td style="padding:10px; font-weight:600;">
+          ${item.userName}<br>
+          <span style="font-size:0.75rem; color:#64748b;">${item.userEmail}</span>
+        </td>
+        <td style="padding:10px;"><span style="padding:3px 8px; border-radius:10px; font-size:0.75rem; background:#eff6ff; color:#1e40af; font-weight:bold;">${item.source}</span></td>
+        <td style="padding:10px;"><span style="padding:3px 8px; border-radius:10px; font-size:0.78rem; background:#fee2e2; color:#dc2626; font-weight:bold;">⚠️ ${item.words.join(', ')}</span></td>
+        <td style="padding:10px; max-width:260px; word-break:break-word; font-size:0.8rem; color:#334155;">"${item.snippet}"</td>
+        <td style="padding:10px; text-align:right;">
+          <button class="btn-action" style="font-size:0.75rem; padding:4px 8px; background:#fffbe6; color:#d97706; border-color:#fde68a;" onclick="openAdminWarnUserModal('${item.userUid}', '${safeName}', 'Tarafınızca gönderilen [${safeSnippet}] metninde uygunsuz ifadeler tespit edilmiştir.')">⚠️ Uyarı Gönder</button>
+          <button class="btn-action btn-finish-test" style="font-size:0.75rem; padding:4px 8px;" onclick="changeUserStatus('${item.userUid}', 'Engellendi')">🚫 Engelle</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 </script>
 
 </body> 
