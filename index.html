@@ -1940,17 +1940,17 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             💾 Limit ve Filigran Ayarlarını Kaydet
           </button>
 <!-- SEKME: YASAK KELİME TESPİTİ -->
-        <div id="adminTabProfanity" style="display: none; flex-direction: column; width: 100%; min-height: 450px; background: #ffffff; padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px;">
-<div style="display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #fecdd3; font-size: 0.85rem; color: #9f1239; flex-wrap: wrap; gap: 10px;">
-            <span>🤬 Otomatik tarama tarafından mesajlarında, soru bildirimlerinde veya dosya adlarında yasaklı kelime tespit edilen kullanıcılar burada listelenir.</span>
-            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <button class="btn-action" style="font-size: 0.75rem; padding: 6px 12px; background: #0284c7; color: white; border-color: #0369a1;" onclick="openAddBannedWordModal()">➕ Yeni Kelime Ekle</button>
-              <button class="btn-action" style="font-size: 0.75rem; padding: 6px 12px; background: #475569; color: white; border-color: #334155;" onclick="openBannedWordsListModal()">📜 Yasaklı Kelimeler Listesi</button>
-              <button class="btn-action btn-finish-test" style="font-size: 0.75rem; padding: 6px 12px;" onclick="clearAllProfanityLogs()">🗑️ Tüm Kayıtları Temizle</button>
+        <div id="adminTabProfanity" style="display: none; flex-direction: column; width: 100%; min-height: 480px; background: #ffffff; padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #fecdd3; font-size: 0.85rem; color: #9f1239; flex-wrap: wrap; gap: 10px;">
+            <span>🤬 Otomatik tarama tarafından tespit edilen argo/küfür içerikleri aşağıda listelenmektedir.</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn-action" style="font-size: 0.78rem; padding: 6px 12px; background: #0284c7; color: white; border-color: #0369a1;" onclick="openAddBannedWordModal()">➕ Yeni Kelime Ekle</button>
+              <button class="btn-action" style="font-size: 0.78rem; padding: 6px 12px; background: #475569; color: white; border-color: #334155;" onclick="openBannedWordsListModal()">📜 Yasaklı Kelimeler Listesi</button>
+              <button class="btn-action btn-finish-test" style="font-size: 0.78rem; padding: 6px 12px;" onclick="clearAllProfanityLogs()">🗑️ Tüm Kayıtları Temizle</button>
             </div>
           </div>
 
-          <div style="flex: 1; overflow-x: auto; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: white; max-height: 500px;">
+          <div style="flex: 1; overflow-x: auto; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: white; max-height: 520px;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
               <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 5;">
                 <tr>
@@ -5968,12 +5968,15 @@ window.sendUserChatMessage = async function() {
     input.value = ''; 
     const userUid = currentUser.uid; 
 
-    // Arka planda anında küfür/argo taraması
+    // Arka planda anında küfür/argo taraması ve veritabanına kesin kaydı
     try {
-      if (typeof window.checkTextForProfanity === 'function') {
-        const detectedWord = window.checkTextForProfanity(text);
-        if (detectedWord && typeof window.logProfanityDetection === 'function') {
-          window.logProfanityDetection(
+      const checkFn = window.checkTextForProfanity || checkTextForProfanity;
+      const logFn = window.logProfanityDetection || logProfanityDetection;
+
+      if (typeof checkFn === 'function') {
+        const detectedWord = checkFn(text);
+        if (detectedWord && typeof logFn === 'function') {
+          await logFn(
             currentUser.uid,
             currentUser.displayName || currentUser.email,
             currentUser.email,
@@ -6498,20 +6501,44 @@ window.changeUserStatus = async function(uid, newStatus) {
     if (cCb) cCb.checked = false;
     document.querySelectorAll('.chat-row-checkbox').forEach(cb => cb.checked = false);
 
-const tabs = {
+    const tabs = {
       users: 'adminTabUsers', warned: 'adminTabWarned', reports: 'adminTabReports',
       uploadedQuestions: 'adminTabUploadedQuestions', chat: 'adminTabChat',
       licenses: 'adminTabLicenses', announcements: 'adminTabAnnouncements', profanity: 'adminTabProfanity', limits: 'adminTabLimits', settings: 'adminTabSettings'
     };
+
     Object.keys(tabs).forEach(key => {
       const el = document.getElementById(tabs[key]);
       if (!el) return;
       if (tabName === key) {
-        el.style.display = 'flex';
+        el.style.setProperty('display', 'flex', 'important');
       } else {
-        el.style.display = 'none';
+        el.style.setProperty('display', 'none', 'important');
       }
     });
+
+    const buttons = {
+      users: 'tabUsersBtn', warned: 'tabWarnedBtn', reports: 'tabReportsBtn',
+      uploadedQuestions: 'tabUploadedQuestionsBtn', chat: 'tabChatBtn',
+      licenses: 'tabLicensesBtn', announcements: 'tabAnnounceBtn', profanity: 'tabProfanityBtn', limits: 'tabLimitsBtn', settings: 'tabSettingsBtn'
+    };
+
+    Object.keys(buttons).forEach(key => {
+      const btn = document.getElementById(buttons[key]);
+      if (!btn) return;
+      if (tabName === key) {
+        btn.classList.remove('btn-toggle-off');
+        btn.classList.add('btn-toggle-on');
+      } else {
+        btn.classList.remove('btn-toggle-on');
+        btn.classList.add('btn-toggle-off');
+      }
+    });
+
+    if (tabName === 'profanity' && typeof window.loadAdminProfanityLogs === 'function') {
+      window.loadAdminProfanityLogs();
+    }
+  };
 
     const buttons = {
       users: 'tabUsersBtn', warned: 'tabWarnedBtn', reports: 'tabReportsBtn',
@@ -6547,7 +6574,9 @@ if (tabName === 'users') renderUserRows();
 
 let profanityLogsUnsubscribe = null;
 
-window.loadAdminProfanityLogs = function() {
+let profanityLogsUnsubscribe = null;
+
+  window.loadAdminProfanityLogs = function() {
     const tbody = document.getElementById('adminProfanityTableBody');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center;">Yasaklı kelime kayıtları yükleniyor...</td></tr>';
@@ -6561,52 +6590,56 @@ window.loadAdminProfanityLogs = function() {
       return;
     }
 
-    if (typeof disposeSubscription === 'function') {
+    if (typeof disposeSubscription === 'function' && profanityLogsUnsubscribe) {
       profanityLogsUnsubscribe = disposeSubscription(profanityLogsUnsubscribe);
     }
 
-    const q = targetCollection(targetDb, "yasakli_kelime_tespitleri");
-    profanityLogsUnsubscribe = targetOnSnapshot(q, (snap) => {
-      if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color:#64748b;">Henüz tespit edilen bir yasaklı kelime bulunmamaktadır.</td></tr>';
-        return;
-      }
+    try {
+      const q = targetCollection(targetDb, "yasakli_kelime_tespitleri");
+      profanityLogsUnsubscribe = targetOnSnapshot(q, (snap) => {
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color:#64748b;">Henüz tespit edilen bir yasaklı kelime bulunmamaktadır.</td></tr>';
+          return;
+        }
 
-      let logs = [];
-      snap.forEach(docSnap => logs.push({ id: docSnap.id, ...docSnap.data() }));
+        let logs = [];
+        snap.forEach(docSnap => logs.push({ id: docSnap.id, ...docSnap.data() }));
 
-      logs.sort((a, b) => {
-        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-        return timeB - timeA;
+        logs.sort((a, b) => {
+          const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+          const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+          return timeB - timeA;
+        });
+
+        tbody.innerHTML = '';
+        logs.forEach(l => {
+          const dateStr = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('tr-TR') : 'Tarih Belirtilmedi';
+          const row = document.createElement('tr');
+          row.style.borderBottom = '1px solid #e2e8f0';
+
+          const safeName = (l.userName || l.userEmail || '').replace(/'/g, "\\'");
+          const safeText = (l.originalText || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+          row.innerHTML = `
+            <td style="padding: 10px; font-weight: 600;">👤 ${l.userName || 'Kullanıcı'}<br><span style="font-size:0.75rem; color:#64748b; font-weight:normal;">${l.userEmail || ''}</span></td>
+            <td style="padding: 10px;"><span style="padding: 2px 8px; border-radius: 6px; font-weight: bold; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">${l.detectedWord}</span></td>
+            <td style="padding: 10px; font-weight: 600; color: #2563eb;">${l.source}</td>
+            <td style="padding: 10px; max-width: 250px; word-break: break-word; color: #334155;">${l.originalText}</td>
+            <td style="padding: 10px; font-size: 0.78rem; color: #64748b;">${dateStr}</td>
+            <td style="padding: 10px; text-align: right; display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
+              <button class="btn-action" style="font-size: 0.72rem; padding: 3px 6px; background: #fffbe6; color: #d97706; border-color: #fde68a;" onclick="openAdminWarnUserModal('${l.userId}', '${safeName}', '${safeText}')">⚠️ Uyar</button>
+              <button class="btn-action btn-finish-test" style="font-size: 0.72rem; padding: 3px 6px;" onclick="changeUserStatus('${l.userId}', 'Engellendi')">🚫 Engelle</button>
+              <button class="msg-delete-btn" onclick="deleteProfanityLog('${l.id}')" title="Kaydı Sil">🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }, (err) => {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:15px; text-align:center;">Hata: ${err.message}</td></tr>`;
       });
-
-      tbody.innerHTML = '';
-      logs.forEach(l => {
-        const dateStr = l.createdAt?.toDate ? l.createdAt.toDate().toLocaleString('tr-TR') : 'Tarih Belirtilmedi';
-        const row = document.createElement('tr');
-        row.style.borderBottom = '1px solid #e2e8f0';
-
-        const safeName = (l.userName || l.userEmail || '').replace(/'/g, "\\'");
-        const safeText = (l.originalText || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-        row.innerHTML = `
-          <td style="padding: 10px; font-weight: 600;">👤 ${l.userName}<br><span style="font-size:0.75rem; color:#64748b; font-weight:normal;">${l.userEmail}</span></td>
-          <td style="padding: 10px;"><span style="padding: 2px 8px; border-radius: 6px; font-weight: bold; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">${l.detectedWord}</span></td>
-          <td style="padding: 10px; font-weight: 600; color: #2563eb;">${l.source}</td>
-          <td style="padding: 10px; max-width: 250px; word-break: break-word; color: #334155;">${l.originalText}</td>
-          <td style="padding: 10px; font-size: 0.78rem; color: #64748b;">${dateStr}</td>
-          <td style="padding: 10px; text-align: right; display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
-            <button class="btn-action" style="font-size: 0.72rem; padding: 3px 6px; background: #fffbe6; color: #d97706; border-color: #fde68a;" onclick="openAdminWarnUserModal('${l.userId}', '${safeName}', '${safeText}')">⚠️ Uyar</button>
-            <button class="btn-action btn-finish-test" style="font-size: 0.72rem; padding: 3px 6px;" onclick="changeUserStatus('${l.userId}', 'Engellendi')">🚫 Engelle</button>
-            <button class="msg-delete-btn" onclick="deleteProfanityLog('${l.id}')" title="Kaydı Sil">🗑️</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }, (err) => {
+    } catch(err) {
       tbody.innerHTML = `<tr><td colspan="6" style="color:red; padding:15px; text-align:center;">Hata: ${err.message}</td></tr>`;
-    });
+    }
   };
 
   window.deleteProfanityLog = async function(docId) {
