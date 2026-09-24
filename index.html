@@ -3467,7 +3467,19 @@ window.closeAnnouncementModal = function() {
 <!-- FIREBASE & GELİŞTİRİLMİŞ MODÜL KODLARI -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signInWithRedirect, 
+  signInWithEmailAndPassword, 
+  onAuthStateChanged, 
+  signOut, 
+  EmailAuthProvider, 
+  reauthenticateWithCredential, 
+  updatePassword, 
+  updateEmail 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, addDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
   import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js"; 
@@ -3647,42 +3659,39 @@ window.closeAnnouncementModal = function() {
   const functions = getFunctions(app, "us-central1"); 
   const provider = new GoogleAuthProvider(); 
   // === TÜM ADMİN VE SİSTEM AYARLARININ KULLANICILARA ANLIK (REALTIME) YANSITILMASI ===
-  onAuthStateChanged(auth, async (user) => {
-    // Bakım Modunu ve Limitleri Sayfa Açılır Açılmaz Anlık Dinle
-    listenMaintenanceRealtime();
-    listenSystemLimitsRealtime();
+onAuthStateChanged(auth, async (user) => {
+  listenMaintenanceRealtime();
+  listenSystemLimitsRealtime();
 
-    if (user) {
-      const loginScreen = document.getElementById('loginScreen');
-      const loginOptionsModal = document.getElementById('loginOptionsModal');
-      const mainApp = document.getElementById('mainApp');
+  if (user) {
+    const loginScreen = document.getElementById('loginScreen');
+    const loginOptionsModal = document.getElementById('loginOptionsModal');
+    const mainApp = document.getElementById('mainApp');
 
-      if (loginScreen) loginScreen.style.display = 'none';
-      if (loginOptionsModal) loginOptionsModal.style.display = 'none';
-      if (mainApp) mainApp.style.display = 'block';
+    if (loginScreen) loginScreen.style.display = 'none';
+    if (loginOptionsModal) loginOptionsModal.style.display = 'none';
+    if (mainApp) mainApp.style.display = 'block';
 
-      window.currentUserEmail = user.email;
-      const nameTargets = document.querySelectorAll('.user-name-target');
-      nameTargets.forEach(el => el.innerText = formatNameSurname(user.displayName || user.email));
+    window.currentUserEmail = user.email;
+    const nameTargets = document.querySelectorAll('.user-name-target');
+    nameTargets.forEach(el => el.innerText = formatNameSurname(user.displayName || user.email));
 
-      // Kullanıcının uyarılarını ve duyurularını canlı dinle
-      listenUserWarnings(user.uid);
-      listenSystemAnnouncementsRealtime(user.uid);
+    listenUserWarnings(user.uid);
+    listenSystemAnnouncementsRealtime(user.uid);
 
-// YALNIZCA Google Auth ile giriş yapılmışsa soruları indir (Şifreli admin girişinde yüklenmez)
-      const isGoogleUser = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+    const isGoogleUser = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
 
-      if (isGoogleUser && typeof window.loadDataAndInit === 'function') {
-        window.loadDataAndInit();
-      }
-    } else {
-      const loginScreen = document.getElementById('loginScreen');
-      const mainApp = document.getElementById('mainApp');
-
-      if (loginScreen) loginScreen.style.display = 'flex';
-      if (mainApp) mainApp.style.display = 'none';
+    if (isGoogleUser && typeof window.loadDataAndInit === 'function') {
+      window.loadDataAndInit();
     }
-  });
+  } else {
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (mainApp) mainApp.style.display = 'none';
+  }
+});
 
   // --- ANLIK DUYURU CANLI DİNLEYİCİSİ ---
   window.listenSystemAnnouncementsRealtime = function(userUid) {
@@ -3765,40 +3774,6 @@ window.closeAnnouncementModal = function() {
       }
     });
   };
-// === CANLI OTURUM DİNLEYİCİSİ (DÖNGÜYÜ VE EKRAN KAPANMASINI ÇÖZER) ===
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      // Oturum açıldı: Giriş ekranlarını kapat, ana paneli aç
-      const loginScreen = document.getElementById('loginScreen');
-      const loginOptionsModal = document.getElementById('loginOptionsModal');
-      const mainApp = document.getElementById('mainApp');
-
-      if (loginScreen) loginScreen.style.display = 'none';
-      if (loginOptionsModal) loginOptionsModal.style.display = 'none';
-      if (mainApp) mainApp.style.display = 'block';
-
-      // Kullanıcı adını ve e-postasını ekrana yaz
-      window.currentUserEmail = user.email;
-      const nameTargets = document.querySelectorAll('.user-name-target');
-      nameTargets.forEach(el => el.innerText = user.displayName || user.email);
-
-      // Kullanıcı kısıtlamalarını ve duyurularını yükle
-      listenUserWarnings(user.uid);
-      if (typeof window.checkSystemAnnouncements === 'function') {
-        window.checkSystemAnnouncements(user.uid);
-      }
-      if (typeof window.loadDataAndInit === 'function') {
-        window.loadDataAndInit();
-      }
-    } else {
-      // Oturum kapalı/çıkış yapıldı: Giriş ekranına yönlendir
-      const loginScreen = document.getElementById('loginScreen');
-      const mainApp = document.getElementById('mainApp');
-
-      if (loginScreen) loginScreen.style.display = 'flex';
-      if (mainApp) mainApp.style.display = 'none';
-    }
-  });
   registerAppEvent('click', '#btnOpenAdminAuth', () => window.openAdminAuthModal?.()); 
   registerAppEvent('click', '#dragDropArea', (e, el) => { 
     if (e.target.closest('#selectedFileInfo button')) return; 
