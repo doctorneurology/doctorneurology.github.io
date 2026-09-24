@@ -1122,7 +1122,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
     </div>
   </div>
 
-  <!-- YENİ EKLENECEK DUYURU MODALI BURAYA -->
+<!-- YENİ EKLENECEK DUYURU MODALI BURAYA -->
   <div id="systemAnnouncementModal" class="modal-overlay no-print" style="display: none; z-index: 29500;">
     <div class="modal-card" style="max-width: 500px; width: 90%; border-top: 5px solid #8b5cf6;">
       <div class="modal-title" id="announcementModalTitle" style="color: #6b21a8;">📢 Sistem Duyurusu</div>
@@ -1133,6 +1133,19 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
           <input type="checkbox" id="chkDoNotShowToday"> Bu duyuruyu bugün bir daha gösterme
         </label>
         <button class="btn-action btn-toggle-on" style="padding: 6px 16px;" onclick="closeAnnouncementModal()">Anladım ve Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AKTİF YAYINLANAN DUYURULAR MODALİ (ADMIN) -->
+  <div id="activeAnnouncementsModal" class="modal-overlay no-print" style="display: none; z-index: 29600;" onclick="if(event.target===this) closeActiveAnnouncementsModal()">
+    <div class="modal-card" style="max-width: 650px; width: 92%; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-title" style="justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <span style="color: #0284c7;">📋 Aktif Yayınlanan Duyurular</span>
+        <button class="btn-action" onclick="closeActiveAnnouncementsModal()">✕ Kapat</button>
+      </div>
+      <div id="activeAnnouncementsList" style="flex: 1; overflow-y: auto; margin-top: 15px; padding-right: 5px;">
+        Yükleniyor...
       </div>
     </div>
   </div>
@@ -1732,6 +1745,7 @@ Açıklama: SSS'de oligodendrositler, PSS'de Schwann hücreleri miyelin üretir.
             </div>
 
             <button class="btn-action btn-toggle-on" style="padding: 10px; width: 100%; justify-content: center;" onclick="publishAnnouncement()">🚀 Duyuruyu Yayınla</button>
+            <button class="btn-action" style="padding: 10px; width: 100%; justify-content: center; margin-top: 10px; background: #0284c7; color: white; border-color: #0369a1;" onclick="openActiveAnnouncementsModal()">📋 Aktif Duyurular</button>
           </div>
 
 <!-- SAĞ TARAF: BAKIM MODU & BAKIM DUYURUSU -->
@@ -3378,6 +3392,7 @@ window.publishAnnouncement = async function() {
 };
 
 window.checkSystemAnnouncements = async function(userUid) {
+  if (window.currentUserIsAdmin === true) return;
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
   const hiddenTodayKey = `hide_announce_date_${userUid}`;
@@ -3459,6 +3474,121 @@ window.closeAnnouncementModal = function() {
   if (currentAnnouncementId) localStorage.setItem(`closed_ann_${currentAnnouncementId}`, 'true');
   const modal = document.getElementById('systemAnnouncementModal');
   if (modal) modal.style.display = 'none';
+};
+
+window.openActiveAnnouncementsModal = function() {
+  document.getElementById('activeAnnouncementsModal').style.display = 'flex';
+  window.loadActiveAnnouncements();
+};
+
+window.closeActiveAnnouncementsModal = function() {
+  document.getElementById('activeAnnouncementsModal').style.display = 'none';
+};
+
+window.loadActiveAnnouncements = async function() {
+  const listEl = document.getElementById('activeAnnouncementsList');
+  if (!listEl) return;
+  listEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:15px;">Duyurular yükleniyor...</p>';
+
+  try {
+    if (!window.db || !window.getDocs || !window.collection) {
+      listEl.innerHTML = '<p style="text-align:center; color:#ef4444;">Veritabanı bağlantısı henüz hazır değil.</p>';
+      return;
+    }
+
+    const snap = await window.getDocs(window.collection(window.db, 'sistem_duyurulari'));
+    if (snap.empty) {
+      listEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">Sistemde kayıtlı yayınlanmış duyuru bulunmuyor.</p>';
+      return;
+    }
+
+    let items = [];
+    snap.forEach(docSnap => {
+      items.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    items.sort((a, b) => {
+      const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+      const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
+
+    if (items.length === 0) {
+      listEl.innerHTML = '<p style="text-align:center; color:#64748b; padding:20px;">Aktif duyuru bulunmuyor.</p>';
+      return;
+    }
+
+    let html = '';
+    items.forEach(ann => {
+      const createdDate = ann.createdAt?.toDate
+        ? ann.createdAt.toDate().toLocaleString('tr-TR')
+        : (ann.createdAt ? new Date(ann.createdAt).toLocaleString('tr-TR') : 'Tarih Belirtilmedi');
+
+      let targetLabel = '🌐 Tüm Kullanıcılar';
+      if (ann.targetType === 'specific') targetLabel = '👤 Özel Kullanıcı';
+      else if (String(ann.targetType).startsWith('role_')) {
+        targetLabel = `👑 Rol: ${String(ann.targetType).replace('role_', '')}`;
+      }
+
+      const durText = (parseInt(ann.durationDays, 10) === 0) ? 'Tek Seferlik' : `${ann.durationDays || 1} Gün`;
+
+      html += `
+        <div style="background:#ffffff; border:1px solid var(--border); border-left:4px solid #0284c7; border-radius:10px; padding:14px; margin-bottom:12px; box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="font-weight:bold; font-size:0.95rem; color:#0f172a;">📢 ${ann.title || 'Başlıksız Duyuru'}</div>
+            <button class="btn-action btn-finish-test" style="font-size:0.75rem; padding:4px 10px;" onclick="deleteAnnouncement('${ann.id}')">
+              🗑️ Duyuruyu Sil ve Kaldır
+            </button>
+          </div>
+          
+          <div style="font-size:0.88rem; color:#334155; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0; white-space:pre-line; margin-bottom:10px;">
+            ${ann.text || ''}
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.78rem; color:#64748b; background:#f1f5f9; padding:6px 10px; border-radius:6px;">
+            <span>🎯 <strong>Hedef:</strong> ${targetLabel}</span>
+            <span>⏳ <strong>Süre:</strong> ${durText}</span>
+            <span>📅 <strong>Yayın Tarihi:</strong> ${createdDate}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    listEl.innerHTML = html;
+  } catch (err) {
+    console.error('Duyurular yüklenirken hata:', err);
+    listEl.innerHTML = `<p style="text-align:center; color:#ef4444; padding:15px;">Duyurular yüklenirken hata oluştu: ${err.message}</p>`;
+  }
+};
+
+window.deleteAnnouncement = async function(annId) {
+  if (typeof window.showCustomConfirm === 'function') {
+    window.showCustomConfirm(
+      "Duyuruyu Sil Onayı",
+      "Bu duyuruyu sistemden kalıcı olarak silmek istediğinize emin misiniz? Silindikten sonra kullanıcılara bir daha gösterilmeyecektir.",
+      async () => {
+        try {
+          if (!window.db || !window.deleteDoc || !window.doc) return;
+          await window.deleteDoc(window.doc(window.db, "sistem_duyurulari", annId));
+          if (typeof window.showToast === 'function') window.showToast("Duyuru başarıyla silindi ve sistemden kaldırıldı.", "success");
+          window.loadActiveAnnouncements();
+        } catch (err) {
+          if (typeof window.showToast === 'function') window.showToast("Duyuru silinirken hata: " + err.message, "error");
+        }
+      },
+      "🗑️"
+    );
+  } else {
+    if (confirm("Bu duyuruyu silmek istediğinize emin misiniz?")) {
+      try {
+        await window.deleteDoc(window.doc(window.db, "sistem_duyurulari", annId));
+        if (typeof window.showToast === 'function') window.showToast("Duyuru başarıyla silindi.", "success");
+        window.loadActiveAnnouncements();
+      } catch (err) {
+        if (typeof window.showToast === 'function') window.showToast("Hata: " + err.message, "error");
+      }
+    }
+  }
 };
 
 // Dinamik HTML'deki onclick çağrılarında kullanılabilmesi için mevcut fonksiyonlar global bırakılır.
@@ -3683,8 +3813,9 @@ window.closeAnnouncementModal = function() {
     }
   });
 
-  // --- ANLIK DUYURU CANLI DİNLEYİCİSİ ---
+// --- ANLIK DUYURU CANLI DİNLEYİCİSİ ---
   window.listenSystemAnnouncementsRealtime = function(userUid) {
+    if (window.currentUserIsAdmin === true) return;
     if (!db || !onSnapshot) return;
     const q = collection(db, "sistem_duyurulari");
 
