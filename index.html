@@ -3567,12 +3567,16 @@ window.loadActiveAnnouncements = async function() {
 };
 
 window.deleteAnnouncement = function(annId) {
+  const targetDeleteDoc = window.deleteDoc || deleteDoc;
+  const targetDoc = window.doc || doc;
+  const targetDb = window.db || db;
+
   showCustomConfirm(
     "Duyuruyu Sil Onayı",
     "Bu duyuruyu sistemden kalıcı olarak silmek istediğinize emin misiniz? Silindikten sonra kullanıcılara bir daha gösterilmeyecektir.",
     async () => {
       try {
-        await deleteDoc(doc(db, "sistem_duyurulari", annId));
+        await targetDeleteDoc(targetDoc(targetDb, "sistem_duyurulari", annId));
         showToast("Duyuru başarıyla silindi ve sistemden kaldırıldı.", "success");
         window.loadActiveAnnouncements();
       } catch (err) {
@@ -3584,14 +3588,19 @@ window.deleteAnnouncement = function(annId) {
 };
 
 window.deleteAllAnnouncements = function() {
+  const targetDeleteDoc = window.deleteDoc || deleteDoc;
+  const targetGetDocs = window.getDocs || getDocs;
+  const targetCollection = window.collection || collection;
+  const targetDb = window.db || db;
+
   showCustomConfirm(
     "Tüm Duyuruları Sil Onayı",
     "Sistemde yayınlanmış TÜM duyuruları silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
     async () => {
       try {
-        const snap = await getDocs(collection(db, "sistem_duyurulari"));
+        const snap = await targetGetDocs(targetCollection(targetDb, "sistem_duyurulari"));
         for (let docSnap of snap.docs) {
-          await deleteDoc(docSnap.ref);
+          await targetDeleteDoc(docSnap.ref);
         }
         showToast("Tüm aktif duyurular başarıyla silindi.", "success");
         window.loadActiveAnnouncements();
@@ -3946,9 +3955,11 @@ const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
   window.storage = storage; 
   window.provider = provider; 
   window.addDoc = addDoc; 
+  window.deleteDoc = deleteDoc;
+  window.doc = doc;
   window.collection = collection; 
   window.getDocs = getDocs; 
-  window.serverTimestamp = serverTimestamp; 
+  window.serverTimestamp = serverTimestamp;
  
   let currentUserData = null; 
   let allFetchedUsers = []; 
@@ -4047,26 +4058,29 @@ const isEmailAdmin = ADMIN_EMAILS.has((user.email || '').toLowerCase());
     return null;
   }
 
-  // Yasaklı kelime tespit edildiğinde Firestore'a anında log kaydı atma
-  async function logProfanityDetection(userId, userName, userEmail, detectedWord, originalText, source) {
+window.logProfanityDetection = async function(userId, userName, userEmail, detectedWord, originalText, source) {
     try {
-      const targetDb = db || window.db;
-      if (!targetDb) return;
+      const targetDb = window.db || db;
+      const targetAddDoc = window.addDoc || addDoc;
+      const targetCollection = window.collection || collection;
+      const targetServerTimestamp = window.serverTimestamp || serverTimestamp;
+
+      if (!targetDb || !targetAddDoc || !targetCollection) return;
       
-      await addDoc(collection(targetDb, "yasakli_kelime_tespitleri"), {
+      await targetAddDoc(targetCollection(targetDb, "yasakli_kelime_tespitleri"), {
         userId: userId || "anonim",
         userName: userName || "İsimsiz",
         userEmail: userEmail || "E-posta yok",
         detectedWord: String(detectedWord),
         originalText: String(originalText),
         source: String(source),
-        createdAt: serverTimestamp()
+        createdAt: targetServerTimestamp()
       });
-      console.log("Yasaklı kelime tespiti veritabanına kaydedildi:", detectedWord);
+      console.log("Yasaklı kelime tespiti admine gönderilmek üzere kaydedildi:", detectedWord);
     } catch(err) {
       console.error("Yasaklı kelime kaydı atılamadı:", err);
     }
-  }
+  };
   window.isAdminSessionActive = false; 
   window.currentUserIsAdmin = false; 
  
@@ -5721,42 +5735,59 @@ window.sendUserReportChatMessage = async function(docId) {
 window.sendUserChatMessage = async function() { 
     const input = document.getElementById('userChatMessageInput'); 
     const text = input.value.trim(); 
-    if (!text || !auth.currentUser) return; 
-
-    // Otomatik küfür/argo taraması (Anlık olarak kaydeder)
-    const detectedWord = window.checkTextForProfanity(text);
-    if (detectedWord) {
-      await window.logProfanityDetection(
-        auth.currentUser.uid,
-        auth.currentUser.displayName || auth.currentUser.email,
-        auth.currentUser.email,
-        detectedWord,
-        text,
-        "Canlı Destek Mesajı"
-      );
-    }
+    const currentUser = window.auth?.currentUser || auth?.currentUser;
+    if (!text || !currentUser) return; 
 
     input.value = ''; 
-    const userUid = auth.currentUser.uid;
- 
-    await addDoc(collection(db, "sohbetler", userUid, "mesajlar"), { 
-      senderUid: userUid, 
-      senderName: auth.currentUser.displayName || auth.currentUser.email, 
-      senderEmail: auth.currentUser.email, 
-      text: text, 
-      zaman: serverTimestamp(), 
-      readByAdmin: false, 
-      deletedByUser: false 
-    }); 
- 
-    await setDoc(doc(db, "sohbetler", userUid), { 
-      lastMessageTime: serverTimestamp(), 
-      lastMessageText: text, 
-      userEmail: auth.currentUser.email, 
-      userName: auth.currentUser.displayName || auth.currentUser.email, 
-      unreadByAdmin: true 
-    }, { merge: true }); 
-  }; 
+    const userUid = currentUser.uid; 
+
+    // Arka planda sessiz küfür/argo taraması (Kullanıcı engellenmez/uyarılmaz, sadece admine gizlice loglanır)
+    try {
+      const detectedWord = window.checkTextForProfanity ? window.checkTextForProfanity(text) : null;
+      if (detectedWord && window.logProfanityDetection) {
+        window.logProfanityDetection(
+          currentUser.uid,
+          currentUser.displayName || currentUser.email,
+          currentUser.email,
+          detectedWord,
+          text,
+          "Canlı Destek Mesajı"
+        );
+      }
+    } catch (err) {
+      console.warn("Arka plan küfür tarama hatası:", err);
+    }
+
+    // Mesaj sorunsuz şekilde yöneticiye gönderilir
+    const targetAddDoc = window.addDoc || addDoc;
+    const targetSetDoc = window.setDoc || setDoc;
+    const targetDoc = window.doc || doc;
+    const targetCollection = window.collection || collection;
+    const targetDb = window.db || db;
+    const targetServerTimestamp = window.serverTimestamp || serverTimestamp;
+
+    try {
+      await targetAddDoc(targetCollection(targetDb, "sohbetler", userUid, "mesajlar"), { 
+        senderUid: userUid, 
+        senderName: currentUser.displayName || currentUser.email, 
+        senderEmail: currentUser.email, 
+        text: text, 
+        zaman: targetServerTimestamp(), 
+        readByAdmin: false, 
+        deletedByUser: false 
+      }); 
+
+      await targetSetDoc(targetDoc(targetDb, "sohbetler", userUid), { 
+        lastMessageTime: targetServerTimestamp(), 
+        lastMessageText: text, 
+        userEmail: currentUser.email, 
+        userName: currentUser.displayName || currentUser.email, 
+        unreadByAdmin: true 
+      }, { merge: true }); 
+    } catch(e) {
+      showToast("Mesaj gönderilemedi: " + e.message, "error");
+    }
+  };
  
   window.deleteUserMessage = async function(msgId) { 
     if (!auth.currentUser) return; 
@@ -6316,14 +6347,15 @@ let profanityLogsUnsubscribe = null;
         const safeName = (l.userName || l.userEmail || '').replace(/'/g, "\\'");
         const safeText = (l.originalText || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-        row.innerHTML = `
+row.innerHTML = `
           <td style="padding: 10px; font-weight: 600;">👤 ${l.userName}<br><span style="font-size:0.75rem; color:#64748b; font-weight:normal;">${l.userEmail}</span></td>
           <td style="padding: 10px;"><span style="padding: 2px 8px; border-radius: 6px; font-weight: bold; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">${l.detectedWord}</span></td>
           <td style="padding: 10px; font-weight: 600; color: #2563eb;">${l.source}</td>
           <td style="padding: 10px; max-width: 250px; word-break: break-word; color: #334155;">${l.originalText}</td>
           <td style="padding: 10px; font-size: 0.78rem; color: #64748b;">${dateStr}</td>
-          <td style="padding: 10px; text-align: right;">
-            <button class="btn-action" style="font-size: 0.75rem; padding: 4px 8px; background: #fffbe6; color: #d97706; border-color: #fde68a;" onclick="openAdminWarnUserModal('${l.userId}', '${safeName}', '${safeText}')">⚠️ Uyar</button>
+          <td style="padding: 10px; text-align: right; display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
+            <button class="btn-action" style="font-size: 0.72rem; padding: 3px 6px; background: #fffbe6; color: #d97706; border-color: #fde68a;" onclick="openAdminWarnUserModal('${l.userId}', '${safeName}', '${safeText}')">⚠️ Uyar</button>
+            <button class="btn-action btn-finish-test" style="font-size: 0.72rem; padding: 3px 6px;" onclick="changeUserStatus('${l.userId}', 'Engellendi')">🚫 Engelle</button>
             <button class="msg-delete-btn" onclick="deleteProfanityLog('${l.id}')" title="Kaydı Sil">🗑️</button>
           </td>
         `;
